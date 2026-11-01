@@ -80,6 +80,7 @@
 <header id="top" class="bg-slate-900 text-white border-b-4 border-yellow-500 sticky top-0 z-30">
   <div class="max-w-5xl mx-auto px-3 py-2 flex items-center gap-3">
     <a id="home-link" href="#" class="shrink-0"><img id="gp-logo" alt="GolfPro36" class="w-10 h-10 rounded-lg bg-white object-contain"></a>
+    <img id="ev-logo" class="hidden w-10 h-10 rounded-lg bg-white object-contain shrink-0" alt="โลโก้งาน">
     <div class="min-w-0 flex-1">
       <div id="ev-name" class="font-black text-[15px] sm:text-lg leading-tight truncate">กำลังโหลด…</div>
       <div id="ev-sub" class="text-[11px] text-slate-300 truncate"></div>
@@ -88,6 +89,7 @@
   </div>
   <nav class="max-w-5xl mx-auto px-2 pb-2 flex gap-1 overflow-x-auto no-scrollbar text-sm">
     <a href="#board" data-nav="board" class="ctab text-slate-200"><i class="fa-solid fa-list-ol"></i> Leaderboard</a>
+    <a href="#awards" data-nav="awards" class="ctab text-slate-200"><i class="fa-solid fa-trophy"></i> รางวัล</a>
     <a href="#score" data-nav="score" class="ctab text-slate-200"><i class="fa-solid fa-pen-to-square"></i> กรอกคะแนน</a>
     <a href="#committee" data-nav="committee" class="ctab text-slate-200"><i class="fa-solid fa-user-shield"></i> กรรมการ</a>
     <a href="#tv" data-nav="tv" class="ctab text-slate-200"><i class="fa-solid fa-tv"></i> จอ TV</a>
@@ -96,6 +98,7 @@
 
 <main class="max-w-5xl mx-auto px-3 py-3 pb-24">
   <div id="trial-banner" class="hidden mb-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs p-2.5"></div>
+  <img id="ev-banner" class="hidden w-full max-h-56 object-cover rounded-2xl mb-3 bg-white" alt="แบนเนอร์งาน">
 
   <!-- ===== LEADERBOARD ===== -->
   <section id="view-board" class="view">
@@ -118,6 +121,14 @@
       <div id="lb-body"></div>
     </div>
     <p class="text-[11px] text-slate-500 mt-2 leading-relaxed" id="lb-legend"></p>
+  </section>
+
+  <!-- ===== รางวัล ===== -->
+  <section id="view-awards" class="view">
+    <div id="aw-state" class="mb-2 rounded-xl px-3 py-2 text-xs font-semibold"></div>
+    <div class="flex mb-2 no-print"><button class="btn btn-light !py-1.5 !px-3 text-xs ml-auto" onclick="window.print()"><i class="fa-solid fa-print"></i> พิมพ์ประกาศผล</button></div>
+    <div class="print-only mb-2"><div class="text-xl font-black" id="aw-print-title"></div></div>
+    <div id="aw-list" class="grid sm:grid-cols-2 gap-3"></div>
   </section>
 
   <!-- ===== กรอกคะแนน (เจ้าหน้าที่ประจำก๊วน) ===== -->
@@ -184,6 +195,7 @@
         <button class="ctab on" data-cm="overview"><i class="fa-solid fa-gauge"></i> ภาพรวม</button>
         <button class="ctab" data-cm="players"><i class="fa-solid fa-users"></i> ผู้เล่น/ก๊วน</button>
         <button class="ctab" data-cm="edit"><i class="fa-solid fa-pen"></i> แก้คะแนน</button>
+        <button class="ctab" data-cm="awards"><i class="fa-solid fa-trophy"></i> รางวัล</button>
         <button class="ctab" data-cm="settings"><i class="fa-solid fa-sliders"></i> ตั้งค่า</button>
         <button class="ctab" data-cm="audit"><i class="fa-solid fa-clock-rotate-left"></i> ประวัติ</button>
         <button class="ctab ml-auto" id="cm-refresh" title="โหลดใหม่"><i class="fa-solid fa-rotate"></i></button>
@@ -209,7 +221,7 @@
       <div data-cmv="players" class="hidden">
         <div class="card p-3 mb-3">
           <div class="font-black mb-1"><i class="fa-solid fa-file-import text-yellow-600"></i> นำเข้ารายชื่อ (วางจาก Excel / Google Sheets)</div>
-          <p class="text-xs text-slate-500 mb-2">คอลัมน์ตามลำดับ: <b>ชื่อ • เพศ (ชาย/หญิง) • HCP • รุ่น • ก๊วน • เวลาออก • หลุมออก</b> — แถวหัวตารางมีหรือไม่มีก็ได้ (HCP แต้มต่อบวกใส่ +2, เวลา/หลุมออกใส่แค่แถวแรกของก๊วนก็พอ)</p>
+          <p class="text-xs text-slate-500 mb-2">คอลัมน์ตามลำดับ: <b>ชื่อ • เพศ (ชาย/หญิง) • HCP • รุ่น • ก๊วน • เวลาออก • หลุมออก • ไฟลท์</b> — แถวหัวตารางมีหรือไม่มีก็ได้ (HCP แต้มต่อบวกใส่ +2, เวลา/หลุมออกใส่แค่แถวแรกของก๊วนก็พอ, ไฟลท์ว่าง = จัดตาม HCP อัตโนมัติ)</p>
           <textarea id="imp-text" rows="6" class="inp font-mono text-xs" placeholder="สมชาย ใจดี	ชาย	12	ทั่วไป	1	07:00	1"></textarea>
           <div class="flex flex-wrap gap-2 mt-2 items-center">
             <button id="imp-sample" class="btn btn-light !py-1.5 text-xs"><i class="fa-solid fa-copy"></i> คัดลอกหัวตารางตัวอย่าง</button>
@@ -233,9 +245,38 @@
           <p class="text-[11px] text-slate-500 mt-2">ทุกการแก้บันทึกค่าเดิม → ค่าใหม่ ผู้แก้ และเหตุผลไว้ในประวัติ (ย้อนดูได้เสมอ)</p>
         </div>
       </div>
+      <!-- รางวัล -->
+      <div data-cmv="awards" class="hidden">
+        <div class="card p-3 mb-3">
+          <div class="font-black mb-1"><i class="fa-solid fa-trophy text-yellow-600"></i> รางวัลที่คำนวณอัตโนมัติ</div>
+          <p class="text-xs text-slate-500 mb-2">ติ๊กรางวัลที่งานนี้มีจริง • "อันดับ" = จำนวนคนที่ได้รางวัล (เช่น Low Net 3 อันดับต่อไฟลท์) • แจกตามลำดับ Overall → ไฟลท์ → รุ่น → รางวัลอื่น เมื่อเปิด 1 คน 1 รางวัล คนที่ได้แล้วจะถูกข้ามให้คนถัดไป</p>
+          <div id="aw-form" class="divide-y text-sm"></div>
+          <button id="aw-save" class="btn btn-dark w-full mt-3"><i class="fa-solid fa-floppy-disk"></i> บันทึกการตั้งค่ารางวัล</button>
+        </div>
+        <div class="card p-3">
+          <div class="font-black mb-1"><i class="fa-solid fa-hand-holding-heart text-yellow-600"></i> รางวัลกรอกมือ (Nearest to the Pin / Long Drive / จับฉลาก / อื่น ๆ)</div>
+          <p class="text-xs text-slate-500 mb-2">พิมพ์ชื่อผู้ได้รับ (เลือกจากรายชื่อได้) และหมายเหตุ เช่น ระยะ — เพิ่มรางวัลอื่นได้เอง</p>
+          <datalist id="pl-names"></datalist>
+          <div id="ma-form" class="space-y-1.5"></div>
+          <div class="flex gap-2 mt-2"><button id="ma-add" class="btn btn-light !py-1.5 text-xs"><i class="fa-solid fa-plus"></i> เพิ่มรางวัล</button>
+          <button id="ma-save" class="btn btn-dark !py-1.5 flex-1"><i class="fa-solid fa-floppy-disk"></i> บันทึกรางวัลกรอกมือ</button></div>
+        </div>
+      </div>
       <!-- ตั้งค่า -->
       <div data-cmv="settings" class="hidden">
         <div class="card p-3 mb-3 grid sm:grid-cols-2 gap-3 text-sm" id="set-form"></div>
+        <div class="card p-3 mb-3">
+          <div class="font-black mb-1"><i class="fa-regular fa-image text-yellow-600"></i> โลโก้และแบนเนอร์งาน</div>
+          <p class="text-xs text-slate-500 mb-2">อัปโหลดรูปจากเครื่อง (ระบบย่อขนาดให้ เก็บในโฟลเดอร์งานบน Drive) หรือวางลิงก์ Google Drive / URL รูป — แสดงบนหัวหน้างาน Leaderboard และจอ TV</p>
+          <div class="grid sm:grid-cols-2 gap-3" id="img-form"></div>
+        </div>
+        <div class="card p-3 mb-3">
+          <div class="flex items-center gap-2 mb-1"><div class="font-black"><i class="fa-solid fa-layer-group text-yellow-600"></i> ไฟลท์ (แบ่งตาม HCP)</div>
+            <button id="fl-add" class="btn btn-light !py-1 !px-2 text-xs ml-auto"><i class="fa-solid fa-plus"></i> เพิ่มไฟลท์</button></div>
+          <p class="text-xs text-slate-500 mb-2">จัดไฟลท์อัตโนมัติจาก HCP (แต้มที่แจ้ง หรือ System 36 ระหว่างแข่ง) — แถวแรกที่ HCP ≤ สูงสุด, แถวสุดท้ายนับเป็น "ขึ้นไป" • ผู้เล่นกำหนดไฟลท์เองได้ที่แท็บผู้เล่น • Leaderboard เลือกดูอันดับในไฟลท์ได้</p>
+          <div class="overflow-x-auto"><table class="w-full text-sm" id="fl-table"></table></div>
+          <button id="fl-save" class="btn btn-dark w-full mt-2"><i class="fa-solid fa-floppy-disk"></i> บันทึกไฟลท์</button>
+        </div>
         <div class="card p-3">
           <div class="font-black mb-2">Par และ Stroke Index รายหลุม</div>
           <div class="overflow-x-auto"><table class="sc-table min-w-[620px]" id="set-course"></table></div>
@@ -296,6 +337,9 @@
  *   DECLARED = แต้มต่อที่ผู้เล่นแจ้ง (คอลัมน์ HCP) × HcpAllowance% ปัดเป็นจำนวนเต็ม (ค่าตั้งต้น 100%)
  *   S36      = System 36: แต้มต่อ = 36 − แต้มรวม (พาร์หรือดีกว่า 2, โบกี้ 1, แย่กว่า 0) — ระหว่างเล่นหลุมที่ยังไม่ตีนับเป็นพาร์ชั่วคราว
  *
+ * ไฟลท์ (data.flights = [{key,label,min,max}] เรียง MinHCP): ผู้เล่นที่ระบุ Flight เอง = ใช้ค่านั้น
+ *   ไม่ระบุ = จัดตาม HCP (DECLARED/GROSS = HCP ที่แจ้ง, S36 = HCP System 36 ปัจจุบัน) แถวแรกที่ HCP ≤ MaxHCP, แถวสุดท้าย = "ขึ้นไป"
+ *   ผู้หญิงแยกเป็นไฟลท์ LADY เมื่อ Tournament.LadyFlight ≠ FALSE (เหมือน GolfPro36)
  * Countback (เทียบการ์ด) ตาม R&A Committee Procedures 5A(6): 9 หลุมหลัง (10–18) → 6 หลุมหลัง (13–18) → 3 หลุมหลัง (16–18) → หลุม 18
  *   → 6 หลุมหลังของ 9 แรก (4–9) → 3 หลุม (7–9) → หลุม 9   ใช้หลุม 10–18 เสมอแม้ออกหลุม 10/Shotgun
  *   Net: หักแต้มต่อ 1/2, 1/3, 1/6, 1/18 ตามจำนวนหลุมของช่วงนั้น (ไม่ปัดเศษ — คิดเป็นหน่วย ×18 เพื่อเลี่ยงทศนิยม)
@@ -382,7 +426,17 @@ var SPE = (function () {
       netToPar += holes[i] - par[i] - recv[i];
     }
     var complete = played === 18;
+    // ไฟลท์
+    var flight = '', fset = ctx.flights;
+    var own = upper(p.flight);
+    if (own && (own === 'LADY' || fset.some(function (f) { return f.key === own; }))) flight = own;
+    else if (ctx.ladyFlight && upper(p.gender) === 'F') flight = 'LADY';
+    else if (fset.length) {
+      var base = mode === 'S36' ? (played ? hcp : null) : (isNaN(parseFloat(p.hcp)) ? null : Math.round(parseFloat(p.hcp)));
+      if (base !== null) for (var f = 0; f < fset.length; f++) if (f === fset.length - 1 || base <= fset[f].max) { flight = fset[f].key; break; }
+    }
     return {
+      flight: flight, flightLabel: flight === 'LADY' ? 'Flight Lady' : ((fset.filter(function (x) { return x.key === flight; })[0] || {}).label || ''),
       id: p.id, name: p.name, gender: p.gender, division: p.division || '', group: p.group, status: status,
       teeTime: g.teeTime || '', startHole: order[0] + 1, cardStatus: g.cardStatus || 'OPEN',
       holes: holes, netHoles: netHoles, recv: recv, played: played, complete: complete,
@@ -486,7 +540,9 @@ var SPE = (function () {
     var ctx = { par: par, si: si, groups: groups, mode: hcpMode(t), allow: allowance(t),
       tieGross: upper(t.TieGross) === 'COUNTBACK' ? 'COUNTBACK' : 'PLAYOFF',
       tieNet: upper(t.TieNet) === 'PLAYOFF' ? 'PLAYOFF' : 'COUNTBACK',
-      playoffGross: String(t.PlayoffGross || '').trim(), playoffNet: String(t.PlayoffNet || '').trim() };
+      playoffGross: String(t.PlayoffGross || '').trim(), playoffNet: String(t.PlayoffNet || '').trim(),
+      flights: (data.flights || []).filter(function (f) { return f && f.key; }).map(function (f) { return { key: upper(f.key), label: f.label || ('Flight ' + upper(f.key)), min: Number(f.min) || 0, max: Number(f.max) }; }).sort(function (a, b) { return a.min - b.min; }),
+      ladyFlight: upper(t.LadyFlight) !== 'FALSE' };
     var rows = (data.players || []).map(function (p) { return playerRow(p, data, ctx); });
     var activeRows = rows.filter(function (r) { return !r.status; });
     var locked = upper(t.RoundLocked) === 'TRUE';
@@ -496,6 +552,7 @@ var SPE = (function () {
     var totalPar = par.reduce(function (a, b) { return a + b; }, 0);
     var started = activeRows.filter(function (r) { return r.played; }).length;
     return {
+      flights: ctx.flights.concat(ctx.ladyFlight && rows.some(function (r) { return r.flight === 'LADY'; }) ? [{ key: 'LADY', label: 'Flight Lady' }] : []),
       mode: ctx.mode, allowance: ctx.allow, final: ctx.final, locked: locked, par: par, si: si, totalPar: totalPar,
       gross: g.list, net: n.list, playoffGross: g.playoff, playoffNet: n.playoff,
       stats: { players: rows.length, active: activeRows.length, started: started,
@@ -504,7 +561,119 @@ var SPE = (function () {
     };
   }
 
-  return { compute: compute, strokesPerHole: strokesPerHole, s36Points: s36Points, fmtToPar: fmtToPar, mark: mark,
+  // ======================================================================
+  // รางวัล — ใช้อันดับจาก compute() (รวมเทียบการ์ด/เพลย์ออฟ) แล้วแจกตามลำดับ:
+  // Overall Gross → Overall Net → ไฟลท์ (Gross, Net) → รุ่น (Gross, Net) → Most Birdies/Pars → Booby  • ก๊วน (ไม่นับ 1 คน 1 รางวัล)
+  // 1 คน 1 รางวัล (ค่าตั้งต้น): ผู้ได้รางวัลก่อนหน้าถูกข้าม คนถัดไปขึ้นแทน • จบรอบแล้วนับเฉพาะคนที่ครบ 18 หลุม
+  // ======================================================================
+  var AWARD_DEF = { OverallLowGross: [true, 1, 'Overall Low Gross'], OverallLowNet: [true, 1, 'Overall Low Net'], Overall_IncludeLady: [false, '', ''],
+    FlightLowGross: [false, 1, 'Low Gross'], FlightLowNet: [true, 2, 'Low Net'], DivisionLowGross: [false, 1, 'Low Gross'], DivisionLowNet: [false, 1, 'Low Net'],
+    BoobyPrize: [true, '', 'Booby Prize'], Booby_Scope: [false, 'ALL', ''], Booby_Rule: [false, '2ND', ''], MostBirdies: [false, 1, 'Most Birdies'], MostPars: [false, 1, 'Most Pars'],
+    TeamLowGross: [false, 1, 'ก๊วนชนะเลิศ Gross'], TeamLowNet: [false, 1, 'ก๊วนชนะเลิศ Net'], Team_BestN: [false, 3, ''], OnePrizePerPerson: [true, '', ''],
+    NearestToPin: [false, '', 'Nearest to the Pin'], LongestDrive: [false, 'NONE', 'Longest Drive'], LongestPutt: [false, '', 'Longest Putt'], SpiritAward: [false, '', 'รางวัลน้ำใจนักกีฬา'], LuckyDraw: [false, 0, 'Lucky Draw'] };
+  function awardCfg(data) {
+    var c = {}, a = data.awards || {};
+    Object.keys(AWARD_DEF).forEach(function (k) { var d = AWARD_DEF[k], x = a[k] || {}; c[k] = { enabled: 'enabled' in x ? !!x.enabled : d[0], value: 'value' in x && x.value !== '' && x.value != null ? x.value : d[1], label: x.label || d[2] }; });
+    return c;
+  }
+  /** ชื่อรางวัลกรอกมือที่ต้องมีตามการตั้งค่า */
+  function manualSlots(data) {
+    var c = awardCfg(data), out = [];
+    String(c.NearestToPin.value || '').split(',').filter(String).forEach(function (h) { out.push(c.NearestToPin.label + ' หลุม ' + h); });
+    var ld = upper(c.LongestDrive.value);
+    if (ld === 'ALL') out.push(c.LongestDrive.label); else if (ld === 'SEPARATE') { out.push(c.LongestDrive.label + ' ชาย'); out.push(c.LongestDrive.label + ' หญิง'); }
+    if (c.LongestPutt.enabled) out.push(c.LongestPutt.label);
+    if (c.SpiritAward.enabled) out.push(c.SpiritAward.label);
+    for (var i = 1; i <= (parseInt(c.LuckyDraw.value, 10) || 0); i++) out.push(c.LuckyDraw.label + ' #' + i);
+    return out;
+  }
+  function awards(data, res) {
+    res = res || compute(data);
+    var c = awardCfg(data), one = c.OnePrizePerPerson.enabled, used = {}, sections = [], fin = res.final;
+    var ok = function (r) { return r && !r.status && r.played > 0 && (!fin || r.complete); };
+    var lady = function (r) { return upper(r.gender) === 'F'; };
+    function sub(filter) { return compute(Object.assign({}, data, { players: (data.players || []).filter(function (p) { return filter(res.byId[p.id]); }) })); }
+    function fmtG(r) { return r.complete ? String(r.gross) + ' (' + fmtToPar(r.toPar) + ')' : fmtToPar(r.toPar) + ' • Thru ' + r.thru; }
+    function fmtN(r) { return r.complete ? 'Net ' + r.net + ' (HCP ' + r.hcpLabel + ')' : 'Net ' + fmtToPar(r.netToPar) + ' • Thru ' + r.thru; }
+    function ranked(key, title, sr, kind, places) {
+      var list = kind === 'net' ? sr.net : sr.gross, ent = [];
+      for (var i = 0; i < list.length && ent.length < places; i++) {
+        var r = list[i]; if (!ok(r) || (one && used[r.id])) continue;
+        ent.push({ place: ent.length + 1, id: r.id, name: r.name, pos: r['pos_' + kind], value: kind === 'net' ? fmtN(r) : fmtG(r), tie: !!r['tie_' + kind], cb: r['cbBy_' + kind] || '' });
+      }
+      ent.forEach(function (e) { used[e.id] = 1; });
+      if (ent.length) sections.push({ key: key, title: title, kind: kind, entries: ent });
+    }
+    var net = res.mode !== 'GROSS';
+    var lf = res.flights.some(function (f) { return f.key === 'LADY'; });
+    var overallPool = c.Overall_IncludeLady.enabled || !lf ? function (r) { return !!r; } : function (r) { return r && !lady(r); };
+    var allSub = null;
+    if (c.OverallLowGross.enabled || (net && c.OverallLowNet.enabled)) allSub = sub(overallPool);
+    if (c.OverallLowGross.enabled) ranked('OverallLowGross', c.OverallLowGross.label, allSub, 'gross', +c.OverallLowGross.value || 1);
+    if (net && c.OverallLowNet.enabled) ranked('OverallLowNet', c.OverallLowNet.label, allSub, 'net', +c.OverallLowNet.value || 1);
+    res.flights.forEach(function (f) {
+      if (!c.FlightLowGross.enabled && !(net && c.FlightLowNet.enabled)) return;
+      var sr = sub(function (r) { return r && r.flight === f.key; });
+      if (c.FlightLowGross.enabled) ranked('FlightLowGross:' + f.key, f.label + ' ' + c.FlightLowGross.label, sr, 'gross', +c.FlightLowGross.value || 1);
+      if (net && c.FlightLowNet.enabled) ranked('FlightLowNet:' + f.key, f.label + ' ' + c.FlightLowNet.label, sr, 'net', +c.FlightLowNet.value || 1);
+    });
+    var divs = []; (data.players || []).forEach(function (p) { if (p.division && divs.indexOf(p.division) < 0) divs.push(p.division); }); divs.sort();
+    divs.forEach(function (d) {
+      if (!c.DivisionLowGross.enabled && !(net && c.DivisionLowNet.enabled)) return;
+      var sr = sub(function (r) { return r && r.division === d; });
+      if (c.DivisionLowGross.enabled) ranked('DivisionLowGross:' + d, 'รุ่น' + d + ' ' + c.DivisionLowGross.label, sr, 'gross', +c.DivisionLowGross.value || 1);
+      if (net && c.DivisionLowNet.enabled) ranked('DivisionLowNet:' + d, 'รุ่น' + d + ' ' + c.DivisionLowNet.label, sr, 'net', +c.DivisionLowNet.value || 1);
+    });
+    function counted(key, test) {
+      if (!c[key].enabled) return;
+      var pool = res.gross.filter(function (r) { return ok(r) && !(one && used[r.id]); }).map(function (r) {
+        var n = 0; for (var h = 0; h < 18; h++) if (r.holes[h] !== null && test(r.holes[h] - res.par[h])) n++;
+        return { r: r, n: n };
+      }).filter(function (x) { return x.n > 0; });
+      pool.sort(function (a, b) { return (b.n - a.n) || (a.r.gross - b.r.gross); });
+      var ent = pool.slice(0, +c[key].value || 1).map(function (x, i) {
+        var tie = pool.some(function (y) { return y !== x && y.n === x.n && y.r.gross === x.r.gross; });
+        return { place: i + 1, id: x.r.id, name: x.r.name, value: x.n + ' ' + (key === 'MostBirdies' ? 'Birdie+' : 'Par') + ' • Gross ' + x.r.gross, tie: tie };
+      });
+      ent.forEach(function (e) { used[e.id] = 1; });
+      if (ent.length) sections.push({ key: key, title: c[key].label, kind: 'count', entries: ent });
+    }
+    counted('MostBirdies', function (d) { return d <= -1; });
+    counted('MostPars', function (d) { return d === 0; });
+    if (c.BoobyPrize.enabled) {
+      var scope = upper(c.Booby_Scope.value), rule = upper(c.Booby_Rule.value) === 'LAST' ? 0 : 1;
+      var pools = scope === 'SEPARATE' ? [['ชาย', function (r) { return !lady(r); }], ['หญิง', lady]] : scope === 'MEN' ? [['', function (r) { return !lady(r); }]] : scope === 'LADY' ? [['', lady]] : [['', function () { return true; }]];
+      pools.forEach(function (pl) {
+        var worst = res.gross.filter(function (r) { return ok(r) && r.complete && pl[1](r); }).slice().reverse();
+        var cand = worst.filter(function (r) { return !(one && used[r.id]); });
+        var w = worst[rule]; if (w && one && used[w.id]) w = cand[rule] || null;
+        if (!w) return;
+        used[w.id] = 1;
+        sections.push({ key: 'BoobyPrize' + (pl[0] ? ':' + pl[0] : ''), title: c.BoobyPrize.label + (pl[0] ? ' ' + pl[0] : '') + (rule ? ' (รองบ๊วย)' : ' (บ๊วย)'), kind: 'booby',
+          entries: [{ place: 1, id: w.id, name: w.name, value: fmtG(w), tie: !!w.tie_gross }] });
+      });
+    }
+    // ก๊วน
+    var N = Math.max(1, Math.min(5, parseInt(c.Team_BestN.value, 10) || 3));
+    [['TeamLowGross', 'gross'], ['TeamLowNet', 'net']].forEach(function (tk) {
+      if (!c[tk[0]].enabled || (tk[1] === 'net' && !net)) return;
+      var teams = {};
+      Object.keys(res.byId).forEach(function (id) { var r = res.byId[id]; if (r.status || !r.complete) return; (teams[r.group] = teams[r.group] || []).push(r); });
+      var list = Object.keys(teams).map(function (g) {
+        var sc = teams[g].map(function (r) { return tk[1] === 'net' ? r.net : r.gross; }).sort(function (a, b) { return a - b; });
+        return { g: g, n: sc.length, total: sc.slice(0, N).reduce(function (a, b) { return a + b; }, 0), next: sc[N] === undefined ? 999 : sc[N], names: teams[g].map(function (r) { return r.name; }) };
+      }).filter(function (x) { return x.n >= N; });
+      list.sort(function (a, b) { return (a.total - b.total) || (a.next - b.next); });
+      var ent = list.slice(0, +c[tk[0]].value || 1).map(function (x, i) {
+        return { place: i + 1, id: '', name: 'ก๊วน ' + x.g, value: (tk[1] === 'net' ? 'Net ' : 'Gross ') + x.total + ' (ดีสุด ' + N + ' คน)', members: x.names.join(', '),
+          tie: list.some(function (y) { return y !== x && y.total === x.total && y.next === x.next; }) };
+      });
+      if (ent.length) sections.push({ key: tk[0], title: c[tk[0]].label, kind: 'team', entries: ent });
+    });
+    return { final: fin, locked: res.locked, sections: sections, manualSlots: manualSlots(data), onePrize: one };
+  }
+
+  return { compute: compute, awards: awards, manualSlots: manualSlots, awardCfg: awardCfg, strokesPerHole: strokesPerHole, s36Points: s36Points, fmtToPar: fmtToPar, mark: mark,
     holeOrder: holeOrder, hcpMode: hcpMode, CB_LABEL: CB_LABEL };
 })();
 </script>
@@ -573,7 +742,7 @@ function load(silent) {
     lastLoad = Date.now();
     RES = SPE.compute(DATA);
     applyHeader(DATA.tournament);
-    renderBoard(); if (route().v === 'tv') renderTV();
+    renderBoard(); renderAwards(); if (route().v === 'tv') renderTV();
   }).catch(e => {
     if (/ไม่พบงาน|รหัสงานไม่ถูกต้อง|หมดอายุ|ปิดใช้งาน/.test(e.message || '')) { leaveToHome(e.message); return; }
     if (!silent) alertErr(e.message || String(e));
@@ -588,21 +757,32 @@ function startPolling(ms) {
 }
 
 // ---------- Leaderboard ----------
+/** ตัวกรอง: ไฟลท์ / รุ่น / เพศ → จัดอันดับใหม่ภายในกลุ่ม (อันดับในไฟลท์ + เทียบการ์ดภายในไฟลท์) */
+let SUB = null;
+function filterKey() { return $('#f-div').value; }
+function subsetResult() {
+  const f = filterKey();
+  if (!f || !RES) return RES;
+  const keep = p => { const r = RES.byId[p.id]; return f.startsWith('F:') ? r.flight === f.slice(2) : f === '__F' ? p.gender === 'F' : f === '__M' ? p.gender !== 'F' : p.division === f.slice(2); };
+  return SPE.compute(Object.assign({}, DATA, { players: DATA.players.filter(keep) }));
+}
 function rowsFor(kind) {
   if (!RES) return [];
-  let list = kind === 'net' ? RES.net : RES.gross;
-  const div = $('#f-div').value, q = $('#f-q').value.trim().toLowerCase();
-  if (div === '__F') list = list.filter(r => r.gender === 'F');
-  else if (div === '__M') list = list.filter(r => r.gender !== 'F');
-  else if (div) list = list.filter(r => r.division === div);
+  SUB = subsetResult();
+  let list = kind === 'net' ? SUB.net : SUB.gross;
+  const q = $('#f-q').value.trim().toLowerCase();
   if (q) list = list.filter(r => String(r.name).toLowerCase().includes(q));
   return list;
 }
 function fillDivisions() {
   const sel = $('#f-div'), cur = sel.value, divs = [...new Set(DATA.players.map(p => p.division).filter(Boolean))].sort();
   const hasF = DATA.players.some(p => p.gender === 'F');
-  sel.innerHTML = '<option value="">ทุกรุ่น</option>' + divs.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('') +
-    (hasF ? '<option value="__M">ชาย</option><option value="__F">หญิง</option>' : '');
+  const used = new Set(Object.values(RES.byId).map(r => r.flight).filter(Boolean));
+  const fl = RES.flights.filter(f => used.has(f.key));
+  sel.innerHTML = '<option value="">Overall (ทุกคน)</option>' +
+    (fl.length ? '<optgroup label="ไฟลท์">' + fl.map(f => `<option value="F:${esc(f.key)}">${esc(f.label)}</option>`).join('') + '</optgroup>' : '') +
+    (divs.length ? '<optgroup label="รุ่น">' + divs.map(d => `<option value="D:${esc(d)}">${esc(d)}</option>`).join('') + '</optgroup>' : '') +
+    (hasF ? '<optgroup label="เพศ"><option value="__M">ชาย</option><option value="__F">หญิง</option></optgroup>' : '');
   if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
 }
 function renderBoard() {
@@ -616,17 +796,17 @@ function renderBoard() {
   else if (!RES.stats.started) { st.className = 'mb-2 rounded-xl px-3 py-2 text-xs font-semibold bg-slate-200 text-slate-700'; st.innerHTML = '<i class="fa-regular fa-clock"></i> ยังไม่เริ่มแข่ง — ตารางเวลาออกแสดงด้านล่าง'; }
   else { st.className = 'mb-2 rounded-xl px-3 py-2 text-xs font-semibold bg-white text-slate-600 border'; st.innerHTML = `<span class="text-red-600 font-black">● ยังไม่เป็นทางการ</span> — เล่นจบ ${RES.stats.finished}/${RES.stats.active} คน • อัปเดตอัตโนมัติ (ล่าสุด ${clock(lastLoad)})`; }
   // เพลย์ออฟ
-  const po = KIND === 'net' ? RES.playoffNet : RES.playoffGross, box = $('#playoff-box');
+  const rows = rowsFor(KIND);
+  const po = KIND === 'net' ? SUB.playoffNet : SUB.playoffGross, box = $('#playoff-box');
   if (po && !po.winner) {
     const names = po.players.map(id => esc(RES.byId[id].name)).join(', ');
-    box.innerHTML = `<i class="fa-solid fa-flag-checkered"></i> <b>${po.rule === 'PLAYOFF' ? 'เพลย์ออฟอันดับ 1' : 'เสมอทุกขั้นของการเทียบการ์ด — รอกรรมการตัดสิน'}</b>: ${names}`;
+    box.innerHTML = `<i class="fa-solid fa-flag-checkered"></i> <b>${filterKey() ? esc($('#f-div').selectedOptions[0].textContent) + ': ' : ''}${po.rule === 'PLAYOFF' ? 'เพลย์ออฟอันดับ 1' : 'เสมอทุกขั้นของการเทียบการ์ด — รอกรรมการตัดสิน'}</b>: ${names}`;
     box.classList.remove('hidden');
   } else box.classList.add('hidden');
   const net = KIND === 'net';
   $('#h-tot').textContent = net ? 'Net' : 'Gross';
   $('#h-topar').textContent = net ? 'Net±' : 'To Par';
   $('#h-extra').textContent = net ? 'HCP' : (mode === 'GROSS' ? 'ก๊วน' : 'HCP');
-  const rows = rowsFor(KIND);
   if (!rows.length) { $('#lb-body').innerHTML = `<div class="p-6 text-center text-slate-400 text-sm">${DATA.players.length ? 'ไม่พบผู้เล่นตามตัวกรอง' : 'ยังไม่มีรายชื่อผู้เล่น — กรรมการนำเข้าได้ที่เมนู "กรรมการ"'}</div>`; return; }
   $('#lb-body').innerHTML = rows.map(r => {
     const pos = r['pos_' + KIND], tp = net ? r.netToPar : r.toPar;
@@ -634,7 +814,7 @@ function renderBoard() {
     const thru = r.status ? '' : (waiting ? `<span class="text-slate-400 text-[11px]">${esc(r.teeTime || '')}${r.startHole !== 1 ? ' ⑩' : ''}</span>` : esc(r.thru));
     const tot = r.status ? '' : net ? (r.complete ? r.net : '') : (r.complete ? r.gross : '');   // รวมแสดงเมื่อจบ 18 หลุม (ระหว่างเล่นดู To Par)
     const cb = r['cbBy_' + KIND] ? `<span class="pill bg-slate-100 text-slate-500 !px-1.5 !py-0 !text-[9px]">CB ${esc(r['cbBy_' + KIND])}</span>` : '';
-    const sub = [r.division, 'ก๊วน ' + r.group].filter(Boolean).join(' • ');
+    const sub = [r.flightLabel, r.division, 'ก๊วน ' + r.group].filter(Boolean).join(' • ');
     return `<div class="lb-row grid grid-cols-[3.2rem_1fr_3.6rem_3rem_3.4rem] sm:grid-cols-[4rem_1fr_4.5rem_4rem_4rem_4rem] items-center px-2 py-2" data-pid="${esc(r.id)}">
       <div class="font-black ${pos === '1' || pos === 'T1' ? 'text-yellow-600' : 'text-slate-700'} text-sm">${esc(pos)}</div>
       <div class="min-w-0"><div class="font-bold truncate text-[14px]">${esc(r.name)} ${r.gender === 'F' ? '<i class="fa-solid fa-venus text-pink-500 text-[11px]"></i>' : ''}</div>
@@ -653,6 +833,26 @@ function renderBoard() {
 }
 function setKind(k) { KIND = k; $$('#seg-kind button').forEach(b => b.classList.toggle('on', b.dataset.kind === k)); renderBoard(); }
 
+// ---------- รางวัล ----------
+const MEDAL = ['🥇', '🥈', '🥉'];
+function renderAwards() {
+  if (!DATA || route().v !== 'awards') return;
+  const A = SPE.awards(DATA, RES), st = $('#aw-state');
+  if (A.locked) { st.className = 'mb-2 rounded-xl px-3 py-2 text-xs font-semibold bg-green-50 text-green-800 border border-green-200'; st.innerHTML = '<i class="fa-solid fa-circle-check"></i> ผลทางการ — กรรมการล็อกรอบแล้ว'; }
+  else if (A.final) { st.className = 'mb-2 rounded-xl px-3 py-2 text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-200'; st.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> ทุกคนจบแล้ว — รอกรรมการตรวจการ์ดและล็อกรอบ'; }
+  else { st.className = 'mb-2 rounded-xl px-3 py-2 text-xs font-semibold bg-white text-slate-600 border'; st.innerHTML = '<span class="text-red-600 font-black">● ผลชั่วคราว</span> — คำนวณจากคะแนนล่าสุด (คนที่ยังเล่นไม่จบอาจเปลี่ยนอันดับ)'; }
+  $('#aw-print-title').textContent = 'ประกาศผลรางวัล — ' + (DATA.tournament.Name || '');
+  const card = (title, body, icon) => `<div class="card overflow-hidden"><div class="bg-slate-900 text-white px-3 py-2 font-black text-sm flex items-center gap-2"><i class="fa-solid ${icon || 'fa-trophy'} text-yellow-400"></i>${esc(title)}</div><div class="divide-y">${body}</div></div>`;
+  const html = A.sections.map(sec => card(sec.title, sec.entries.map(e => `<div class="flex items-center gap-3 px-3 py-2 ${e.id ? 'cursor-pointer hover:bg-slate-50' : ''}" ${e.id ? `data-awpid="${esc(e.id)}"` : ''}>
+      <div class="text-2xl w-8 text-center">${sec.entries.length > 1 || sec.kind === 'gross' || sec.kind === 'net' ? (MEDAL[e.place - 1] || '<span class="text-base font-black text-slate-500">' + e.place + '</span>') : '🏅'}</div>
+      <div class="min-w-0 flex-1"><div class="font-bold truncate">${esc(e.name)}</div><div class="text-[11px] text-slate-500">${esc(e.value)}${e.members ? ' • ' + esc(e.members) : ''}${e.cb ? ' • CB ' + esc(e.cb) : ''}</div></div>
+      ${e.tie && A.final ? '<span class="pill bg-yellow-100 text-yellow-800">เสมอ — กรรมการตัดสิน</span>' : ''}</div>`).join(''), sec.kind === 'team' ? 'fa-people-group' : sec.kind === 'booby' ? 'fa-face-grin-squint' : 'fa-trophy')).join('');
+  const man = {}; (DATA.manualAwards || []).forEach(m => { man[m.award] = m; });
+  const names = A.manualSlots.concat((DATA.manualAwards || []).map(m => m.award).filter(a => !A.manualSlots.includes(a)));
+  const manHtml = names.length ? card('รางวัลพิเศษ', names.map(n => { const m = man[n] || {}; return `<div class="flex items-center gap-3 px-3 py-2"><div class="text-xl w-8 text-center">🎖️</div><div class="min-w-0 flex-1"><div class="text-[11px] font-bold text-slate-500">${esc(n)}</div><div class="font-bold truncate">${m.winner ? esc(m.winner) : '<span class="text-slate-300">รอประกาศ</span>'}</div></div><div class="text-xs text-slate-500">${esc(m.note || '')}</div></div>`; }).join(''), 'fa-star') : '';
+  $('#aw-list').innerHTML = (html + manHtml) || '<div class="text-slate-400 text-sm p-4">ยังไม่มีรางวัล — กรรมการตั้งค่าได้ที่ กรรมการ → รางวัล</div>';
+}
+
 // ---------- สกอร์การ์ดผู้เล่น ----------
 function scorecardTable(r, par, si, opt) {
   opt = opt || {};
@@ -670,7 +870,7 @@ function scorecardTable(r, par, si, opt) {
 function openCard(pid) {
   const r = RES && RES.byId[pid]; if (!r) return;
   $('#pc-name').textContent = r.name;
-  $('#pc-sub').textContent = ['ก๊วน ' + r.group, r.teeTime && 'ออก ' + r.teeTime + (r.startHole !== 1 ? ' หลุม ' + r.startHole : ''), r.division].filter(Boolean).join(' • ');
+  $('#pc-sub').textContent = [r.flightLabel, 'ก๊วน ' + r.group, r.teeTime && 'ออก ' + r.teeTime + (r.startHole !== 1 ? ' หลุม ' + r.startHole : ''), r.division].filter(Boolean).join(' • ');
   const net = RES.mode !== 'GROSS';
   const stat = (label, val, cls) => `<div class="rounded-xl bg-slate-50 border py-2"><div class="text-[10px] font-bold text-slate-500">${label}</div><div class="text-xl font-black ${cls || ''}">${val}</div></div>`;
   $('#pc-stats').innerHTML = stat('Gross', r.played ? r.gross : '–') + stat('To Par', fmtTP(r.toPar), tpClass(r.toPar)) +
@@ -688,7 +888,7 @@ function renderTV() {
   const t = DATA.tournament;
   $('#tv-name').textContent = t.Name || '';
   $('#tv-sub').textContent = [t.Course, t.Date].filter(Boolean).join(' • ');
-  $('#tv-logo').src = GP_LOGO;
+  $('#tv-logo').src = IMGS.EventLogo || GP_LOGO;
   $('#tv-state').innerHTML = RES.locked ? '<span class="text-green-400"><i class="fa-solid fa-circle-check"></i> ผลทางการ</span>' : (RES.stats.started ? '<span class="text-red-500">● LIVE</span>' : '<span class="text-slate-400">ยังไม่เริ่ม</span>');
   const kinds = RES.mode === 'GROSS' ? ['gross'] : ['gross', 'net'];
   const per = 13, cols = 2, pageSize = per * cols;
@@ -886,7 +1086,7 @@ function cmCall(fn, ...args) {
     CM.v = r; renderCM(); load(true); if (r.message) toast(r.message); return r;
   }).catch(e => { Swal.close(); alertErr(e.message); return null; });
 }
-function cmCompute() { return SPE.compute({ tournament: CM.v.tournament, course: CM.v.course, players: CM.v.players, groups: CM.v.groups, scores: CM.v.scores }); }
+function cmCompute() { return SPE.compute({ tournament: CM.v.tournament, course: CM.v.course, players: CM.v.players, groups: CM.v.groups, scores: CM.v.scores, flights: CM.v.flights }); }
 /** ลิงก์ QR บัตรก๊วน: เปิดหน้ากรอกคะแนนของก๊วนนั้นทันที (ใช้ query เพื่อให้ทำงานทั้งบน GitHub และ Apps Script) */
 function groupLink(g) { const base = EVENT_URL || location.href.split('#')[0]; return base + (base.includes('?') ? '&' : '?') + 'sg=' + encodeURIComponent(g.group) + '&sk=' + encodeURIComponent(g.pin) + '#score'; }
 function renderCM() {
@@ -923,8 +1123,8 @@ function renderCM() {
   $('#btn-lock').innerHTML = locked ? '<i class="fa-solid fa-lock-open"></i> ปลดล็อกรอบ' : '<i class="fa-solid fa-lock"></i> ล็อกรอบ = ประกาศผลทางการ';
   // ผู้เล่น
   $('#pl-count').textContent = '(' + v.players.length + ' คน)';
-  $('#cm-players').innerHTML = '<tr class="text-[11px] text-slate-500 text-left"><th class="py-1">รหัส</th><th>ชื่อ</th><th>HCP</th><th>รุ่น</th><th>ก๊วน</th><th>สถานะ</th><th></th></tr>' + v.players.map(p =>
-    `<tr class="border-t"><td class="py-1.5 text-xs text-slate-500">${esc(p.id)}</td><td class="font-bold">${esc(p.name)} ${p.gender === 'F' ? '<i class="fa-solid fa-venus text-pink-500 text-xs"></i>' : ''}</td><td>${p.hcp === '' ? '–' : (p.hcp < 0 ? '+' + (-p.hcp) : esc(p.hcp))}</td><td class="text-xs">${esc(p.division)}</td><td>${esc(p.group)}</td>
+  $('#cm-players').innerHTML = '<tr class="text-[11px] text-slate-500 text-left"><th class="py-1">รหัส</th><th>ชื่อ</th><th>HCP</th><th>ไฟลท์</th><th>รุ่น</th><th>ก๊วน</th><th>สถานะ</th><th></th></tr>' + v.players.map(p =>
+    `<tr class="border-t"><td class="py-1.5 text-xs text-slate-500">${esc(p.id)}</td><td class="font-bold">${esc(p.name)} ${p.gender === 'F' ? '<i class="fa-solid fa-venus text-pink-500 text-xs"></i>' : ''}</td><td>${p.hcp === '' ? '–' : (p.hcp < 0 ? '+' + (-p.hcp) : esc(p.hcp))}</td><td class="text-xs">${esc((R.byId[p.id] || {}).flightLabel || '–')}${p.flight ? ' <i class="fa-solid fa-thumbtack text-slate-400" title="กำหนดเอง"></i>' : ''}</td><td class="text-xs">${esc(p.division)}</td><td>${esc(p.group)}</td>
     <td>${p.status ? `<span class="pill bg-red-100 text-red-700" title="${esc(p.statusNote)}">${esc(p.status)}</span>` : ''}</td>
     <td class="text-right whitespace-nowrap"><button class="btn btn-light !p-1.5 text-xs" data-pedit="${esc(p.id)}"><i class="fa-solid fa-pen"></i></button> <button class="btn btn-light !p-1.5 text-xs" data-pstat="${esc(p.id)}">WD/DQ</button></td></tr>`).join('');
   // แก้คะแนน
@@ -933,8 +1133,56 @@ function renderCM() {
   if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
   renderEditTable();
   renderSettings();
+  renderAwardForm(); renderManualForm();
   $('#cm-audit').innerHTML = v.audit.map(a => `<div class="py-1.5"><span class="text-slate-400">${esc(a.time)}</span> <b>${esc(a.actor)}</b> <span class="pill bg-slate-100 text-slate-600 !py-0">${esc(a.action)}</span> ${esc(a.detail)}</div>`).join('') || '<div class="text-slate-400">ยังไม่มีประวัติ</div>';
 }
+const AW_UI = [
+  ['h', 'Overall'], ['r', 'OverallLowGross', 'Overall Low Gross'], ['r', 'OverallLowNet', 'Overall Low Net', 'net'], ['b', 'Overall_IncludeLady', 'Overall รวมผู้หญิงด้วย (ปิด = ผู้หญิงชิงใน Flight Lady)'],
+  ['h', 'ไฟลท์ / รุ่น'], ['r', 'FlightLowGross', 'Low Gross ทุกไฟลท์ (อันดับต่อไฟลท์)'], ['r', 'FlightLowNet', 'Low Net ทุกไฟลท์ (อันดับต่อไฟลท์)', 'net'],
+  ['r', 'DivisionLowGross', 'Low Gross ทุกรุ่น (อันดับต่อรุ่น)'], ['r', 'DivisionLowNet', 'Low Net ทุกรุ่น (อันดับต่อรุ่น)', 'net'],
+  ['h', 'รางวัลอื่น'], ['r', 'MostBirdies', 'Most Birdies'], ['r', 'MostPars', 'Most Pars'], ['x', 'BoobyPrize', 'Booby Prize'],
+  ['e', 'Booby_Scope', 'Booby: ผู้มีสิทธิ์', [['ALL', 'รวมทุกคน'], ['MEN', 'เฉพาะชาย'], ['LADY', 'เฉพาะหญิง'], ['SEPARATE', 'แยกชาย-หญิง']]],
+  ['e', 'Booby_Rule', 'Booby: ใคร', [['2ND', 'รองบ๊วย'], ['LAST', 'บ๊วย']]],
+  ['r', 'TeamLowGross', 'ก๊วน Low Gross'], ['r', 'TeamLowNet', 'ก๊วน Low Net', 'net'], ['n', 'Team_BestN', 'ก๊วน: นับดีสุดกี่คน (1-5)'],
+  ['b', 'OnePrizePerPerson', '1 คน 1 รางวัล'],
+  ['h', 'รางวัลกรอกมือ'], ['t', 'NearestToPin', 'Nearest to the Pin: หลุม (เช่น 3,7,12,16)'],
+  ['e', 'LongestDrive', 'Longest Drive', [['NONE', 'ไม่มี'], ['ALL', '1 รางวัล'], ['SEPARATE', 'แยกชาย-หญิง']]],
+  ['x', 'LongestPutt', 'Longest Putt'], ['x', 'SpiritAward', 'รางวัลน้ำใจนักกีฬา'], ['n', 'LuckyDraw', 'Lucky Draw: จำนวนรางวัล (0-50)']];
+function renderAwardForm() {
+  const a = CM.v.awards || {}, net = SPE.hcpMode(CM.v.tournament) !== 'GROSS';
+  $('#aw-form').innerHTML = AW_UI.map(u => {
+    if (u[0] === 'h') return `<div class="pt-3 pb-1 font-black text-xs text-slate-500 uppercase">${u[1]}</div>`;
+    const k = u[1], x = a[k] || {}, dim = u[3] === 'net' && !net ? ' opacity-40' : '';
+    const chk = `<input type="checkbox" class="w-5 h-5 accent-slate-900" data-awe="${k}" ${x.enabled ? 'checked' : ''}>`;
+    const lab = `<input class="inp !py-1 text-xs" data-awl="${k}" value="${esc(x.label)}" maxlength="60" title="ชื่อที่แสดง">`;
+    if (u[0] === 'r') return `<div class="py-1.5 grid grid-cols-[1.5rem_1fr_5rem] sm:grid-cols-[1.5rem_1fr_14rem_5rem] items-center gap-2${dim}">${chk}<span class="font-bold">${u[2]}</span><span class="hidden sm:block">${lab}</span><label class="flex items-center gap-1 text-xs">อันดับ<input class="inp !py-1 !w-12 text-center" data-awv="${k}" inputmode="numeric" value="${esc(x.value)}"></label></div>`;
+    if (u[0] === 'x') return `<div class="py-1.5 grid grid-cols-[1.5rem_1fr] sm:grid-cols-[1.5rem_1fr_14rem_5rem] items-center gap-2">${chk}<span class="font-bold">${u[2]}</span><span class="hidden sm:block">${lab}</span></div>`;
+    if (u[0] === 'b') return `<div class="py-1.5 grid grid-cols-[1.5rem_1fr] items-center gap-2">${chk}<span class="font-bold">${u[2]}</span></div>`;
+    if (u[0] === 'e') return `<div class="py-1.5 grid grid-cols-[1fr_10rem] items-center gap-2"><span class="font-bold pl-8">${u[2]}</span><select class="inp !py-1 text-sm" data-awv="${k}">${u[3].map(o => `<option value="${o[0]}" ${String(x.value).toUpperCase() === o[0] ? 'selected' : ''}>${o[1]}</option>`).join('')}</select></div>`;
+    return `<div class="py-1.5 grid grid-cols-[1fr_10rem] items-center gap-2"><span class="font-bold pl-8">${u[2]}</span><input class="inp !py-1 text-sm" data-awv="${k}" value="${esc(x.value)}" ${u[0] === 'n' ? 'inputmode="numeric"' : ''}></div>`;
+  }).join('');
+}
+function readAwardForm() {
+  const m = {};
+  $$('[data-awe]').forEach(i => { (m[i.dataset.awe] = m[i.dataset.awe] || {}).enabled = i.checked; });
+  $$('[data-awv]').forEach(i => { (m[i.dataset.awv] = m[i.dataset.awv] || {}).value = i.value; });
+  $$('[data-awl]').forEach(i => { (m[i.dataset.awl] = m[i.dataset.awl] || {}).label = i.value; });
+  return m;
+}
+let MA_ROWS = null;
+function renderManualForm(rows) {
+  const v = CM.v, slots = SPE.manualSlots({ awards: v.awards }), saved = v.manualAwards || [];
+  if (!rows) { rows = slots.map(n => Object.assign({ award: n, winner: '', note: '' }, saved.find(m => m.award === n) || {})); saved.forEach(m => { if (!slots.includes(m.award)) rows.push(Object.assign({}, m)); }); }
+  MA_ROWS = rows;
+  $('#pl-names').innerHTML = v.players.map(p => `<option value="${esc(p.name)}">`).join('');
+  $('#ma-form').innerHTML = rows.map((r, i) => `<div class="grid grid-cols-[1fr_1fr] sm:grid-cols-[14rem_1fr_9rem_2rem] gap-1.5 items-center" data-ma="${i}">
+    <input class="inp !py-1.5 text-sm font-bold" data-m="award" value="${esc(r.award)}" placeholder="ชื่อรางวัล" ${slots.includes(r.award) ? 'readonly' : ''}>
+    <input class="inp !py-1.5 text-sm" data-m="winner" list="pl-names" value="${esc(r.winner)}" placeholder="ผู้ได้รับ">
+    <input class="inp !py-1.5 text-sm" data-m="note" value="${esc(r.note)}" placeholder="หมายเหตุ เช่น 1.20 ม.">
+    ${slots.includes(r.award) ? '<span></span>' : `<button class="btn btn-light !p-1.5 text-xs" data-madel="${i}"><i class="fa-solid fa-xmark"></i></button>`}</div>`).join('') || '<div class="text-xs text-slate-400">ยังไม่มีรางวัลกรอกมือ — ตั้งหลุม NTP / Long Drive / จับฉลาก ด้านบน หรือกด "เพิ่มรางวัล"</div>';
+}
+function readManualForm() { return $$('#ma-form [data-ma]').map(d => ({ award: $('[data-m=award]', d).value, winner: $('[data-m=winner]', d).value, note: $('[data-m=note]', d).value })); }
+
 function renderEditTable() {
   const v = CM.v, pid = $('#ed-player').value, par = v.course.par;
   if (!pid) { $('#ed-table').innerHTML = ''; return; }
@@ -955,18 +1203,57 @@ function renderSettings() {
     field('ผู้กรอกคะแนน', sel('ScorerMode', [['STAFF', 'เจ้าหน้าที่ประจำก๊วน'], ['MARKER', 'ผู้เล่นในก๊วน (Marker)']])) +
     field('แก้ได้หลังส่งการ์ด (นาที)', `<input class="inp" type="number" min="0" max="60" data-set="CorrectionMin" value="${esc(t.CorrectionMin)}">`) +
     field('เสมออันดับ 1 — Gross', sel('TieGross', [['PLAYOFF', 'เพลย์ออฟ'], ['COUNTBACK', 'เทียบการ์ด 9/6/3/1']])) +
-    field('เสมออันดับ 1 — Net', sel('TieNet', [['COUNTBACK', 'เทียบการ์ด 9/6/3/1'], ['PLAYOFF', 'เพลย์ออฟ']]));
+    field('เสมออันดับ 1 — Net', sel('TieNet', [['COUNTBACK', 'เทียบการ์ด 9/6/3/1'], ['PLAYOFF', 'เพลย์ออฟ']])) +
+    field('ผู้หญิง', sel('LadyFlight', [['TRUE', 'แยกเป็น Flight Lady'], ['FALSE', 'จัดไฟลท์ตาม HCP เหมือนผู้ชาย']]));
+  renderImageForm(); renderFlights(CM.v.flightRows);
   let h = '<tr><th>หลุม</th>'; for (let i = 0; i < 18; i++) h += `<th>${i + 1}</th>`; h += '</tr><tr><th>Par</th>';
   for (let i = 0; i < 18; i++) h += `<td><input class="w-8 text-center border rounded" data-par="${i}" value="${c.par[i]}" inputmode="numeric" maxlength="1"></td>`;
   h += '</tr><tr><th>SI</th>'; for (let i = 0; i < 18; i++) h += `<td><input class="w-8 text-center border rounded" data-si="${i}" value="${c.si[i]}" inputmode="numeric" maxlength="2"></td>`;
   $('#set-course').innerHTML = h + '</tr>';
 }
+function renderImageForm() {
+  const im = CM.v.images || {}, label = { EventLogo: 'โลโก้งาน (สี่เหลี่ยมจัตุรัส)', BannerLogo: 'แบนเนอร์งาน (แนวนอน 3:1)' };
+  $('#img-form').innerHTML = ['EventLogo', 'BannerLogo'].map(k => `<div class="rounded-xl border p-2">
+    <div class="text-xs font-bold text-slate-600 mb-1">${label[k]}</div>
+    <div class="h-24 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden mb-2"><img data-prev="${k}" class="${IMGS[k] ? '' : 'hidden'} max-h-24 max-w-full object-contain" src="${IMGS[k] ? esc(IMGS[k]) : ''}"><span class="text-xs text-slate-400 ${IMGS[k] ? 'hidden' : ''}">${im[k] ? 'ตั้งลิงก์แล้ว' : 'ยังไม่มีรูป'}</span></div>
+    <div class="flex gap-1"><label class="btn btn-dark !py-1.5 text-xs flex-1 cursor-pointer"><i class="fa-solid fa-upload"></i> อัปโหลดรูป<input type="file" accept="image/*" class="hidden" data-upimg="${k}"></label>
+    ${im[k] ? `<button class="btn btn-light !py-1.5 text-xs" data-rmimg="${k}"><i class="fa-solid fa-trash"></i></button>` : ''}</div>
+    <input class="inp mt-1 !py-1 text-xs" data-set="${k}" value="${esc(im[k])}" placeholder="หรือวางลิงก์ Google Drive / https://...">
+  </div>`).join('');
+  $$('[data-upimg]').forEach(i => i.onchange = () => uploadImage(i.dataset.upimg, i.files[0]));
+}
+/** ย่อรูปในเบราว์เซอร์ก่อนส่ง (โลโก้ ≤ 512px PNG, แบนเนอร์ ≤ 1600px JPEG) */
+function shrinkImage(file, kind) {
+  return new Promise((ok, no) => {
+    if (!file || !/^image\//.test(file.type)) return no(new Error('เลือกไฟล์รูปภาพ'));
+    const fr = new FileReader();
+    fr.onload = () => { const img = new Image(); img.onload = () => {
+      const max = kind === 'EventLogo' ? 512 : 1600, k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      const g = c.getContext('2d'); if (kind !== 'EventLogo') { g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); }
+      g.drawImage(img, 0, 0, c.width, c.height);
+      ok(kind === 'EventLogo' ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', 0.85));
+    }; img.onerror = () => no(new Error('อ่านรูปไม่ได้')); img.src = fr.result; };
+    fr.onerror = () => no(new Error('อ่านไฟล์ไม่ได้')); fr.readAsDataURL(file);
+  });
+}
+function uploadImage(kind, file) {
+  shrinkImage(file, kind).then(d => cmCall('uploadEventImage', kind, d, file.name)).then(r => { if (r) loadImages().then(renderImageForm); }).catch(e => alertErr(e.message));
+}
+function renderFlights(rows) {
+  $('#fl-table').innerHTML = '<tr class="text-[11px] text-slate-500 text-left"><th>ชื่อย่อ</th><th>ชื่อที่แสดง</th><th>HCP ต่ำสุด</th><th>HCP สูงสุด</th><th>ใช้</th><th></th></tr>' + rows.map((f, i) => `<tr class="border-t" data-fl="${i}">
+    <td class="py-1 pr-1"><input class="inp !py-1 !w-16 uppercase" data-f="key" maxlength="6" value="${esc(f.key)}"></td><td class="pr-1"><input class="inp !py-1" data-f="label" maxlength="40" value="${esc(f.label)}"></td>
+    <td class="pr-1"><input class="inp !py-1 !w-20" data-f="min" inputmode="decimal" value="${esc(f.min)}"></td><td class="pr-1"><input class="inp !py-1 !w-20" data-f="max" inputmode="decimal" value="${esc(f.max)}"></td>
+    <td><input type="checkbox" class="w-5 h-5" data-f="enabled" ${f.enabled !== false ? 'checked' : ''}></td><td><button class="btn btn-light !p-1.5 text-xs" data-fldel="${i}"><i class="fa-solid fa-xmark"></i></button></td></tr>`).join('');
+}
+function readFlightForm() { return $$('#fl-table [data-fl]').map(tr => ({ key: $('[data-f=key]', tr).value.trim().toUpperCase(), label: $('[data-f=label]', tr).value, min: $('[data-f=min]', tr).value, max: $('[data-f=max]', tr).value, enabled: $('[data-f=enabled]', tr).checked })); }
+
 /** แปลงข้อความที่วางจาก Excel (แท็บ) หรือ CSV เป็นแถว */
 function parseRoster(text) {
   const lines = String(text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
   const rows = lines.map(l => (l.includes('\t') ? l.split('\t') : l.split(/\s*,\s*/)).map(x => x.trim()));
   if (rows.length && /ชื่อ|name/i.test(rows[0][0])) rows.shift();
-  return rows.map(c => ({ name: c[0] || '', gender: c[1] || '', hcp: c[2] || '', division: c[3] || '', group: c[4] || '', teeTime: c[5] || '', startHole: c[6] || '' }));
+  return rows.map(c => ({ name: c[0] || '', gender: c[1] || '', hcp: c[2] || '', division: c[3] || '', group: c[4] || '', teeTime: c[5] || '', startHole: c[6] || '', flight: c[7] || '' }));
 }
 function importNow() {
   const rows = parseRoster($('#imp-text').value), mode = $('#imp-mode').value;
@@ -996,7 +1283,7 @@ function printGroupCards() {
 // ---------- เส้นทางหน้า ----------
 function route() {
   const parts = location.hash.replace(/^#/, '').split('/');
-  const v = ['board', 'score', 'committee', 'tv', 'gcards'].includes(parts[0]) ? parts[0] : 'board';
+  const v = ['board', 'awards', 'score', 'committee', 'tv', 'gcards'].includes(parts[0]) ? parts[0] : 'board';
   return { v, a: decodeURIComponent(parts[1] || ''), b: decodeURIComponent(parts[2] || '') };
 }
 function show() {
@@ -1008,19 +1295,22 @@ function show() {
   $$('[data-nav]').forEach(a => a.classList.toggle('text-slate-200', a.dataset.nav !== r.v));
   if (r.v !== 'tv') { document.body.classList.remove('tv'); clearInterval(tvTimer); startPolling(POLL_MS); }
   if (r.v === 'tv') startTV();
+  if (r.v === 'awards') renderAwards();
   if (r.v === 'score') {
     if (r.a && r.b) { const g = r.a, p = r.b; history.replaceState(null, '', location.pathname + location.search + '#score'); scorerLogin(g, p); }   // ลบรหัสออกจากแถบที่อยู่
     else if (!SC.group) { const s = JSON.parse(sstore('sp_sc_' + EVENT_CODE) || 'null'); if (s) scorerLogin(s.g, s.p, true); }
     else refreshScorer();
   }
   if (r.v === 'committee' && !CM.v) { const p = sstore('sp_cm_' + EVENT_CODE); if (p) cmLogin(p, true); }
+  showBanner();
   window.scrollTo(0, 0);
 }
 
 // ---------- ผูกปุ่ม ----------
 document.addEventListener('click', e => {
-  const t = e.target.closest('button, [data-pid]'); if (!t) return;
+  const t = e.target.closest('button, [data-pid], [data-awpid]'); if (!t) return;
   if (t.closest('#lb-body') && t.dataset.pid) return openCard(t.dataset.pid);
+  const aw = e.target.closest('[data-awpid]'); if (aw) return openCard(aw.dataset.awpid);
   if (t.dataset.kind) return setKind(t.dataset.kind);
   if (t.classList.contains('hole-chip')) { SC.hole = Number(t.dataset.h); return renderScorer(); }
   if (t.dataset.act) return stepScore(t.closest('[data-pid]').dataset.pid, t.dataset.act);
@@ -1028,6 +1318,9 @@ document.addEventListener('click', e => {
   if (t.dataset.gqr) return showGroupQr(t.dataset.gqr);
   if (t.dataset.glock) return cmCall('setGroupCard', t.dataset.glock, 'LOCK');
   if (t.dataset.greopen) return Swal.fire({ icon: 'question', title: 'เปิดการ์ดก๊วน ' + esc(t.dataset.greopen) + ' ให้แก้ได้อีกครั้ง?', showCancelButton: true, confirmButtonText: 'เปิดแก้', cancelButtonText: 'ยกเลิก' }).then(x => x.isConfirmed && cmCall('setGroupCard', t.dataset.greopen, 'REOPEN'));
+  if (t.dataset.madel) { const rows = readManualForm(); rows.splice(Number(t.dataset.madel), 1); return renderManualForm(rows); }
+  if (t.dataset.fldel) { const rows = readFlightForm(); rows.splice(Number(t.dataset.fldel), 1); return renderFlights(rows); }
+  if (t.dataset.rmimg) return Swal.fire({ icon: 'question', title: 'ลบรูปนี้?', showCancelButton: true, confirmButtonText: 'ลบ', cancelButtonText: 'ยกเลิก' }).then(x => x.isConfirmed && cmCall('uploadEventImage', t.dataset.rmimg, '', '').then(r => { if (r) loadImages().then(renderImageForm); }));
   if (t.dataset.poSave) return cmCall('setPlayoffWinner', t.dataset.poSave, $(`[data-po-sel="${t.dataset.poSave}"]`).value);
   if (t.dataset.pstat) {
     const p = CM.v.players.find(x => x.id === t.dataset.pstat);
@@ -1038,9 +1331,10 @@ document.addEventListener('click', e => {
   if (t.dataset.pedit) {
     const p = CM.v.players.find(x => x.id === t.dataset.pedit);
     return Swal.fire({ title: 'แก้ข้อมูล ' + esc(p.id), html: `<input id="sw-n" class="inp mb-2" value="${esc(p.name)}" placeholder="ชื่อ"><select id="sw-g" class="inp mb-2"><option value="M">ชาย</option><option value="F">หญิง</option></select>
-      <input id="sw-h" class="inp mb-2" value="${p.hcp === '' ? '' : (p.hcp < 0 ? '+' + (-p.hcp) : p.hcp)}" placeholder="HCP"><input id="sw-d" class="inp mb-2" value="${esc(p.division)}" placeholder="รุ่น"><select id="sw-gr" class="inp">${CM.v.groups.map(g => `<option value="${esc(g.group)}">ก๊วน ${esc(g.group)}</option>`).join('')}</select>`,
-      didOpen: () => { $('#sw-g').value = p.gender === 'F' ? 'F' : 'M'; $('#sw-gr').value = p.group; }, showCancelButton: true, confirmButtonText: 'บันทึก', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#0f172a',
-      preConfirm: () => ({ name: $('#sw-n').value, gender: $('#sw-g').value, hcp: $('#sw-h').value, division: $('#sw-d').value, group: $('#sw-gr').value }) }).then(x => x.isConfirmed && cmCall('editPlayer', p.id, x.value));
+      <input id="sw-h" class="inp mb-2" value="${p.hcp === '' ? '' : (p.hcp < 0 ? '+' + (-p.hcp) : p.hcp)}" placeholder="HCP"><input id="sw-d" class="inp mb-2" value="${esc(p.division)}" placeholder="รุ่น"><select id="sw-gr" class="inp mb-2">${CM.v.groups.map(g => `<option value="${esc(g.group)}">ก๊วน ${esc(g.group)}</option>`).join('')}</select>
+      <select id="sw-f" class="inp"><option value="">ไฟลท์: อัตโนมัติ (ตาม HCP)</option>${CM.v.flights.map(f => `<option value="${esc(f.key)}">ไฟลท์: ${esc(f.label)} (กำหนดเอง)</option>`).join('')}<option value="LADY">ไฟลท์: Flight Lady (กำหนดเอง)</option></select>`,
+      didOpen: () => { $('#sw-g').value = p.gender === 'F' ? 'F' : 'M'; $('#sw-gr').value = p.group; $('#sw-f').value = p.flight || ''; }, showCancelButton: true, confirmButtonText: 'บันทึก', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#0f172a',
+      preConfirm: () => ({ name: $('#sw-n').value, gender: $('#sw-g').value, hcp: $('#sw-h').value, division: $('#sw-d').value, group: $('#sw-gr').value, flight: $('#sw-f').value }) }).then(x => x.isConfirmed && cmCall('editPlayer', p.id, x.value));
   }
 });
 $('#f-div').onchange = renderBoard; $('#f-q').oninput = renderBoard;
@@ -1070,18 +1364,37 @@ $('#btn-lock').onclick = () => {
 };
 $('#btn-gcards').onclick = printGroupCards;
 $('#imp-go').onclick = importNow;
-$('#imp-sample').onclick = () => { const s = 'ชื่อ\tเพศ\tHCP\tรุ่น\tก๊วน\tเวลาออก\tหลุมออก\nสมชาย ใจดี\tชาย\t12\tทั่วไป\t1\t07:00\t1\nสมหญิง รักดี\tหญิง\t20\tหญิง\t1\t\t'; try { navigator.clipboard.writeText(s); toast('คัดลอกแล้ว — วางใน Excel ได้เลย'); } catch (e) { $('#imp-text').value = s; } };
+$('#imp-sample').onclick = () => { const s = 'ชื่อ\tเพศ\tHCP\tรุ่น\tก๊วน\tเวลาออก\tหลุมออก\tไฟลท์\nสมชาย ใจดี\tชาย\t12\tทั่วไป\t1\t07:00\t1\t\nสมหญิง รักดี\tหญิง\t20\tหญิง\t1\t\t\t'; try { navigator.clipboard.writeText(s); toast('คัดลอกแล้ว — วางใน Excel ได้เลย'); } catch (e) { $('#imp-text').value = s; } };
 $('#ed-player').onchange = renderEditTable;
+$('#fl-add').onclick = () => { const rows = readFlightForm(), last = rows[rows.length - 1]; const k = String.fromCharCode(65 + Math.min(rows.length, 25)); rows.push({ key: k, label: 'Flight ' + k, min: last ? Number(last.max) + 1 : 0, max: 54, enabled: true }); renderFlights(rows); };
+$('#fl-save').onclick = () => cmCall('saveFlights', readFlightForm());
+$('#aw-save').onclick = () => cmCall('saveAwards', readAwardForm());
+$('#ma-add').onclick = () => { const rows = readManualForm(); rows.push({ award: '', winner: '', note: '' }); renderManualForm(rows); };
+$('#ma-save').onclick = () => cmCall('saveManualAwards', readManualForm());
 $('#ed-save').onclick = () => { const pid = $('#ed-player').value; if (!pid) return alertErr('เลือกผู้เล่นก่อน'); const arr = $$('[data-edh]').map(i => i.value.trim()); cmCall('adminSaveScores', pid, arr, $('#ed-reason').value).then(r => { if (r) $('#ed-reason').value = ''; }); };
 $('#set-save').onclick = () => {
   const s = {}; $$('[data-set]').forEach(i => { s[i.dataset.set] = i.value; });
   const course = { par: $$('[data-par]').map(i => i.value), si: $$('[data-si]').map(i => i.value) };
   const changed = course.par.join() !== CM.v.course.par.join() || course.si.join() !== CM.v.course.si.join();
-  cmCall('saveSettings', s, changed ? course : null);
+  cmCall('saveSettings', s, changed ? course : null).then(r => { if (r) loadImages(); });
 };
 window.addEventListener('hashchange', show);
 window.addEventListener('online', () => flush());
 document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - lastLoad > 10000) load(true); });
+
+// ---------- โลโก้ / แบนเนอร์งาน (โหลดครั้งเดียว) ----------
+let IMGS = {};
+function loadImages() {
+  return api('getEventImages', EVENT_CODE).then(m => {
+    IMGS = m || {};
+    const lg = $('#ev-logo'), bn = $('#ev-banner');
+    if (IMGS.EventLogo) { lg.src = IMGS.EventLogo; lg.classList.remove('hidden'); } else lg.classList.add('hidden');
+    if (IMGS.BannerLogo) { bn.src = IMGS.BannerLogo; } 
+    showBanner();
+    if (route().v === 'tv') renderTV();
+  }).catch(() => {});
+}
+function showBanner() { const v = route().v; $('#ev-banner').classList.toggle('hidden', !IMGS.BannerLogo || v !== 'board'); }
 
 // ---------- เริ่ม ----------
 $('#gp-logo').src = GP_LOGO;
@@ -1096,6 +1409,7 @@ if (START_SCORE && START_SCORE.g && START_SCORE.k) {   // เปิดจาก 
 }
 show();
 load();
+loadImages();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});</script>
 </body>
