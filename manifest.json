@@ -1,0 +1,25 @@
+{
+  "name": "GolfPro Stroke Play — GolfPro36",
+  "short_name": "GP Stroke Play",
+  "description": "นับสโตรกและ Leaderboard สด สำหรับการแข่งขันกอล์ฟ Stroke Play",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "lang": "th",
+  "background_color": "#f1f5f9",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="GP Stroke Play">
+<script src="config.js"></script>
+<script src="gas-shim.js"></script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>GolfPro Stroke Play</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800;900&display=swap');
+  :root { --navy:#0f172a; --gold:#eab308; --under:#dc2626; --over:#1d4ed8; }
+  body { font-family:'Kanit',sans-serif; background:#f1f5f9; color:#0f172a; -webkit-tap-highlight-color:transparent; }
+  .view { display:none; } .view.active { display:block; }
+  .no-scrollbar::-webkit-scrollbar { display:none; } .no-scrollbar { scrollbar-width:none; }
+  .tp-under { color:var(--under); } .tp-over { color:var(--over); } .tp-even { color:#0f172a; }
+  .lb-row { border-bottom:1px solid #e2e8f0; cursor:pointer; }
+  .lb-row:hover { background:#f8fafc; }
+  .lb-row.cut { border-top:2px dashed #94a3b8; }
+  .pill { display:inline-flex; align-items:center; gap:4px; border-radius:9999px; padding:2px 10px; font-size:11px; font-weight:800; }
+  .live-dot { width:8px; height:8px; border-radius:9999px; background:#ef4444; animation:pulse 1.4s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.25 } }
+  .mark { display:inline-block; min-width:1.6em; line-height:1.4em; text-align:center; }
+  .mark.circle { border-radius:50%; border:.11em solid #dc2626; color:#dc2626; font-weight:700; }
+  .mark.dcircle { border-radius:50%; border:.11em solid #dc2626; color:#dc2626; font-weight:700; box-shadow:0 0 0 .15em #fff,0 0 0 .27em #dc2626; margin:0 .25em; }
+  .mark.square { border:.11em solid #2563eb; border-radius:.15em; color:#2563eb; font-weight:700; }
+  .mark.dsquare { border:.11em solid #2563eb; border-radius:.15em; color:#2563eb; font-weight:700; box-shadow:0 0 0 .15em #fff,0 0 0 .27em #2563eb; margin:0 .25em; }
+  .mark.ace { border-radius:50%; border:.11em solid #b45309; color:#7c2d12; font-weight:900; background:#fde68a; box-shadow:0 0 0 .15em #fff,0 0 0 .27em #b45309; margin:0 .3em; }
+  .sc-table { border-collapse:collapse; width:100%; }
+  .sc-table th, .sc-table td { border:1px solid #e2e8f0; text-align:center; padding:4px 1px; }
+  .sc-table th { background:#f8fafc; font-size:10px; color:#64748b; font-weight:700; }
+  .sc-table td { font-size:13px; font-weight:700; }
+  .sc-table .tot { background:#f1f5f9; }
+  #pc-table td { font-size:12px; padding:3px 0; } #pc-table th { font-size:9px; padding:3px 0; } #pc-table th:first-child, #pc-table td:first-child { width:2.6rem; }
+  .hole-chip { min-width:40px; height:40px; border-radius:12px; font-weight:800; font-size:15px; border:2px solid #e2e8f0; background:#fff; color:#334155; flex:0 0 auto; }
+  .hole-chip.done { background:#dcfce7; border-color:#22c55e; color:#166534; }
+  .hole-chip.part { background:#fef9c3; border-color:#eab308; color:#854d0e; }
+  .hole-chip.cur { background:var(--navy); border-color:var(--navy); color:#fff; }
+  .step-btn { width:56px; height:56px; border-radius:16px; font-size:26px; font-weight:900; background:#e2e8f0; color:#0f172a; flex:0 0 auto; }
+  .step-btn:active { transform:scale(.95); background:#cbd5e1; }
+  .score-val { min-width:64px; height:56px; border-radius:16px; font-size:30px; font-weight:900; background:#fff; border:2px solid #cbd5e1; flex:0 0 auto; }
+  .score-val.empty { color:#94a3b8; font-size:18px; }
+  .ctab { padding:8px 12px; border-radius:10px; font-weight:800; font-size:13px; color:#475569; white-space:nowrap; }
+  .ctab.on { background:var(--navy); color:#fff; }
+  .seg button { padding:6px 16px; font-weight:800; font-size:13px; border-radius:9999px; color:#475569; }
+  .seg button.on { background:var(--navy); color:#fff; }
+  .inp { width:100%; border:1px solid #cbd5e1; border-radius:10px; padding:8px 10px; font-size:15px; background:#fff; }
+  .inp:focus { outline:2px solid var(--gold); border-color:var(--gold); }
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; border-radius:12px; padding:10px 16px; font-weight:800; font-size:14px; }
+  .btn-dark { background:var(--navy); color:#fff; } .btn-gold { background:var(--gold); color:#0f172a; }
+  .btn-light { background:#fff; color:#0f172a; border:1px solid #cbd5e1; } .btn-red { background:#dc2626; color:#fff; }
+  .btn:disabled { opacity:.45; }
+  .card { background:#fff; border-radius:18px; box-shadow:0 1px 3px rgba(15,23,42,.08); }
+  /* จอ TV */
+  body.tv { background:#020617; }
+  body.tv #top, body.tv #nav { display:none !important; }
+  .tv-row { display:grid; grid-template-columns:3.2em 1fr 4.2em 3.4em 3.6em; white-space:nowrap; align-items:center; padding:.35em .6em; border-bottom:1px solid #1e293b; }
+  .tv-row:nth-child(odd) { background:#0b1224; }
+  @media print {
+    #top nav, #nav, .no-print { display:none !important; }
+    body { background:#fff; } .card { box-shadow:none; }
+    .lb-row { break-inside:avoid; }
+    .print-only { display:block !important; }
+  }
+  .print-only { display:none; }
+  .gcard { break-inside:avoid; border:2px dashed #94a3b8; border-radius:14px; padding:12px; }
+</style>
+</head>
+<body class="min-h-screen">
+<!-- ===== หัวหน้า ===== -->
+<header id="top" class="bg-slate-900 text-white border-b-4 border-yellow-500 sticky top-0 z-30">
+  <div class="max-w-5xl mx-auto px-3 py-2 flex items-center gap-3">
+    <a id="home-link" href="#" class="shrink-0"><img id="gp-logo" alt="GolfPro36" class="w-10 h-10 rounded-lg bg-white object-contain"></a>
+    <div class="min-w-0 flex-1">
+      <div id="ev-name" class="font-black text-[15px] sm:text-lg leading-tight truncate">กำลังโหลด…</div>
+      <div id="ev-sub" class="text-[11px] text-slate-300 truncate"></div>
+    </div>
+    <span id="ev-status" class="pill bg-slate-700 text-white"></span>
+  </div>
+  <nav class="max-w-5xl mx-auto px-2 pb-2 flex gap-1 overflow-x-auto no-scrollbar text-sm">
+    <a href="#board" data-nav="board" class="ctab text-slate-200"><i class="fa-solid fa-list-ol"></i> Leaderboard</a>
+    <a href="#score" data-nav="score" class="ctab text-slate-200"><i class="fa-solid fa-pen-to-square"></i> กรอกคะแนน</a>
+    <a href="#committee" data-nav="committee" class="ctab text-slate-200"><i class="fa-solid fa-user-shield"></i> กรรมการ</a>
+    <a href="#tv" data-nav="tv" class="ctab text-slate-200"><i class="fa-solid fa-tv"></i> จอ TV</a>
+  </nav>
+</header>
+
+<main class="max-w-5xl mx-auto px-3 py-3 pb-24">
+  <div id="trial-banner" class="hidden mb-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs p-2.5"></div>
+
+  <!-- ===== LEADERBOARD ===== -->
+  <section id="view-board" class="view">
+    <div id="board-state" class="mb-2 rounded-xl px-3 py-2 text-xs font-semibold"></div>
+    <div id="playoff-box" class="hidden mb-2 rounded-xl bg-yellow-50 border border-yellow-300 px-3 py-2 text-sm"></div>
+    <div class="flex flex-wrap items-center gap-2 mb-2 no-print">
+      <div class="seg bg-white rounded-full p-1 shadow-sm flex" id="seg-kind">
+        <button data-kind="gross" class="on">Gross</button>
+        <button data-kind="net" id="seg-net">Net</button>
+      </div>
+      <select id="f-div" class="inp !w-auto !py-1.5 text-sm"></select>
+      <input id="f-q" class="inp !w-36 !py-1.5 text-sm" placeholder="ค้นหาชื่อ…">
+      <button id="btn-print" class="btn btn-light !py-1.5 !px-3 text-xs ml-auto"><i class="fa-solid fa-print"></i> พิมพ์</button>
+    </div>
+    <div class="print-only mb-2"><div id="print-title" class="text-lg font-black"></div><div id="print-sub" class="text-xs"></div></div>
+    <div class="card overflow-hidden">
+      <div class="grid grid-cols-[3.2rem_1fr_3.6rem_3rem_3.4rem] sm:grid-cols-[4rem_1fr_4.5rem_4rem_4rem_4rem] bg-slate-900 text-slate-300 text-[10px] sm:text-xs font-black uppercase px-2 py-2">
+        <div>Pos</div><div>ผู้เล่น</div><div class="text-center" id="h-topar">To Par</div><div class="text-center">Thru</div><div class="text-center" id="h-tot">Gross</div><div class="hidden sm:block text-center" id="h-extra">HCP</div>
+      </div>
+      <div id="lb-body"></div>
+    </div>
+    <p class="text-[11px] text-slate-500 mt-2 leading-relaxed" id="lb-legend"></p>
+  </section>
+
+  <!-- ===== กรอกคะแนน (เจ้าหน้าที่ประจำก๊วน) ===== -->
+  <section id="view-score" class="view">
+    <div id="sc-login" class="card p-5 max-w-sm mx-auto">
+      <h2 class="font-black text-lg mb-1"><i class="fa-solid fa-pen-to-square text-yellow-500"></i> <span id="sc-login-title">กรอกคะแนนประจำก๊วน</span></h2>
+      <p class="text-xs text-slate-500 mb-4" id="sc-login-hint">ใส่เลขก๊วนและรหัสก๊วน 4 หลัก (อยู่บนบัตรก๊วนที่กรรมการแจก หรือสแกน QR บนบัตร)</p>
+      <label class="text-xs font-bold text-slate-600">เลขก๊วน</label>
+      <input id="sc-g" class="inp mb-3 text-center text-2xl font-black" inputmode="numeric" maxlength="6" autocomplete="off">
+      <label class="text-xs font-bold text-slate-600">รหัสก๊วน</label>
+      <input id="sc-p" class="inp mb-4 text-center text-2xl font-black tracking-[.4em]" inputmode="numeric" maxlength="4" type="password" autocomplete="off">
+      <button id="sc-go" class="btn btn-dark w-full text-base"><i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบก๊วน</button>
+    </div>
+    <div id="sc-app" class="hidden">
+      <div class="card p-3 mb-2 flex items-center gap-2">
+        <div class="min-w-0 flex-1">
+          <div class="font-black text-base" id="sc-title"></div>
+          <div class="text-[11px] text-slate-500" id="sc-meta"></div>
+        </div>
+        <span id="sync-pill" class="pill bg-green-100 text-green-800"></span>
+        <button id="sc-logout" class="btn btn-light !p-2 text-xs" title="ออกจากระบบก๊วน"><i class="fa-solid fa-right-from-bracket"></i></button>
+      </div>
+      <div id="sc-closed" class="hidden mb-2 rounded-xl bg-slate-800 text-white text-sm p-3"></div>
+      <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-2" id="hole-chips"></div>
+      <div class="flex gap-2 mb-2">
+        <button class="ctab on flex-1" id="tab-hole"><i class="fa-solid fa-flag"></i> ทีละหลุม</button>
+        <button class="ctab flex-1 bg-white" id="tab-card"><i class="fa-solid fa-table"></i> การ์ดสรุป / ส่งการ์ด</button>
+      </div>
+      <div id="sc-hole" class="card p-3">
+        <div class="flex items-end justify-between mb-3">
+          <div><div class="text-[11px] font-bold text-slate-500">หลุม</div><div class="text-5xl font-black leading-none" id="h-no"></div></div>
+          <div class="text-right"><div class="text-2xl font-black" id="h-par"></div><div class="text-xs text-slate-500" id="h-si"></div></div>
+        </div>
+        <div id="h-players" class="space-y-2"></div>
+        <button id="h-allpar" class="mt-3 text-xs font-bold text-slate-500 underline">ใส่พาร์ให้คนที่ยังว่าง</button>
+        <div class="flex gap-2 mt-4">
+          <button id="h-prev" class="btn btn-light flex-1 !py-3"><i class="fa-solid fa-chevron-left"></i> หลุมก่อน</button>
+          <button id="h-next" class="btn btn-gold flex-[2] !py-3 text-base">หลุมถัดไป <i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+      <div id="sc-card" class="hidden card p-3">
+        <div class="overflow-x-auto"><table class="sc-table min-w-[640px]" id="card-table"></table></div>
+        <div class="mt-3 rounded-xl bg-slate-50 border p-3">
+          <div class="font-black text-sm mb-1"><i class="fa-solid fa-signature text-yellow-600"></i> ยืนยันการ์ด (แทนการเซ็นชื่อ)</div>
+          <p class="text-[11px] text-slate-500 mb-2">ให้ผู้เล่นแต่ละคนตรวจคะแนนของตัวเองทุกหลุม แล้วติ๊กยืนยัน — ส่งการ์ดแล้วยังแก้ได้อีก <b id="win-min">15</b> นาที หลังจากนั้นต้องให้กรรมการแก้</p>
+          <div id="attest-list" class="space-y-1.5"></div>
+          <button id="btn-submit" class="btn btn-dark w-full mt-3"><i class="fa-solid fa-paper-plane"></i> ส่งการ์ดให้กรรมการ</button>
+          <div id="submit-state" class="text-center text-sm font-bold mt-2"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== กรรมการ ===== -->
+  <section id="view-committee" class="view">
+    <div id="cm-login" class="card p-5 max-w-sm mx-auto">
+      <h2 class="font-black text-lg mb-1"><i class="fa-solid fa-user-shield text-yellow-500"></i> หน้ากรรมการ</h2>
+      <p class="text-xs text-slate-500 mb-4">ใช้รหัสกรรมการของงานนี้ (ผู้ให้บริการแจ้งตอนสร้างงาน)</p>
+      <input id="cm-pin" class="inp mb-4 text-center text-2xl font-black tracking-[.3em]" inputmode="numeric" type="password" autocomplete="off" placeholder="รหัสกรรมการ">
+      <button id="cm-go" class="btn btn-dark w-full"><i class="fa-solid fa-unlock"></i> เข้าสู่หน้ากรรมการ</button>
+    </div>
+    <div id="cm-app" class="hidden">
+      <div class="flex gap-1 overflow-x-auto no-scrollbar mb-3 bg-white rounded-xl p-1 shadow-sm" id="cm-tabs">
+        <button class="ctab on" data-cm="overview"><i class="fa-solid fa-gauge"></i> ภาพรวม</button>
+        <button class="ctab" data-cm="players"><i class="fa-solid fa-users"></i> ผู้เล่น/ก๊วน</button>
+        <button class="ctab" data-cm="edit"><i class="fa-solid fa-pen"></i> แก้คะแนน</button>
+        <button class="ctab" data-cm="settings"><i class="fa-solid fa-sliders"></i> ตั้งค่า</button>
+        <button class="ctab" data-cm="audit"><i class="fa-solid fa-clock-rotate-left"></i> ประวัติ</button>
+        <button class="ctab ml-auto" id="cm-refresh" title="โหลดใหม่"><i class="fa-solid fa-rotate"></i></button>
+      </div>
+      <!-- ภาพรวม -->
+      <div data-cmv="overview">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3" id="cm-stats"></div>
+        <div id="cm-playoff" class="hidden card p-3 mb-3"></div>
+        <div class="card p-3 mb-3">
+          <div class="flex flex-wrap items-center gap-2 mb-2">
+            <div class="font-black">ก๊วน</div>
+            <button id="btn-gcards" class="btn btn-light !py-1.5 !px-3 text-xs ml-auto"><i class="fa-solid fa-qrcode"></i> พิมพ์บัตรก๊วน (QR + รหัส)</button>
+          </div>
+          <div class="overflow-x-auto"><table class="w-full text-sm" id="cm-groups"></table></div>
+        </div>
+        <div class="card p-3">
+          <div class="font-black mb-1">ผลทางการ</div>
+          <p class="text-xs text-slate-500 mb-2" id="lock-hint"></p>
+          <button id="btn-lock" class="btn btn-dark"></button>
+        </div>
+      </div>
+      <!-- ผู้เล่น -->
+      <div data-cmv="players" class="hidden">
+        <div class="card p-3 mb-3">
+          <div class="font-black mb-1"><i class="fa-solid fa-file-import text-yellow-600"></i> นำเข้ารายชื่อ (วางจาก Excel / Google Sheets)</div>
+          <p class="text-xs text-slate-500 mb-2">คอลัมน์ตามลำดับ: <b>ชื่อ • เพศ (ชาย/หญิง) • HCP • รุ่น • ก๊วน • เวลาออก • หลุมออก</b> — แถวหัวตารางมีหรือไม่มีก็ได้ (HCP แต้มต่อบวกใส่ +2, เวลา/หลุมออกใส่แค่แถวแรกของก๊วนก็พอ)</p>
+          <textarea id="imp-text" rows="6" class="inp font-mono text-xs" placeholder="สมชาย ใจดี	ชาย	12	ทั่วไป	1	07:00	1"></textarea>
+          <div class="flex flex-wrap gap-2 mt-2 items-center">
+            <button id="imp-sample" class="btn btn-light !py-1.5 text-xs"><i class="fa-solid fa-copy"></i> คัดลอกหัวตารางตัวอย่าง</button>
+            <select id="imp-mode" class="inp !w-auto !py-1.5 text-sm"><option value="APPEND">เพิ่มต่อท้าย</option><option value="REPLACE">แทนที่ทั้งหมด (ก่อนเริ่มแข่งเท่านั้น)</option></select>
+            <button id="imp-go" class="btn btn-dark !py-1.5 ml-auto"><i class="fa-solid fa-eye"></i> ตรวจและนำเข้า</button>
+          </div>
+        </div>
+        <div class="card p-3">
+          <div class="font-black mb-2">รายชื่อ <span id="pl-count" class="text-slate-400 text-sm"></span></div>
+          <div class="overflow-x-auto"><table class="w-full text-sm" id="cm-players"></table></div>
+        </div>
+      </div>
+      <!-- แก้คะแนน -->
+      <div data-cmv="edit" class="hidden">
+        <div class="card p-3">
+          <div class="font-black mb-2">แก้คะแนนรายหลุม (กรรมการ)</div>
+          <select id="ed-player" class="inp mb-3"></select>
+          <div class="overflow-x-auto"><table class="sc-table min-w-[620px]" id="ed-table"></table></div>
+          <input id="ed-reason" class="inp mt-3" maxlength="200" placeholder="เหตุผลการแก้ (บังคับ) เช่น Marker กรอกผิดหลุม 7 ตามการ์ดกระดาษ">
+          <button id="ed-save" class="btn btn-dark w-full mt-2"><i class="fa-solid fa-floppy-disk"></i> บันทึกการแก้คะแนน</button>
+          <p class="text-[11px] text-slate-500 mt-2">ทุกการแก้บันทึกค่าเดิม → ค่าใหม่ ผู้แก้ และเหตุผลไว้ในประวัติ (ย้อนดูได้เสมอ)</p>
+        </div>
+      </div>
+      <!-- ตั้งค่า -->
+      <div data-cmv="settings" class="hidden">
+        <div class="card p-3 mb-3 grid sm:grid-cols-2 gap-3 text-sm" id="set-form"></div>
+        <div class="card p-3">
+          <div class="font-black mb-2">Par และ Stroke Index รายหลุม</div>
+          <div class="overflow-x-auto"><table class="sc-table min-w-[620px]" id="set-course"></table></div>
+          <button id="set-save" class="btn btn-dark w-full mt-3"><i class="fa-solid fa-floppy-disk"></i> บันทึกการตั้งค่า</button>
+        </div>
+      </div>
+      <!-- ประวัติ -->
+      <div data-cmv="audit" class="hidden"><div class="card p-3"><div class="font-black mb-2">ประวัติการเปลี่ยนแปลง (150 รายการล่าสุด)</div><div id="cm-audit" class="text-xs divide-y"></div></div></div>
+    </div>
+  </section>
+
+  <!-- ===== พิมพ์บัตรก๊วน ===== -->
+  <section id="view-gcards" class="view">
+    <div class="no-print flex gap-2 mb-3"><button class="btn btn-dark" onclick="window.print()"><i class="fa-solid fa-print"></i> พิมพ์</button><a href="#committee" class="btn btn-light">กลับ</a></div>
+    <div id="gcards" class="grid grid-cols-2 gap-3"></div>
+  </section>
+</main>
+
+<!-- ===== จอ TV ===== -->
+<div id="view-tv" class="view fixed inset-0 z-40 bg-slate-950 text-white overflow-hidden">
+  <div class="flex items-center gap-4 px-6 py-3 border-b-4 border-yellow-500 bg-slate-900">
+    <img id="tv-logo" class="w-14 h-14 rounded-xl bg-white object-contain" alt="">
+    <div class="flex-1 min-w-0"><div id="tv-name" class="text-3xl font-black truncate"></div><div id="tv-sub" class="text-slate-400 text-lg"></div></div>
+    <div id="tv-kind" class="text-3xl font-black text-yellow-400"></div>
+    <div id="tv-state" class="text-xl font-black"></div>
+    <button onclick="location.hash='#board'" class="text-slate-500 text-2xl" title="ออกจากจอ TV"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="grid grid-cols-2 gap-6 px-6 py-4 text-[1.55vw]" id="tv-cols"></div>
+  <div class="absolute bottom-2 left-6 right-6 flex justify-between text-slate-500 text-sm"><span>GolfPro Stroke Play • golfpro36</span><span id="tv-time"></span></div>
+</div>
+
+<!-- ===== สกอร์การ์ดผู้เล่น ===== -->
+<div id="pc-modal" class="hidden fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center p-0 sm:p-4" onclick="if(event.target===this)closeCard()">
+  <div class="bg-white w-full sm:max-w-2xl rounded-t-3xl sm:rounded-3xl max-h-[92vh] overflow-y-auto">
+    <div class="bg-slate-900 text-white px-4 py-3 rounded-t-3xl flex items-center gap-3">
+      <div class="flex-1 min-w-0"><div id="pc-name" class="font-black text-lg truncate"></div><div id="pc-sub" class="text-xs text-slate-300"></div></div>
+      <button onclick="closeCard()" class="text-2xl text-slate-300"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="p-3">
+      <div class="grid grid-cols-4 gap-2 mb-3 text-center" id="pc-stats"></div>
+      <table class="sc-table table-fixed" id="pc-table"></table>
+      <div class="flex flex-wrap gap-3 text-[11px] text-slate-500 mt-2">
+        <span><span class="mark circle">3</span> Birdie</span><span><span class="mark dcircle">2</span> Eagle</span>
+        <span><span class="mark square">5</span> Bogey</span><span><span class="mark dsquare">6</span> Double+</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/**
+ * engine.html — เครื่องคำนวณคะแนน GolfPro Stroke Play (ใช้ในหน้าเว็บ และในชุดทดสอบ Node)
+ *
+ * หลักการ: "คะแนนดิบรายหลุม (gross) คือความจริงเดียว" — ทุกอย่าง (Net, อันดับ, Countback) คำนวณจากคะแนนดิบทุกครั้ง
+ *
+ * โหมดแต้มต่อ (Tournament.HcpMode):
+ *   GROSS    = ไม่มีแต้มต่อ (ไม่มีอันดับ Net)
+ *   DECLARED = แต้มต่อที่ผู้เล่นแจ้ง (คอลัมน์ HCP) × HcpAllowance% ปัดเป็นจำนวนเต็ม (ค่าตั้งต้น 100%)
+ *   S36      = System 36: แต้มต่อ = 36 − แต้มรวม (พาร์หรือดีกว่า 2, โบกี้ 1, แย่กว่า 0) — ระหว่างเล่นหลุมที่ยังไม่ตีนับเป็นพาร์ชั่วคราว
+ *
+ * Countback (เทียบการ์ด) ตาม R&A Committee Procedures 5A(6): 9 หลุมหลัง (10–18) → 6 หลุมหลัง (13–18) → 3 หลุมหลัง (16–18) → หลุม 18
+ *   → 6 หลุมหลังของ 9 แรก (4–9) → 3 หลุม (7–9) → หลุม 9   ใช้หลุม 10–18 เสมอแม้ออกหลุม 10/Shotgun
+ *   Net: หักแต้มต่อ 1/2, 1/3, 1/6, 1/18 ตามจำนวนหลุมของช่วงนั้น (ไม่ปัดเศษ — คิดเป็นหน่วย ×18 เพื่อเลี่ยงทศนิยม)
+ *   เสมอทุกขั้น = เสมอจริง (ป้าย "ให้กรรมการตัดสิน")
+ * อันดับ 1 ประเภท Gross ตั้งเป็น PLAYOFF ได้ (Tournament.TieGross) — ผู้ชนะ Play-off บันทึกใน Tournament.PlayoffGross (PlayerID)
+ * Countback ใช้ "เมื่อผลเป็นที่สิ้นสุด" เท่านั้น (กรรมการล็อกรอบ หรือทุกคนเล่นครบ) ระหว่างแข่งแสดงอันดับร่วม (T)
+ */
+var SPE = (function () {
+  'use strict';
+  var STATUS = { WD: 'WD', DQ: 'DQ', NR: 'NR' };
+  /** ช่วงหลุม (0-based, ปลายเปิด) ของการเทียบการ์ด ตามลำดับ */
+  var CB = [[9, 18], [12, 18], [15, 18], [17, 18], [3, 9], [6, 9], [8, 9]];
+  var CB_LABEL = ['9 หลุมหลัง', '6 หลุมหลัง', '3 หลุมหลัง', 'หลุม 18', '6 หลุมหลังของ 9 แรก', '3 หลุมหลังของ 9 แรก', 'หลุม 9'];
+
+  function toInt(v) { var n = parseInt(v, 10); return isNaN(n) ? null : n; }
+  function upper(v) { return String(v == null ? '' : v).trim().toUpperCase(); }
+
+  function hcpMode(t) { var m = upper(t && t.HcpMode); return m === 'DECLARED' || m === 'S36' ? m : 'GROSS'; }
+  function allowance(t) { var a = parseFloat(t && t.HcpAllowance); return isNaN(a) || a <= 0 || a > 100 ? 100 : a; }
+
+  /** สโตรกที่ได้รายหลุมจากแต้มต่อ (รองรับแต้มต่อบวก: ค่าติดลบ = คืนสโตรกที่ SI 18, 17, ...) */
+  function strokesPerHole(hcp, si) {
+    var out = [], h = Math.round(hcp) || 0, i;
+    for (i = 0; i < 18; i++) {
+      var s = toInt(si[i]) || (i + 1);
+      if (h >= 0) out.push(Math.floor(h / 18) + (s <= h % 18 ? 1 : 0));
+      else out.push(s > 18 + Math.max(h, -18) ? -1 : 0);
+    }
+    return out;
+  }
+
+  /** แต้ม System 36 ต่อหลุม */
+  function s36Points(strokes, par) { var d = strokes - par; return d <= 0 ? 2 : (d === 1 ? 1 : 0); }
+
+  function fmtToPar(n) { if (n === null || n === undefined || isNaN(n)) return '–'; return n === 0 ? 'E' : (n > 0 ? '+' + n : String(n)); }
+
+  /** ชื่อคลาสเครื่องหมายบนสกอร์การ์ด (มาตรฐานสากล) */
+  function mark(strokes, par) {
+    if (strokes === null || strokes === undefined) return '';
+    var d = strokes - par;
+    if (strokes === 1) return 'ace';
+    if (d <= -2) return 'dcircle';
+    if (d === -1) return 'circle';
+    if (d === 1) return 'square';
+    if (d >= 2) return 'dsquare';
+    return '';
+  }
+
+  /** ลำดับหลุมที่ก๊วนเล่น เริ่มจากหลุมออก (1-18) */
+  function holeOrder(startHole) {
+    var s = toInt(startHole); if (!(s >= 1 && s <= 18)) s = 1;
+    var out = []; for (var i = 0; i < 18; i++) out.push((s - 1 + i) % 18);
+    return out;
+  }
+
+  /** คำนวณผู้เล่น 1 คน */
+  function playerRow(p, data, ctx) {
+    var t = data.tournament || {}, par = ctx.par, si = ctx.si;
+    var sc = (data.scores || {})[p.id] || {};
+    var holes = [], gross = 0, played = 0, parPlayed = 0, pts = 0, i;
+    for (i = 0; i < 18; i++) {
+      var v = toInt(sc[i]);
+      if (v !== null && v >= 1) { holes.push(v); gross += v; played++; parPlayed += par[i]; pts += s36Points(v, par[i]); }
+      else { holes.push(null); pts += 2; }
+    }
+    var g = ctx.groups[String(p.group)] || {};
+    var order = holeOrder(g.startHole);
+    var lastIdx = -1; for (i = 0; i < 18; i++) if (holes[order[i]] !== null) lastIdx = i;
+    var status = upper(p.status); if (!STATUS[status]) status = '';
+    var mode = ctx.mode, hcp = 0, hcpLabel = '';
+    if (mode === 'DECLARED') {
+      var raw = parseFloat(p.hcp);
+      hcp = isNaN(raw) ? 0 : Math.round(raw * ctx.allow / 100);
+      hcpLabel = isNaN(raw) ? '0' : (hcp < 0 ? '+' + (-hcp) : String(hcp));
+    } else if (mode === 'S36') {
+      hcp = Math.max(0, 36 - pts);
+      hcpLabel = String(hcp) + (played < 18 ? '*' : '');
+    }
+    var recv = mode === 'GROSS' ? new Array(18).fill(0) : strokesPerHole(hcp, si);
+    var netToPar = 0, netHoles = [];
+    for (i = 0; i < 18; i++) {
+      if (holes[i] === null) { netHoles.push(null); continue; }
+      netHoles.push(holes[i] - recv[i]);
+      netToPar += holes[i] - par[i] - recv[i];
+    }
+    var complete = played === 18;
+    return {
+      id: p.id, name: p.name, gender: p.gender, division: p.division || '', group: p.group, status: status,
+      teeTime: g.teeTime || '', startHole: order[0] + 1, cardStatus: g.cardStatus || 'OPEN',
+      holes: holes, netHoles: netHoles, recv: recv, played: played, complete: complete,
+      thru: complete ? 'F' : (played ? String(played) + (order[0] !== 0 ? '*' : '') : ''),
+      lastHole: lastIdx >= 0 ? order[lastIdx] + 1 : 0,
+      gross: gross, toPar: played ? gross - parPlayed : null,
+      hcp: hcp, hcpLabel: hcpLabel, net: complete ? gross - hcp : null, netToPar: played ? netToPar : null,
+      out: sumOf(holes, 0, 9), in_: sumOf(holes, 9, 18)
+    };
+  }
+  function sumOf(arr, a, b) { var s = 0, any = false; for (var i = a; i < b; i++) if (arr[i] !== null) { s += arr[i]; any = true; } return any ? s : null; }
+
+  /** ค่าเทียบการ์ด (×18 เพื่อให้หักแต้มต่อเป็นเศษส่วนได้โดยไม่มีทศนิยม) — ยิ่งน้อยยิ่งดี */
+  function cbVector(r, net) {
+    return CB.map(function (rg) {
+      var s = 0; for (var i = rg[0]; i < rg[1]; i++) s += r.holes[i] || 0;
+      return s * 18 - (net ? r.hcp * (rg[1] - rg[0]) : 0);
+    });
+  }
+
+  /** จัดอันดับ 1 ประเภท (kind = 'gross' | 'net') */
+  function rank(rows, kind, ctx) {
+    var key = kind === 'net' ? 'netToPar' : 'toPar';
+    var active = [], waiting = [], out = [];
+    rows.forEach(function (r) {
+      if (r.status) out.push(r);
+      else if (!r.played) waiting.push(r);
+      else active.push(r);
+    });
+    var useCb = ctx.final, tieRule = kind === 'net' ? ctx.tieNet : ctx.tieGross;
+    active.forEach(function (r) { r['_cb' + kind] = useCb && r.complete ? cbVector(r, kind === 'net') : null; });
+    function cmp(a, b) {
+      if (ctx.final && a.complete !== b.complete) return a.complete ? -1 : 1;   // จบแล้วแต่ไม่ครบ 18 = ท้ายตาราง
+      var d = a[key] - b[key]; if (d) return d;
+      if (a['_cb' + kind] && b['_cb' + kind]) for (var i = 0; i < CB.length; i++) { var x = a['_cb' + kind][i] - b['_cb' + kind][i]; if (x) return x; }
+      return 0;
+    }
+    active.sort(function (a, b) { return cmp(a, b) || (b.played - a.played) || String(a.name).localeCompare(String(b.name), 'th'); });
+    // ป้ายอันดับ
+    var pos = 0, i, j;
+    for (i = 0; i < active.length; i = j) {
+      for (j = i + 1; j < active.length && cmp(active[i], active[j]) === 0; j++);
+      var n = j - i, p = i + 1;
+      for (var k = i; k < j; k++) {
+        var r = active[k];
+        if (ctx.final && !r.complete) { r['pos_' + kind] = 'DNF'; r['tie_' + kind] = false; continue; }
+        r['pos_' + kind] = (n > 1 ? 'T' : '') + p;
+        r['posNum_' + kind] = p;
+        r['tie_' + kind] = n > 1;
+        r['cbBy_' + kind] = '';
+      }
+    }
+    // ระบุว่าเทียบการ์ดตัดสินที่ขั้นไหน (แสดงเป็นหมายเหตุ)
+    if (useCb) for (i = 1; i < active.length; i++) {
+      var a = active[i - 1], b = active[i];
+      if (!a.complete || !b.complete || a[key] !== b[key]) continue;
+      for (var s = 0; s < CB.length; s++) if (a['_cb' + kind][s] !== b['_cb' + kind][s]) { b['cbBy_' + kind] = CB_LABEL[s]; if (!a['cbBy_' + kind]) a['cbBy_' + kind] = CB_LABEL[s]; break; }
+    }
+    // อันดับ 1 เสมอ: กติกา PLAYOFF = ทุกคนที่คะแนนเท่าผู้นำต้องเพลย์ออฟ (ไม่ใช้ countback ตัดสินอันดับ 1)
+    //               กติกา COUNTBACK = เพลย์ออฟ/ให้กรรมการตัดสิน เฉพาะเมื่อเทียบการ์ดทุกขั้นแล้วยังเสมอ
+    var playoff = null;
+    if (ctx.final && active.length && active[0].complete) {
+      var lead = active[0];
+      var S = tieRule === 'PLAYOFF'
+        ? active.filter(function (r) { return r.complete && r[key] === lead[key]; })
+        : active.filter(function (r) { return r['posNum_' + kind] === 1 && r['tie_' + kind]; });
+      if (S.length > 1) {
+        var w = kind === 'net' ? ctx.playoffNet : ctx.playoffGross;
+        var winner = S.filter(function (r) { return r.id === w; })[0] || null;
+        playoff = { players: S.map(function (r) { return r.id; }), rule: tieRule, winner: winner ? winner.id : '' };
+        S.forEach(function (r) {
+          r['cbBy_' + kind] = '';
+          if (winner && r === winner) { r['pos_' + kind] = '1'; r['posNum_' + kind] = 1; r['tie_' + kind] = false; }
+          else if (winner) { r['pos_' + kind] = (S.length > 2 ? 'T' : '') + '2'; r['posNum_' + kind] = 2; r['tie_' + kind] = S.length > 2; }
+          else { r['pos_' + kind] = 'T1'; r['posNum_' + kind] = 1; r['tie_' + kind] = true; }
+        });
+        if (winner) { active.splice(active.indexOf(winner), 1); active.unshift(winner); }
+      }
+    }
+    waiting.sort(function (a, b) { return String(a.teeTime).localeCompare(String(b.teeTime)) || (toInt(a.group) - toInt(b.group)) || String(a.name).localeCompare(String(b.name), 'th'); });
+    waiting.forEach(function (r) { r['pos_' + kind] = '–'; r['tie_' + kind] = false; });
+    var ord = { WD: 1, NR: 2, DQ: 3 };
+    out.sort(function (a, b) { return ord[a.status] - ord[b.status] || String(a.name).localeCompare(String(b.name), 'th'); });
+    out.forEach(function (r) { r['pos_' + kind] = r.status; r['tie_' + kind] = false; });
+    return { list: active.concat(waiting, out), playoff: playoff };
+  }
+
+  /**
+   * data = { tournament, course:{par[18],si[18]}, players:[{id,name,gender,hcp,division,group,status}],
+   *          groups:[{group,teeTime,startHole,cardStatus}], scores:{pid:{0..17:strokes}} }
+   */
+  function compute(data) {
+    var t = data.tournament || {};
+    var par = [], si = [];
+    for (var i = 0; i < 18; i++) {
+      par.push(toInt(data.course && data.course.par && data.course.par[i]) || 4);
+      si.push(toInt(data.course && data.course.si && data.course.si[i]) || (i + 1));
+    }
+    var groups = {};
+    (data.groups || []).forEach(function (g) { groups[String(g.group)] = g; });
+    var ctx = { par: par, si: si, groups: groups, mode: hcpMode(t), allow: allowance(t),
+      tieGross: upper(t.TieGross) === 'COUNTBACK' ? 'COUNTBACK' : 'PLAYOFF',
+      tieNet: upper(t.TieNet) === 'PLAYOFF' ? 'PLAYOFF' : 'COUNTBACK',
+      playoffGross: String(t.PlayoffGross || '').trim(), playoffNet: String(t.PlayoffNet || '').trim() };
+    var rows = (data.players || []).map(function (p) { return playerRow(p, data, ctx); });
+    var activeRows = rows.filter(function (r) { return !r.status; });
+    var locked = upper(t.RoundLocked) === 'TRUE';
+    ctx.final = locked || (activeRows.length > 0 && activeRows.every(function (r) { return r.complete; }));
+    var g = rank(rows.map(function (r) { return r; }), 'gross', ctx);
+    var n = ctx.mode === 'GROSS' ? { list: [], playoff: null } : rank(rows.slice(), 'net', ctx);
+    var totalPar = par.reduce(function (a, b) { return a + b; }, 0);
+    var started = activeRows.filter(function (r) { return r.played; }).length;
+    return {
+      mode: ctx.mode, allowance: ctx.allow, final: ctx.final, locked: locked, par: par, si: si, totalPar: totalPar,
+      gross: g.list, net: n.list, playoffGross: g.playoff, playoffNet: n.playoff,
+      stats: { players: rows.length, active: activeRows.length, started: started,
+        finished: activeRows.filter(function (r) { return r.complete; }).length },
+      byId: rows.reduce(function (m, r) { m[r.id] = r; return m; }, {})
+    };
+  }
+
+  return { compute: compute, strokesPerHole: strokesPerHole, s36Points: s36Points, fmtToPar: fmtToPar, mark: mark,
+    holeOrder: holeOrder, hcpMode: hcpMode, CB_LABEL: CB_LABEL };
+})();
+</script>
+
+<!-- lib.html — ไลบรารีร่วม: GPQR (สร้าง QR ในเบราว์เซอร์) + โลโก้ระบบ (ยกมาจาก GolfPro36 v2.3.5) -->
+<script>
+/* v2.2 QR Code — qrcode-generator (c) Kazuhiko Arase, MIT License. "QR Code" is a registered trademark of DENSO WAVE INCORPORATED */
+var GPQR = (function () {
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,(function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1}))},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(o*r,n*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(t,r){var e=n("友");if(2!=e.length||38726!=(e[0]<<8|e[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)};
+  function make(text) { var q = qrcode(0, 'M'); q.addData(String(text)); q.make(); return q; }
+  return {
+    /** รูป QR เป็น data URL (GIF) — ใช้ใน <img> / ดาวน์โหลด / html2canvas ได้ */
+    dataUrl: function (text, cell, margin) { return make(text).createDataURL(cell || 6, margin == null ? 4 : margin); }
+  };
+})();
+</script>
+<script>
+var GP_LOGO = "data:image/jpeg;base64,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";
+</script>
+
+<script>
+'use strict';
+const EVENT_CODE = (new URLSearchParams(location.search).get('event') || '').toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 40);
+if (!EVENT_CODE) location.replace('index.html');
+const HOME_URL = new URL('./', location.href).href.split('?')[0];
+const EVENT_URL = new URL('event.html?event=' + encodeURIComponent(EVENT_CODE), location.href).href;
+const START_SCORE = (function (q) { return { g: (q.get('sg') || '').slice(0, 6), k: (q.get('sk') || '').slice(0, 10) }; })(new URLSearchParams(location.search));
+const IS_TRIAL = /^TRY-/.test(EVENT_CODE);
+const POLL_MS = 20000, TV_POLL_MS = 15000;
+
+// ---------- เครื่องมือทั่วไป ----------
+const $ = (s, el) => (el || document).querySelector(s);
+const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
+function sstore(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
+function api(fn, ...args) {
+  return new Promise((ok, no) => google.script.run.withSuccessHandler(ok).withFailureHandler(no)[fn](...args));
+}
+function toast(msg, icon) { Swal.fire({ toast: true, position: 'top', timer: 2600, showConfirmButton: false, icon: icon || 'success', title: esc(msg) }); }
+function alertErr(msg) { return Swal.fire({ icon: 'error', title: 'ทำรายการไม่สำเร็จ', text: msg, confirmButtonColor: '#0f172a' }); }
+function tpClass(n) { return n == null ? 'text-slate-400' : n < 0 ? 'tp-under' : n > 0 ? 'tp-over' : 'tp-even'; }
+const fmtTP = n => SPE.fmtToPar(n);
+function uuid() { return (crypto.randomUUID ? crypto.randomUUID() : 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2)); }
+const DEVICE = (() => { let d = store('sp_dev'); if (!d) { d = 'D' + Math.random().toString(36).slice(2, 10); store('sp_dev', d); } return d; })();
+function clock(ms) { const d = new Date(ms || Date.now()); return d.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+const MODE_LABEL = { GROSS: 'Gross (ไม่มีแต้มต่อ)', DECLARED: 'Net — แต้มต่อที่แจ้ง', S36: 'Net — System 36' };
+
+// ---------- สถานะหน้า ----------
+let DATA = null, RES = null, KIND = 'gross', pollTimer = null, lastLoad = 0;
+
+function applyHeader(t) {
+  $('#ev-name').textContent = t.Name || 'GolfPro Stroke Play';
+  document.title = (t.Name || 'GolfPro Stroke Play') + ' | GolfPro Stroke Play';
+  $('#ev-sub').textContent = [t.Course, t.Date, MODE_LABEL[SPE.hcpMode(t)] + (SPE.hcpMode(t) === 'DECLARED' && Number(t.HcpAllowance) !== 100 ? ' ' + t.HcpAllowance + '%' : '')].filter(Boolean).join(' • ');
+  const st = $('#ev-status'), locked = String(t.RoundLocked).toUpperCase() === 'TRUE';
+  if (locked) { st.className = 'pill bg-green-600 text-white'; st.innerHTML = '<i class="fa-solid fa-circle-check"></i> ผลทางการ'; }
+  else if (t.Status === 'Live') { st.className = 'pill bg-red-600 text-white'; st.innerHTML = '<span class="live-dot bg-white"></span> LIVE'; }
+  else if (t.Status === 'Finished') { st.className = 'pill bg-slate-600 text-white'; st.textContent = 'จบการแข่งขัน'; }
+  else { st.className = 'pill bg-slate-700 text-white'; st.textContent = 'ยังไม่เริ่ม'; }
+}
+
+function load(silent) {
+  return api('getEventData', EVENT_CODE).then(json => {
+    DATA = typeof json === 'string' ? JSON.parse(json) : json;
+    lastLoad = Date.now();
+    RES = SPE.compute(DATA);
+    applyHeader(DATA.tournament);
+    renderBoard(); if (route().v === 'tv') renderTV();
+  }).catch(e => {
+    if (/ไม่พบงาน|รหัสงานไม่ถูกต้อง|หมดอายุ|ปิดใช้งาน/.test(e.message || '')) { leaveToHome(e.message); return; }
+    if (!silent) alertErr(e.message || String(e));
+    $('#board-state').className = 'mb-2 rounded-xl px-3 py-2 text-xs font-semibold bg-amber-100 text-amber-900';
+    $('#board-state').innerHTML = '<i class="fa-solid fa-wifi"></i> เชื่อมต่อไม่ได้ชั่วคราว — แสดงข้อมูลล่าสุด จะลองใหม่อัตโนมัติ';
+  });
+}
+function leaveToHome(msg) { location.replace('index.html?event=' + encodeURIComponent(EVENT_CODE) + '&msg=' + encodeURIComponent(msg)); return; Swal.fire({ icon: 'warning', title: esc(msg), confirmButtonText: 'ไปหน้าแรก' }).then(() => { if (HOME_URL) location.href = HOME_URL; }); }
+function startPolling(ms) {
+  clearInterval(pollTimer);
+  pollTimer = setInterval(() => { if (!document.hidden) load(true); }, ms);
+}
+
+// ---------- Leaderboard ----------
+function rowsFor(kind) {
+  if (!RES) return [];
+  let list = kind === 'net' ? RES.net : RES.gross;
+  const div = $('#f-div').value, q = $('#f-q').value.trim().toLowerCase();
+  if (div === '__F') list = list.filter(r => r.gender === 'F');
+  else if (div === '__M') list = list.filter(r => r.gender !== 'F');
+  else if (div) list = list.filter(r => r.division === div);
+  if (q) list = list.filter(r => String(r.name).toLowerCase().includes(q));
+  return list;
+}
+function fillDivisions() {
+  const sel = $('#f-div'), cur = sel.value, divs = [...new Set(DATA.players.map(p => p.division).filter(Boolean))].sort();
+  const hasF = DATA.players.some(p => p.gender === 'F');
+  sel.innerHTML = '<option value="">ทุกรุ่น</option>' + divs.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('') +
+    (hasF ? '<option value="__M">ชาย</option><option value="__F">หญิง</option>' : '');
+  if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
+}
+function renderBoard() {
+  if (!DATA) return;
+  const t = DATA.tournament, mode = RES.mode;
+  $('#seg-net').classList.toggle('hidden', mode === 'GROSS');
+  if (mode === 'GROSS' && KIND === 'net') setKind('gross');
+  fillDivisions();
+  const st = $('#board-state');
+  if (RES.locked) { st.className = 'mb-2 rounded-xl px-3 py-2 text-xs font-semibold bg-green-50 text-green-800 border border-green-200'; st.innerHTML = '<i class="fa-solid fa-circle-check"></i> ผลทางการ — กรรมการตรวจและล็อกรอบแล้ว'; }
+  else if (!RES.stats.started) { st.className = 'mb-2 rounded-xl px-3 py-2 text-xs font-semibold bg-slate-200 text-slate-700'; st.innerHTML = '<i class="fa-regular fa-clock"></i> ยังไม่เริ่มแข่ง — ตารางเวลาออกแสดงด้านล่าง'; }
+  else { st.className = 'mb-2 rounded-xl px-3 py-2 text-xs font-semibold bg-white text-slate-600 border'; st.innerHTML = `<span class="text-red-600 font-black">● ยังไม่เป็นทางการ</span> — เล่นจบ ${RES.stats.finished}/${RES.stats.active} คน • อัปเดตอัตโนมัติ (ล่าสุด ${clock(lastLoad)})`; }
+  // เพลย์ออฟ
+  const po = KIND === 'net' ? RES.playoffNet : RES.playoffGross, box = $('#playoff-box');
+  if (po && !po.winner) {
+    const names = po.players.map(id => esc(RES.byId[id].name)).join(', ');
+    box.innerHTML = `<i class="fa-solid fa-flag-checkered"></i> <b>${po.rule === 'PLAYOFF' ? 'เพลย์ออฟอันดับ 1' : 'เสมอทุกขั้นของการเทียบการ์ด — รอกรรมการตัดสิน'}</b>: ${names}`;
+    box.classList.remove('hidden');
+  } else box.classList.add('hidden');
+  const net = KIND === 'net';
+  $('#h-tot').textContent = net ? 'Net' : 'Gross';
+  $('#h-topar').textContent = net ? 'Net±' : 'To Par';
+  $('#h-extra').textContent = net ? 'HCP' : (mode === 'GROSS' ? 'ก๊วน' : 'HCP');
+  const rows = rowsFor(KIND);
+  if (!rows.length) { $('#lb-body').innerHTML = `<div class="p-6 text-center text-slate-400 text-sm">${DATA.players.length ? 'ไม่พบผู้เล่นตามตัวกรอง' : 'ยังไม่มีรายชื่อผู้เล่น — กรรมการนำเข้าได้ที่เมนู "กรรมการ"'}</div>`; return; }
+  $('#lb-body').innerHTML = rows.map(r => {
+    const pos = r['pos_' + KIND], tp = net ? r.netToPar : r.toPar;
+    const waiting = !r.played && !r.status;
+    const thru = r.status ? '' : (waiting ? `<span class="text-slate-400 text-[11px]">${esc(r.teeTime || '')}${r.startHole !== 1 ? ' ⑩' : ''}</span>` : esc(r.thru));
+    const tot = r.status ? '' : net ? (r.complete ? r.net : '') : (r.complete ? r.gross : '');   // รวมแสดงเมื่อจบ 18 หลุม (ระหว่างเล่นดู To Par)
+    const cb = r['cbBy_' + KIND] ? `<span class="pill bg-slate-100 text-slate-500 !px-1.5 !py-0 !text-[9px]">CB ${esc(r['cbBy_' + KIND])}</span>` : '';
+    const sub = [r.division, 'ก๊วน ' + r.group].filter(Boolean).join(' • ');
+    return `<div class="lb-row grid grid-cols-[3.2rem_1fr_3.6rem_3rem_3.4rem] sm:grid-cols-[4rem_1fr_4.5rem_4rem_4rem_4rem] items-center px-2 py-2" data-pid="${esc(r.id)}">
+      <div class="font-black ${pos === '1' || pos === 'T1' ? 'text-yellow-600' : 'text-slate-700'} text-sm">${esc(pos)}</div>
+      <div class="min-w-0"><div class="font-bold truncate text-[14px]">${esc(r.name)} ${r.gender === 'F' ? '<i class="fa-solid fa-venus text-pink-500 text-[11px]"></i>' : ''}</div>
+        <div class="text-[10px] text-slate-500 truncate">${esc(sub)} ${cb}${r.status ? ' <b class="text-red-600">' + esc(r.status) + '</b>' : ''}</div></div>
+      <div class="text-center font-black text-lg ${tpClass(tp)}">${r.status || waiting ? '' : fmtTP(tp)}</div>
+      <div class="text-center font-bold text-sm">${thru}</div>
+      <div class="text-center font-bold">${esc(tot)}</div>
+      <div class="hidden sm:block text-center text-xs text-slate-500">${mode === 'GROSS' ? esc(r.group) : esc(r.hcpLabel)}</div>
+    </div>`;
+  }).join('');
+  $('#lb-legend').innerHTML = (mode === 'S36' ? 'HCP มี * = System 36 ชั่วคราวระหว่างเล่น (หลุมที่ยังไม่ตีคิดเป็นพาร์) • ' : '') +
+    'Thru = เล่นแล้วกี่หลุม (F = จบ, * = ออกหลุม 10) • ตัวแดง = ต่ำกว่าพาร์ • ' +
+    (RES.final ? 'อันดับเสมอตัดสินด้วยการเทียบการ์ด (CB) ตาม R&A: 9/6/3/1 หลุมสุดท้าย' : 'ระหว่างแข่งคะแนนเท่ากันแสดง T (เทียบการ์ดเมื่อจบรอบ)');
+  $('#print-title').textContent = (t.Name || '') + ' — ' + (net ? 'Net' : 'Gross');
+  $('#print-sub').textContent = [t.Course, t.Date, RES.locked ? 'ผลทางการ' : 'ผลไม่เป็นทางการ ณ ' + clock(lastLoad)].filter(Boolean).join(' • ');
+}
+function setKind(k) { KIND = k; $$('#seg-kind button').forEach(b => b.classList.toggle('on', b.dataset.kind === k)); renderBoard(); }
+
+// ---------- สกอร์การ์ดผู้เล่น ----------
+function scorecardTable(r, par, si, opt) {
+  opt = opt || {};
+  const half = (a, b, label) => {
+    let h = '<tr><th class="w-12">หลุม</th>'; for (let i = a; i < b; i++) h += `<th>${i + 1}</th>`; h += `<th class="tot">${label}</th></tr>`;
+    h += '<tr><th>Par</th>'; let ps = 0; for (let i = a; i < b; i++) { h += `<th>${par[i]}</th>`; ps += par[i]; } h += `<th class="tot">${ps}</th></tr>`;
+    if (opt.si) { h += '<tr><th>SI</th>'; for (let i = a; i < b; i++) h += `<th class="!font-normal">${si[i]}</th>`; h += '<th class="tot"></th></tr>'; }
+    h += '<tr><td class="text-[10px] text-slate-500">Gross</td>'; let s = 0, any = false;
+    for (let i = a; i < b; i++) { const v = r.holes[i]; if (v != null) { s += v; any = true; } h += `<td>${v == null ? '<span class="text-slate-300">·</span>' : `<span class="mark ${SPE.mark(v, par[i])}">${v}</span>`}${opt.recv && r.recv[i] > 0 ? `<sup class="text-[8px] text-emerald-600">${'•'.repeat(Math.min(r.recv[i], 3))}</sup>` : ''}</td>`; }
+    h += `<td class="tot">${any ? s : ''}</td></tr>`;
+    return h;
+  };
+  return half(0, 9, 'OUT') + half(9, 18, 'IN');
+}
+function openCard(pid) {
+  const r = RES && RES.byId[pid]; if (!r) return;
+  $('#pc-name').textContent = r.name;
+  $('#pc-sub').textContent = ['ก๊วน ' + r.group, r.teeTime && 'ออก ' + r.teeTime + (r.startHole !== 1 ? ' หลุม ' + r.startHole : ''), r.division].filter(Boolean).join(' • ');
+  const net = RES.mode !== 'GROSS';
+  const stat = (label, val, cls) => `<div class="rounded-xl bg-slate-50 border py-2"><div class="text-[10px] font-bold text-slate-500">${label}</div><div class="text-xl font-black ${cls || ''}">${val}</div></div>`;
+  $('#pc-stats').innerHTML = stat('Gross', r.played ? r.gross : '–') + stat('To Par', fmtTP(r.toPar), tpClass(r.toPar)) +
+    (net ? stat('HCP', esc(r.hcpLabel)) + stat('Net', r.complete ? r.net : (r.played ? fmtTP(r.netToPar) : '–'), r.complete ? '' : tpClass(r.netToPar)) : stat('Thru', esc(r.thru || '–')) + stat('อันดับ', esc(r.pos_gross)));
+  $('#pc-table').innerHTML = scorecardTable(r, RES.par, RES.si, { si: true, recv: net });
+  $('#pc-modal').classList.remove('hidden');
+}
+function closeCard() { $('#pc-modal').classList.add('hidden'); }
+
+// ---------- จอ TV ----------
+let tvPage = 0, tvTimer = null;
+function renderTV() {
+  if (!DATA) return;
+  document.body.classList.add('tv');
+  const t = DATA.tournament;
+  $('#tv-name').textContent = t.Name || '';
+  $('#tv-sub').textContent = [t.Course, t.Date].filter(Boolean).join(' • ');
+  $('#tv-logo').src = GP_LOGO;
+  $('#tv-state').innerHTML = RES.locked ? '<span class="text-green-400"><i class="fa-solid fa-circle-check"></i> ผลทางการ</span>' : (RES.stats.started ? '<span class="text-red-500">● LIVE</span>' : '<span class="text-slate-400">ยังไม่เริ่ม</span>');
+  const kinds = RES.mode === 'GROSS' ? ['gross'] : ['gross', 'net'];
+  const per = 13, cols = 2, pageSize = per * cols;
+  // หน้า = (ประเภท, ช่วงอันดับ)
+  const pages = [];
+  kinds.forEach(k => { const L = (k === 'net' ? RES.net : RES.gross); for (let i = 0; i < Math.max(L.length, 1); i += pageSize) pages.push({ k, from: i, list: L }); });
+  const pg = pages[tvPage % pages.length];
+  $('#tv-kind').textContent = pg.k === 'net' ? 'NET' : 'GROSS';
+  const row = r => {
+    const tp = pg.k === 'net' ? r.netToPar : r.toPar, waiting = !r.played && !r.status;
+    return `<div class="tv-row"><div class="font-black text-yellow-400">${esc(r['pos_' + pg.k])}</div><div class="truncate font-semibold">${esc(r.name)}</div>
+      <div class="text-center font-black ${tp == null || waiting || r.status ? '' : tp < 0 ? 'text-red-400' : tp > 0 ? 'text-sky-300' : 'text-white'}">${r.status ? esc(r.status) : waiting ? '' : fmtTP(tp)}</div>
+      <div class="text-center text-slate-300">${waiting ? esc(r.teeTime) : esc(r.thru)}</div>
+      <div class="text-center font-bold">${r.status || !r.complete ? '' : pg.k === 'net' ? r.net : r.gross}</div></div>`;
+  };
+  const head = `<div class="tv-row text-slate-400 text-[.7em] font-black !bg-transparent"><div>POS</div><div>PLAYER</div><div class="text-center">${pg.k === 'net' ? 'NET±' : 'TO PAR'}</div><div class="text-center">THRU</div><div class="text-center">${pg.k === 'net' ? 'NET' : 'TOT'}</div></div>`;
+  const slice = pg.list.slice(pg.from, pg.from + pageSize);
+  $('#tv-cols').innerHTML = [0, 1].map(c => { const part = slice.slice(c * per, c * per + per); return '<div>' + (part.length ? head + part.map(row).join('') : '') + '</div>'; }).join('');
+  $('#tv-time').textContent = 'อัปเดต ' + clock(lastLoad);
+}
+function startTV() {
+  clearInterval(tvTimer);
+  tvTimer = setInterval(() => { tvPage++; renderTV(); }, 12000);
+  startPolling(TV_POLL_MS); renderTV();
+}
+
+// ---------- เจ้าหน้าที่ประจำก๊วน ----------
+const SC = { group: '', pin: '', view: null, hole: 0, queue: [], sending: false, retry: 0, timer: null };
+const qKey = () => 'sp_q_' + EVENT_CODE + '_' + SC.group;
+function loadQueue() { try { SC.queue = JSON.parse(store(qKey()) || '[]'); } catch (e) { SC.queue = []; } }
+function saveQueue() { store(qKey(), JSON.stringify(SC.queue)); }
+function scoreOf(pid, h) { const s = SC.view.scores[pid] || {}; return s[h] == null ? null : s[h]; }
+function scorerLogin(g, p, silent) {
+  if (!g || !p) { if (!silent) alertErr('กรุณาใส่เลขก๊วนและรหัสก๊วน'); return Promise.resolve(); }
+  Swal.fire({ title: 'กำลังเข้าสู่ระบบก๊วน…', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+  return api('scorerLogin', EVENT_CODE, g, p).then(r => {
+    Swal.close();
+    if (r.status !== 'success') { sstore('sp_sc_' + EVENT_CODE, null); if (!silent || r.message) alertErr(r.message); return; }
+    SC.group = String(g); SC.pin = String(p);
+    sstore('sp_sc_' + EVENT_CODE, JSON.stringify({ g: SC.group, p: SC.pin }));
+    loadQueue(); applyView(r, true);
+    $('#sc-login').classList.add('hidden'); $('#sc-app').classList.remove('hidden');
+    const order = SPE.holeOrder(r.group.startHole);
+    SC.hole = order.find(h => r.players.some(pl => !pl.status && scoreOf(pl.id, h) == null));
+    if (SC.hole == null) SC.hole = order[0];
+    renderScorer(); flush();
+  }).catch(e => { Swal.close(); alertErr(e.message || String(e)); });
+}
+/** ใช้ข้อมูลจากเซิร์ฟเวอร์ แล้วซ้อนคิวที่ยังไม่ได้ส่ง (แสดงค่าที่กรอกในเครื่องเสมอ) */
+function applyView(v, fresh) {
+  SC.view = v;
+  SC.queue.forEach(o => { const s = SC.view.scores[o.pid] = SC.view.scores[o.pid] || {}; if (o.strokes === '') delete s[o.hole - 1]; else s[o.hole - 1] = o.strokes; });
+}
+function enqueue(pid, h, strokes) {
+  const base = ((SC.view.versions[pid] || {})[h]) || 0;
+  SC.queue = SC.queue.filter(o => !(o.pid === pid && o.hole === h + 1));   // ค่าล่าสุดของหลุมเดียวกันแทนค่าเก่าในคิว
+  SC.queue.push({ opId: uuid(), pid, hole: h + 1, strokes, base });
+  saveQueue();
+  const s = SC.view.scores[pid] = SC.view.scores[pid] || {};
+  if (strokes === '') delete s[h]; else s[h] = strokes;
+  clearTimeout(SC.timer); SC.timer = setTimeout(flush, 900);
+  renderScorer();
+}
+function flush() {
+  if (SC.sending || !SC.queue.length || !SC.group) { renderSync(); return; }
+  SC.sending = true; renderSync();
+  const batch = SC.queue.slice(0, 150);
+  api('saveGroupScores', EVENT_CODE, SC.group, SC.pin, batch, DEVICE).then(r => {
+    SC.sending = false;
+    if (r.status !== 'success') {
+      if (r.auth) { SC.queue = []; saveQueue(); logoutScorer(); alertErr(r.message); return; }
+      if (r.closed) { const lost = SC.queue.length; SC.queue = []; saveQueue(); refreshScorer(); alertErr(r.message + (lost ? ` (คะแนนที่ยังไม่ส่ง ${lost} รายการไม่ถูกบันทึก — แจ้งกรรมการ)` : '')); return; }
+      throw new Error(r.message);
+    }
+    const sent = new Set(batch.map(o => o.opId));
+    SC.queue = SC.queue.filter(o => !sent.has(o.opId)); saveQueue();
+    SC.retry = 0; applyView(r); renderScorer();
+    if (r.applied && DATA && DATA.tournament.Status !== 'Live') load(true);   // คะแนนแรกของงาน → หัวหน้าเปลี่ยนเป็น LIVE
+    (r.rejected || []).forEach(x => toast(x.message, 'error'));
+    (r.conflicts || []).forEach(c => { const p = r.players.find(x => x.id === c.pid); toast(`หลุม ${c.hole} ของ ${p ? p.name : c.pid} เคยถูกบันทึกจากอีกเครื่อง (${c.prev || '–'}) — ใช้ค่าล่าสุดของเครื่องนี้`, 'warning'); });
+    if (SC.queue.length) flush();
+  }).catch(e => {
+    SC.sending = false; SC.retry = Math.min(SC.retry + 1, 6); renderSync(true);
+    clearTimeout(SC.timer); SC.timer = setTimeout(flush, 3000 * SC.retry);
+  });
+}
+function refreshScorer() { if (!SC.group) return; api('scorerLogin', EVENT_CODE, SC.group, SC.pin).then(r => { if (r.status === 'success') { applyView(r); renderScorer(); } }).catch(() => {}); }
+function logoutScorer() { SC.group = ''; SC.pin = ''; SC.view = null; sstore('sp_sc_' + EVENT_CODE, null); $('#sc-app').classList.add('hidden'); $('#sc-login').classList.remove('hidden'); }
+function renderSync(err) {
+  const p = $('#sync-pill'); if (!p) return;
+  if (SC.sending) { p.className = 'pill bg-sky-100 text-sky-800'; p.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin"></i> กำลังส่ง'; }
+  else if (SC.queue.length) { p.className = 'pill bg-amber-100 text-amber-900'; p.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> รอส่ง ${SC.queue.length}${err || !navigator.onLine ? ' (ออฟไลน์)' : ''}`; }
+  else { p.className = 'pill bg-green-100 text-green-800'; p.innerHTML = '<i class="fa-solid fa-check"></i> บันทึกแล้ว'; }
+}
+function editable() { return SC.view && SC.view.edit !== 'CLOSED'; }
+function renderScorer() {
+  const v = SC.view; if (!v) return;
+  const par = v.course.par, si = v.course.si, order = SPE.holeOrder(v.group.startHole), active = v.players.filter(p => !p.status);
+  $('#sc-title').textContent = 'ก๊วน ' + v.group.group;
+  $('#sc-meta').textContent = [v.group.teeTime && 'ออก ' + v.group.teeTime, 'หลุมออก ' + v.group.startHole, v.players.length + ' คน', String(v.tournament.ScorerMode).toUpperCase() === 'MARKER' ? 'Marker กรอก' : 'เจ้าหน้าที่กรอก'].filter(Boolean).join(' • ');
+  const closed = $('#sc-closed');
+  if (v.edit === 'CLOSED') { closed.classList.remove('hidden'); closed.innerHTML = '<i class="fa-solid fa-lock"></i> การ์ดก๊วนนี้ปิดแล้ว — ดูคะแนนได้อย่างเดียว ถ้าพบคะแนนผิดให้แจ้งกรรมการ'; }
+  else if (v.edit === 'WINDOW') { closed.classList.remove('hidden'); closed.innerHTML = `<i class="fa-solid fa-hourglass-half"></i> ส่งการ์ดแล้ว — แก้ได้ถึง ${new Date(v.editUntil).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น.`; }
+  else closed.classList.add('hidden');
+  $('#hole-chips').innerHTML = order.map(h => {
+    const n = active.filter(p => scoreOf(p.id, h) != null).length;
+    const cls = h === SC.hole ? 'cur' : n && n === active.length ? 'done' : n ? 'part' : '';
+    return `<button class="hole-chip ${cls}" data-h="${h}">${h + 1}</button>`;
+  }).join('');
+  const cur = $('.hole-chip.cur'); if (cur) cur.scrollIntoView({ block: 'nearest', inline: 'center' });
+  const h = SC.hole;
+  $('#h-no').textContent = h + 1; $('#h-par').textContent = 'Par ' + par[h]; $('#h-si').textContent = 'SI ' + si[h];
+  const label = (s, p) => { const d = s - p; return s === 1 ? 'Hole in one!' : d <= -3 ? 'Albatross' : d === -2 ? 'Eagle' : d === -1 ? 'Birdie' : d === 0 ? 'Par' : d === 1 ? 'Bogey' : d === 2 ? 'Double' : '+' + d; };
+  const dis = editable() ? '' : 'disabled';
+  $('#h-players').innerHTML = v.players.map(p => {
+    const s = scoreOf(p.id, h);
+    if (p.status) return `<div class="flex items-center gap-2 rounded-xl bg-slate-100 p-2 opacity-60"><div class="flex-1 font-bold">${esc(p.name)}</div><span class="pill bg-red-100 text-red-700">${esc(p.status)}</span></div>`;
+    const d = s == null ? null : s - par[h];
+    return `<div class="flex items-center gap-2 rounded-2xl border p-2 ${s == null ? 'bg-white' : 'bg-slate-50'}" data-pid="${esc(p.id)}">
+      <div class="min-w-0 flex-1"><div class="font-bold truncate">${esc(p.name)}</div>
+        <div class="text-[11px] ${s == null ? 'text-slate-400' : d < 0 ? 'text-red-600 font-bold' : d > 0 ? 'text-blue-700 font-bold' : 'text-slate-600 font-bold'}">${s == null ? 'ยังไม่กรอก' : label(s, par[h])}</div></div>
+      <button class="step-btn" data-act="dec" ${dis}>−</button>
+      <button class="score-val ${s == null ? 'empty' : ''}" data-act="set" ${dis}>${s == null ? 'แตะ' : s}</button>
+      <button class="step-btn" data-act="inc" ${dis}>+</button></div>`;
+  }).join('');
+  $('#h-allpar').classList.toggle('hidden', !editable());
+  const idx = order.indexOf(h);
+  $('#h-prev').disabled = idx === 0;
+  $('#h-next').innerHTML = idx === 17 ? '<i class="fa-solid fa-table"></i> ดูการ์ดสรุป' : 'หลุมถัดไป <i class="fa-solid fa-chevron-right"></i>';
+  renderCard(); renderSync();
+}
+function renderCard() {
+  const v = SC.view, par = v.course.par;
+  let html = '<tr><th class="text-left px-1">ผู้เล่น</th>';
+  for (let i = 0; i < 18; i++) html += `<th>${i + 1}</th>`; html += '<th class="tot">OUT</th><th class="tot">IN</th><th class="tot">รวม</th></tr><tr><th class="text-left px-1">Par</th>';
+  for (let i = 0; i < 18; i++) html += `<th>${par[i]}</th>`; html += `<th class="tot">${par.slice(0, 9).reduce((a, b) => a + b)}</th><th class="tot">${par.slice(9).reduce((a, b) => a + b)}</th><th class="tot">${par.reduce((a, b) => a + b)}</th></tr>`;
+  v.players.forEach(p => {
+    let o = 0, n = 0, cnt = 0; html += `<tr><td class="text-left px-1 !text-[12px] whitespace-nowrap">${esc(p.name)}${p.status ? ' <b class="text-red-600">' + esc(p.status) + '</b>' : ''}</td>`;
+    for (let i = 0; i < 18; i++) { const s = scoreOf(p.id, i); if (s != null) { cnt++; if (i < 9) o += s; else n += s; } html += `<td class="${s == null && !p.status ? 'bg-amber-50' : ''}">${s == null ? '' : `<span class="mark ${SPE.mark(s, par[i])}">${s}</span>`}</td>`; }
+    html += `<td class="tot">${o || ''}</td><td class="tot">${n || ''}</td><td class="tot">${cnt ? o + n : ''}</td></tr>`;
+  });
+  $('#card-table').innerHTML = html;
+  $('#win-min').textContent = v.tournament.CorrectionMin != null ? v.tournament.CorrectionMin : 15;
+  const submitted = v.group.cardStatus !== 'OPEN';
+  $('#attest-list').innerHTML = v.players.filter(p => !p.status).map(p => {
+    const n = Object.keys(v.scores[p.id] || {}).length;
+    return `<label class="flex items-center gap-2 rounded-xl bg-white border p-2 ${n < 18 ? 'opacity-60' : ''}"><input type="checkbox" class="w-6 h-6 accent-slate-900" data-att="${esc(p.id)}" ${n < 18 || submitted ? 'disabled' : ''} ${submitted ? 'checked' : ''}>
+      <span class="flex-1 font-bold text-sm">${esc(p.name)}</span><span class="text-[11px] ${n < 18 ? 'text-amber-700 font-bold' : 'text-green-700'}">${n < 18 ? 'ขาด ' + (18 - n) + ' หลุม' : 'ครบ 18 หลุม'}</span></label>`;
+  }).join('');
+  $('#btn-submit').classList.toggle('hidden', submitted);
+  $('#submit-state').innerHTML = submitted ? (v.group.cardStatus === 'LOCKED' ? '<span class="text-slate-700"><i class="fa-solid fa-lock"></i> กรรมการล็อกการ์ดแล้ว</span>' : '<span class="text-green-700"><i class="fa-solid fa-circle-check"></i> ส่งการ์ดแล้ว</span>') : '';
+}
+function stepScore(pid, act) {
+  if (!editable()) return;
+  const h = SC.hole, par = SC.view.course.par[h], s = scoreOf(pid, h);
+  let n = s == null ? par : (act === 'inc' ? s + 1 : act === 'dec' ? s - 1 : s);
+  if (s != null && act === 'set') return pickScore(pid);
+  if (n < 1) n = 1; if (n > 20) n = 20;
+  enqueue(pid, h, n);
+}
+function pickScore(pid) {
+  const h = SC.hole, par = SC.view.course.par[h], p = SC.view.players.find(x => x.id === pid);
+  const opts = []; for (let i = 1; i <= Math.max(10, par + 6); i++) opts.push(i);
+  Swal.fire({ title: `${esc(p.name)} • หลุม ${h + 1}`, html: '<div class="grid grid-cols-5 gap-2">' + opts.map(i => `<button class="swal-n btn ${i === par ? 'btn-gold' : 'btn-light'} !text-xl" data-n="${i}">${i}</button>`).join('') + '</div><button class="swal-n btn btn-light w-full mt-3 !text-red-600" data-n="">ลบคะแนนหลุมนี้</button>',
+    showConfirmButton: false, showCloseButton: true,
+    didOpen: el => $$('.swal-n', el).forEach(b => b.onclick = () => { enqueue(pid, h, b.dataset.n === '' ? '' : Number(b.dataset.n)); Swal.close(); }) });
+}
+function submitCardNow() {
+  const att = $$('[data-att]').filter(x => x.checked).map(x => x.dataset.att);
+  if (SC.queue.length) return alertErr('ยังมีคะแนนรอส่ง ' + SC.queue.length + ' รายการ — รอให้ขึ้น "บันทึกแล้ว" ก่อนส่งการ์ด');
+  Swal.fire({ icon: 'question', title: 'ส่งการ์ดก๊วน ' + esc(SC.group) + '?', text: 'ผู้เล่นทุกคนตรวจคะแนนครบแล้ว', showCancelButton: true, confirmButtonText: 'ส่งการ์ด', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#0f172a' }).then(x => {
+    if (!x.isConfirmed) return;
+    api('submitCard', EVENT_CODE, SC.group, SC.pin, att).then(r => {
+      if (r.status !== 'success') return alertErr(r.message);
+      applyView(r); renderScorer(); Swal.fire({ icon: 'success', title: 'ส่งการ์ดแล้ว', text: 'ขอบคุณครับ — ยื่นสกอร์การ์ดกระดาษให้กรรมการ (ถ้ามี)', confirmButtonColor: '#0f172a' });
+    }).catch(e => alertErr(e.message));
+  });
+}
+
+// ---------- กรรมการ ----------
+const CM = { pin: '', v: null, tab: 'overview' };
+function cmLogin(pin, silent) {
+  if (!pin) return;
+  return api('getCommitteeData', EVENT_CODE, pin).then(r => {
+    if (r.status !== 'success') { sstore('sp_cm_' + EVENT_CODE, null); if (!silent) alertErr(r.message); return; }
+    CM.pin = pin; sstore('sp_cm_' + EVENT_CODE, pin); CM.v = r;
+    $('#cm-login').classList.add('hidden'); $('#cm-app').classList.remove('hidden'); renderCM();
+  }).catch(e => alertErr(e.message));
+}
+function cmCall(fn, ...args) {
+  Swal.fire({ title: 'กำลังบันทึก…', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+  return api(fn, EVENT_CODE, CM.pin, ...args).then(r => {
+    Swal.close();
+    if (r.status !== 'success') { if (r.auth) { CM.pin = ''; sstore('sp_cm_' + EVENT_CODE, null); $('#cm-app').classList.add('hidden'); $('#cm-login').classList.remove('hidden'); } alertErr(r.message); return null; }
+    CM.v = r; renderCM(); load(true); if (r.message) toast(r.message); return r;
+  }).catch(e => { Swal.close(); alertErr(e.message); return null; });
+}
+function cmCompute() { return SPE.compute({ tournament: CM.v.tournament, course: CM.v.course, players: CM.v.players, groups: CM.v.groups, scores: CM.v.scores }); }
+/** ลิงก์ QR บัตรก๊วน: เปิดหน้ากรอกคะแนนของก๊วนนั้นทันที (ใช้ query เพื่อให้ทำงานทั้งบน GitHub และ Apps Script) */
+function groupLink(g) { const base = EVENT_URL || location.href.split('#')[0]; return base + (base.includes('?') ? '&' : '?') + 'sg=' + encodeURIComponent(g.group) + '&sk=' + encodeURIComponent(g.pin) + '#score'; }
+function renderCM() {
+  const v = CM.v; if (!v) return;
+  $$('#cm-tabs [data-cm]').forEach(b => b.classList.toggle('on', b.dataset.cm === CM.tab));
+  $$('[data-cmv]').forEach(d => d.classList.toggle('hidden', d.dataset.cmv !== CM.tab));
+  const R = cmCompute(), locked = String(v.tournament.RoundLocked).toUpperCase() === 'TRUE';
+  const sub = v.groups.filter(g => g.cardStatus !== 'OPEN').length;
+  const stat = (n, l, c) => `<div class="card p-3 text-center"><div class="text-2xl font-black ${c || ''}">${n}</div><div class="text-[11px] font-bold text-slate-500">${l}</div></div>`;
+  $('#cm-stats').innerHTML = stat(R.stats.active, 'ผู้เล่นที่ยังแข่ง') + stat(R.stats.started, 'ออกรอบแล้ว') + stat(R.stats.finished, 'เล่นครบ 18 หลุม') + stat(sub + '/' + v.groups.length, 'ส่งการ์ดแล้ว', sub === v.groups.length && v.groups.length ? 'text-green-600' : '');
+  // ก๊วน
+  const byG = {}; v.players.forEach(p => { (byG[p.group] = byG[p.group] || []).push(p); });
+  const stLabel = g => g.cardStatus === 'LOCKED' ? '<span class="pill bg-slate-800 text-white">ล็อกแล้ว</span>' : g.cardStatus === 'SUBMITTED' ? `<span class="pill bg-green-100 text-green-800">ส่งแล้ว${g.edit === 'WINDOW' ? ' (ช่วงแก้ไข)' : ''}</span>` : '<span class="pill bg-slate-100 text-slate-600">กำลังเล่น</span>';
+  $('#cm-groups').innerHTML = '<tr class="text-[11px] text-slate-500 text-left"><th class="py-1">ก๊วน</th><th>ออก</th><th>เล่นถึง</th><th>การ์ด</th><th>รหัส</th><th class="text-right">จัดการ</th></tr>' + v.groups.map(g => {
+    const ps = (byG[g.group] || []).filter(p => !p.status), counts = ps.map(p => Object.keys(v.scores[p.id] || {}).length);
+    const thru = counts.length ? (Math.min(...counts) === Math.max(...counts) ? Math.min(...counts) : Math.min(...counts) + '–' + Math.max(...counts)) : '–';
+    return `<tr class="border-t"><td class="py-2 font-black">${esc(g.group)}<div class="text-[10px] text-slate-500 font-normal">${(byG[g.group] || []).map(p => esc(p.name.split(' ')[0])).join(', ')}</div></td>
+      <td class="text-xs">${esc(g.teeTime)}<br><span class="text-slate-500">หลุม ${g.startHole}</span></td><td class="font-bold">${thru}${thru === 18 ? ' ✓' : ''}</td><td>${stLabel(g)}</td>
+      <td class="font-mono font-black">${esc(g.pin)}</td>
+      <td class="text-right whitespace-nowrap"><button class="btn btn-light !p-1.5 text-xs" data-gqr="${esc(g.group)}" title="QR ก๊วน"><i class="fa-solid fa-qrcode"></i></button>
+      ${g.cardStatus === 'LOCKED' || g.cardStatus === 'SUBMITTED' ? `<button class="btn btn-light !p-1.5 text-xs" data-greopen="${esc(g.group)}">เปิดแก้</button>` : ''}
+      ${g.cardStatus !== 'LOCKED' ? `<button class="btn btn-dark !p-1.5 text-xs" data-glock="${esc(g.group)}">ล็อก</button>` : ''}</td></tr>`;
+  }).join('') + (v.groups.length ? '' : '<tr><td colspan="6" class="py-4 text-center text-slate-400">ยังไม่มีก๊วน — นำเข้ารายชื่อที่แท็บ "ผู้เล่น/ก๊วน"</td></tr>');
+  // เพลย์ออฟ
+  const box = $('#cm-playoff'), pos = [['GROSS', R.playoffGross], ['NET', R.playoffNet]].filter(x => x[1]);
+  if (pos.length) {
+    box.classList.remove('hidden');
+    box.innerHTML = pos.map(([k, po]) => `<div class="mb-2"><div class="font-black text-sm"><i class="fa-solid fa-flag-checkered text-yellow-600"></i> ${k === 'GROSS' ? 'Gross' : 'Net'}: ${po.rule === 'PLAYOFF' ? 'ต้องเพลย์ออฟอันดับ 1' : 'เสมอทุกขั้นของการเทียบการ์ด'}</div>
+      <div class="flex flex-wrap gap-2 mt-1 items-center"><select class="inp !w-auto !py-1.5" data-po-sel="${k}"><option value="">— ยังไม่ตัดสิน —</option>${po.players.map(id => `<option value="${esc(id)}" ${po.winner === id ? 'selected' : ''}>${esc(R.byId[id].name)}</option>`).join('')}</select>
+      <button class="btn btn-dark !py-1.5 text-xs" data-po-save="${k}">บันทึกผู้ชนะ</button></div></div>`).join('');
+  } else box.classList.add('hidden');
+  $('#lock-hint').textContent = locked ? 'รอบนี้ล็อกแล้ว — Leaderboard แสดง "ผลทางการ" ถ้าต้องแก้คะแนนให้ปลดล็อกก่อน' : `ล็อกเมื่อตรวจการ์ดครบทุกก๊วนแล้ว (ส่งแล้ว ${sub}/${v.groups.length}) — ล็อกแล้วเจ้าหน้าที่ก๊วนแก้ไม่ได้ และผลเป็นทางการ`;
+  $('#btn-lock').className = 'btn ' + (locked ? 'btn-light' : 'btn-dark');
+  $('#btn-lock').innerHTML = locked ? '<i class="fa-solid fa-lock-open"></i> ปลดล็อกรอบ' : '<i class="fa-solid fa-lock"></i> ล็อกรอบ = ประกาศผลทางการ';
+  // ผู้เล่น
+  $('#pl-count').textContent = '(' + v.players.length + ' คน)';
+  $('#cm-players').innerHTML = '<tr class="text-[11px] text-slate-500 text-left"><th class="py-1">รหัส</th><th>ชื่อ</th><th>HCP</th><th>รุ่น</th><th>ก๊วน</th><th>สถานะ</th><th></th></tr>' + v.players.map(p =>
+    `<tr class="border-t"><td class="py-1.5 text-xs text-slate-500">${esc(p.id)}</td><td class="font-bold">${esc(p.name)} ${p.gender === 'F' ? '<i class="fa-solid fa-venus text-pink-500 text-xs"></i>' : ''}</td><td>${p.hcp === '' ? '–' : (p.hcp < 0 ? '+' + (-p.hcp) : esc(p.hcp))}</td><td class="text-xs">${esc(p.division)}</td><td>${esc(p.group)}</td>
+    <td>${p.status ? `<span class="pill bg-red-100 text-red-700" title="${esc(p.statusNote)}">${esc(p.status)}</span>` : ''}</td>
+    <td class="text-right whitespace-nowrap"><button class="btn btn-light !p-1.5 text-xs" data-pedit="${esc(p.id)}"><i class="fa-solid fa-pen"></i></button> <button class="btn btn-light !p-1.5 text-xs" data-pstat="${esc(p.id)}">WD/DQ</button></td></tr>`).join('');
+  // แก้คะแนน
+  const sel = $('#ed-player'), cur = sel.value;
+  sel.innerHTML = '<option value="">— เลือกผู้เล่น —</option>' + v.players.map(p => `<option value="${esc(p.id)}">ก๊วน ${esc(p.group)} • ${esc(p.name)}</option>`).join('');
+  if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
+  renderEditTable();
+  renderSettings();
+  $('#cm-audit').innerHTML = v.audit.map(a => `<div class="py-1.5"><span class="text-slate-400">${esc(a.time)}</span> <b>${esc(a.actor)}</b> <span class="pill bg-slate-100 text-slate-600 !py-0">${esc(a.action)}</span> ${esc(a.detail)}</div>`).join('') || '<div class="text-slate-400">ยังไม่มีประวัติ</div>';
+}
+function renderEditTable() {
+  const v = CM.v, pid = $('#ed-player').value, par = v.course.par;
+  if (!pid) { $('#ed-table').innerHTML = ''; return; }
+  const sc = v.scores[pid] || {};
+  let h = '<tr><th>หลุม</th>'; for (let i = 0; i < 18; i++) h += `<th>${i + 1}</th>`; h += '</tr><tr><th>Par</th>'; for (let i = 0; i < 18; i++) h += `<th>${par[i]}</th>`;
+  h += '</tr><tr><td class="text-[10px]">Gross</td>'; for (let i = 0; i < 18; i++) h += `<td><input class="w-8 text-center font-bold border rounded bg-yellow-50" inputmode="numeric" maxlength="2" data-edh="${i}" value="${sc[i] == null ? '' : sc[i]}"></td>`;
+  $('#ed-table').innerHTML = h + '</tr>';
+}
+function renderSettings() {
+  const t = CM.v.tournament, c = CM.v.course;
+  const sel = (k, opts) => `<select class="inp" data-set="${k}">${opts.map(([v, l]) => `<option value="${v}" ${String(t[k]).toUpperCase() === v.toUpperCase() ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
+  const field = (label, html) => `<label class="block"><span class="text-xs font-bold text-slate-600">${label}</span>${html}</label>`;
+  $('#set-form').innerHTML = field('ชื่องาน', `<input class="inp" data-set="Name" value="${esc(t.Name)}">`) + field('สนาม / รายละเอียด', `<input class="inp" data-set="Course" value="${esc(t.Course)}">`) +
+    field('วันที่', `<input type="date" class="inp" data-set="Date" value="${esc(t.Date)}">`) +
+    field('สถานะงาน', sel('Status', [['Upcoming', 'ยังไม่เริ่ม'], ['Live', 'กำลังแข่ง'], ['Finished', 'จบแล้ว']])) +
+    field('ระบบแต้มต่อ', sel('HcpMode', [['GROSS', 'Gross ล้วน (ไม่มีแต้มต่อ)'], ['DECLARED', 'แต้มต่อที่ผู้เล่นแจ้ง (คอลัมน์ HCP)'], ['S36', 'System 36 (คำนวณหลังเล่น)']])) +
+    field('สัดส่วนแต้มต่อ % (เฉพาะแต้มที่แจ้ง)', `<input class="inp" type="number" min="1" max="100" data-set="HcpAllowance" value="${esc(t.HcpAllowance || 100)}">`) +
+    field('ผู้กรอกคะแนน', sel('ScorerMode', [['STAFF', 'เจ้าหน้าที่ประจำก๊วน'], ['MARKER', 'ผู้เล่นในก๊วน (Marker)']])) +
+    field('แก้ได้หลังส่งการ์ด (นาที)', `<input class="inp" type="number" min="0" max="60" data-set="CorrectionMin" value="${esc(t.CorrectionMin)}">`) +
+    field('เสมออันดับ 1 — Gross', sel('TieGross', [['PLAYOFF', 'เพลย์ออฟ'], ['COUNTBACK', 'เทียบการ์ด 9/6/3/1']])) +
+    field('เสมออันดับ 1 — Net', sel('TieNet', [['COUNTBACK', 'เทียบการ์ด 9/6/3/1'], ['PLAYOFF', 'เพลย์ออฟ']]));
+  let h = '<tr><th>หลุม</th>'; for (let i = 0; i < 18; i++) h += `<th>${i + 1}</th>`; h += '</tr><tr><th>Par</th>';
+  for (let i = 0; i < 18; i++) h += `<td><input class="w-8 text-center border rounded" data-par="${i}" value="${c.par[i]}" inputmode="numeric" maxlength="1"></td>`;
+  h += '</tr><tr><th>SI</th>'; for (let i = 0; i < 18; i++) h += `<td><input class="w-8 text-center border rounded" data-si="${i}" value="${c.si[i]}" inputmode="numeric" maxlength="2"></td>`;
+  $('#set-course').innerHTML = h + '</tr>';
+}
+/** แปลงข้อความที่วางจาก Excel (แท็บ) หรือ CSV เป็นแถว */
+function parseRoster(text) {
+  const lines = String(text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const rows = lines.map(l => (l.includes('\t') ? l.split('\t') : l.split(/\s*,\s*/)).map(x => x.trim()));
+  if (rows.length && /ชื่อ|name/i.test(rows[0][0])) rows.shift();
+  return rows.map(c => ({ name: c[0] || '', gender: c[1] || '', hcp: c[2] || '', division: c[3] || '', group: c[4] || '', teeTime: c[5] || '', startHole: c[6] || '' }));
+}
+function importNow() {
+  const rows = parseRoster($('#imp-text').value), mode = $('#imp-mode').value;
+  if (!rows.length) return alertErr('วางรายชื่อในช่องก่อน');
+  const groups = [...new Set(rows.map(r => r.group))];
+  const preview = '<div class="text-left text-xs max-h-64 overflow-y-auto"><table class="w-full"><tr class="text-slate-500"><th>ชื่อ</th><th>เพศ</th><th>HCP</th><th>รุ่น</th><th>ก๊วน</th></tr>' +
+    rows.slice(0, 60).map(r => `<tr class="border-t"><td>${esc(r.name)}</td><td>${esc(r.gender)}</td><td>${esc(r.hcp)}</td><td>${esc(r.division)}</td><td>${esc(r.group)}</td></tr>`).join('') + '</table></div>';
+  Swal.fire({ title: `นำเข้า ${rows.length} คน ${groups.length} ก๊วน`, html: preview + `<p class="text-xs mt-2">${mode === 'REPLACE' ? '<b class="text-red-600">แทนที่รายชื่อเดิมทั้งหมด</b>' : 'เพิ่มต่อท้ายรายชื่อเดิม'}</p>`,
+    showCancelButton: true, confirmButtonText: 'ยืนยันนำเข้า', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#0f172a', width: 640 })
+    .then(x => { if (x.isConfirmed) cmCall('importPlayers', rows, mode).then(r => { if (r) $('#imp-text').value = ''; }); });
+}
+function showGroupQr(gno) {
+  const g = CM.v.groups.find(x => x.group === gno), link = groupLink(g);
+  Swal.fire({ title: 'ก๊วน ' + esc(g.group), html: `<img src="${GPQR.dataUrl(link, 6, 2)}" style="width:220px;margin:0 auto;image-rendering:pixelated"><div class="text-3xl font-black tracking-[.3em] mt-2">${esc(g.pin)}</div><div class="text-xs text-slate-500 mt-1">สแกนแล้วเข้ากรอกคะแนนก๊วนนี้ได้ทันที</div>`, confirmButtonColor: '#0f172a' });
+}
+function printGroupCards() {
+  const v = CM.v, t = v.tournament, byG = {};
+  v.players.forEach(p => { (byG[p.group] = byG[p.group] || []).push(p); });
+  $('#gcards').innerHTML = v.groups.map(g => `<div class="gcard bg-white"><div class="flex gap-3"><img src="${GPQR.dataUrl(groupLink(g), 4, 1)}" class="w-28 h-28" style="image-rendering:pixelated">
+    <div class="min-w-0"><div class="text-[10px] text-slate-500 truncate">${esc(t.Name)}</div><div class="text-2xl font-black">ก๊วน ${esc(g.group)}</div>
+    <div class="text-xs">ออก ${esc(g.teeTime)} • หลุม ${g.startHole}</div><div class="text-xs text-slate-500">รหัสก๊วน</div><div class="text-3xl font-black tracking-[.3em]">${esc(g.pin)}</div></div></div>
+    <div class="text-[11px] mt-1">${(byG[g.group] || []).map(p => esc(p.name)).join(' • ')}</div>
+    <div class="text-[9px] text-slate-400 mt-1">สแกน QR → กรอกคะแนนทีละหลุม → จบรอบให้ผู้เล่นยืนยันแล้วกด "ส่งการ์ด" • GolfPro Stroke Play</div></div>`).join('');
+  location.hash = '#gcards';
+}
+
+// ---------- เส้นทางหน้า ----------
+function route() {
+  const parts = location.hash.replace(/^#/, '').split('/');
+  const v = ['board', 'score', 'committee', 'tv', 'gcards'].includes(parts[0]) ? parts[0] : 'board';
+  return { v, a: decodeURIComponent(parts[1] || ''), b: decodeURIComponent(parts[2] || '') };
+}
+function show() {
+  const r = route();
+  if (r.v === 'gcards' && !CM.v) { location.hash = '#committee'; return; }
+  $$('.view').forEach(s => s.classList.remove('active'));
+  $('#view-' + r.v).classList.add('active');
+  $$('[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === r.v));
+  $$('[data-nav]').forEach(a => a.classList.toggle('text-slate-200', a.dataset.nav !== r.v));
+  if (r.v !== 'tv') { document.body.classList.remove('tv'); clearInterval(tvTimer); startPolling(POLL_MS); }
+  if (r.v === 'tv') startTV();
+  if (r.v === 'score') {
+    if (r.a && r.b) { const g = r.a, p = r.b; history.replaceState(null, '', location.pathname + location.search + '#score'); scorerLogin(g, p); }   // ลบรหัสออกจากแถบที่อยู่
+    else if (!SC.group) { const s = JSON.parse(sstore('sp_sc_' + EVENT_CODE) || 'null'); if (s) scorerLogin(s.g, s.p, true); }
+    else refreshScorer();
+  }
+  if (r.v === 'committee' && !CM.v) { const p = sstore('sp_cm_' + EVENT_CODE); if (p) cmLogin(p, true); }
+  window.scrollTo(0, 0);
+}
+
+// ---------- ผูกปุ่ม ----------
+document.addEventListener('click', e => {
+  const t = e.target.closest('button, [data-pid]'); if (!t) return;
+  if (t.closest('#lb-body') && t.dataset.pid) return openCard(t.dataset.pid);
+  if (t.dataset.kind) return setKind(t.dataset.kind);
+  if (t.classList.contains('hole-chip')) { SC.hole = Number(t.dataset.h); return renderScorer(); }
+  if (t.dataset.act) return stepScore(t.closest('[data-pid]').dataset.pid, t.dataset.act);
+  if (t.dataset.cm) { CM.tab = t.dataset.cm; return renderCM(); }
+  if (t.dataset.gqr) return showGroupQr(t.dataset.gqr);
+  if (t.dataset.glock) return cmCall('setGroupCard', t.dataset.glock, 'LOCK');
+  if (t.dataset.greopen) return Swal.fire({ icon: 'question', title: 'เปิดการ์ดก๊วน ' + esc(t.dataset.greopen) + ' ให้แก้ได้อีกครั้ง?', showCancelButton: true, confirmButtonText: 'เปิดแก้', cancelButtonText: 'ยกเลิก' }).then(x => x.isConfirmed && cmCall('setGroupCard', t.dataset.greopen, 'REOPEN'));
+  if (t.dataset.poSave) return cmCall('setPlayoffWinner', t.dataset.poSave, $(`[data-po-sel="${t.dataset.poSave}"]`).value);
+  if (t.dataset.pstat) {
+    const p = CM.v.players.find(x => x.id === t.dataset.pstat);
+    return Swal.fire({ title: esc(p.name), html: `<select id="sw-st" class="inp mb-2"><option value="">ปกติ (แข่งต่อ)</option><option value="WD">WD — ถอนตัว</option><option value="DQ">DQ — ตัดสิทธิ์</option><option value="NR">NR — ไม่ส่งผล</option></select><input id="sw-note" class="inp" placeholder="หมายเหตุ / เหตุผล" value="${esc(p.statusNote)}">`,
+      didOpen: () => { $('#sw-st').value = p.status || ''; }, showCancelButton: true, confirmButtonText: 'บันทึก', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#0f172a',
+      preConfirm: () => [$('#sw-st').value, $('#sw-note').value] }).then(x => x.isConfirmed && cmCall('setPlayerStatus', p.id, x.value[0], x.value[1]));
+  }
+  if (t.dataset.pedit) {
+    const p = CM.v.players.find(x => x.id === t.dataset.pedit);
+    return Swal.fire({ title: 'แก้ข้อมูล ' + esc(p.id), html: `<input id="sw-n" class="inp mb-2" value="${esc(p.name)}" placeholder="ชื่อ"><select id="sw-g" class="inp mb-2"><option value="M">ชาย</option><option value="F">หญิง</option></select>
+      <input id="sw-h" class="inp mb-2" value="${p.hcp === '' ? '' : (p.hcp < 0 ? '+' + (-p.hcp) : p.hcp)}" placeholder="HCP"><input id="sw-d" class="inp mb-2" value="${esc(p.division)}" placeholder="รุ่น"><select id="sw-gr" class="inp">${CM.v.groups.map(g => `<option value="${esc(g.group)}">ก๊วน ${esc(g.group)}</option>`).join('')}</select>`,
+      didOpen: () => { $('#sw-g').value = p.gender === 'F' ? 'F' : 'M'; $('#sw-gr').value = p.group; }, showCancelButton: true, confirmButtonText: 'บันทึก', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#0f172a',
+      preConfirm: () => ({ name: $('#sw-n').value, gender: $('#sw-g').value, hcp: $('#sw-h').value, division: $('#sw-d').value, group: $('#sw-gr').value }) }).then(x => x.isConfirmed && cmCall('editPlayer', p.id, x.value));
+  }
+});
+$('#f-div').onchange = renderBoard; $('#f-q').oninput = renderBoard;
+$('#btn-print').onclick = () => window.print();
+$('#sc-go').onclick = () => scorerLogin($('#sc-g').value.trim(), $('#sc-p').value.trim());
+$('#sc-p').onkeydown = e => { if (e.key === 'Enter') $('#sc-go').click(); };
+$('#sc-logout').onclick = () => { if (SC.queue.length) return alertErr('ยังมีคะแนนรอส่ง — รอให้ส่งเสร็จก่อนออกจากระบบ'); logoutScorer(); };
+$('#tab-hole').onclick = () => { $('#tab-hole').classList.add('on'); $('#tab-hole').classList.remove('bg-white'); $('#tab-card').classList.remove('on'); $('#tab-card').classList.add('bg-white'); $('#sc-hole').classList.remove('hidden'); $('#sc-card').classList.add('hidden'); };
+$('#tab-card').onclick = () => { $('#tab-card').classList.add('on'); $('#tab-card').classList.remove('bg-white'); $('#tab-hole').classList.remove('on'); $('#tab-hole').classList.add('bg-white'); $('#sc-card').classList.remove('hidden'); $('#sc-hole').classList.add('hidden'); };
+$('#h-prev').onclick = () => { const o = SPE.holeOrder(SC.view.group.startHole), i = o.indexOf(SC.hole); if (i > 0) { SC.hole = o[i - 1]; renderScorer(); } };
+$('#h-next').onclick = () => {
+  const o = SPE.holeOrder(SC.view.group.startHole), i = o.indexOf(SC.hole);
+  const missing = SC.view.players.filter(p => !p.status && scoreOf(p.id, SC.hole) == null);
+  const go = () => { if (i < 17) { SC.hole = o[i + 1]; renderScorer(); } else $('#tab-card').click(); };
+  if (missing.length && editable()) return Swal.fire({ icon: 'warning', title: 'ยังไม่ได้กรอก', text: missing.map(p => p.name).join(', '), showCancelButton: true, confirmButtonText: 'ไปหลุมถัดไปเลย', cancelButtonText: 'กลับไปกรอก' }).then(x => x.isConfirmed && go());
+  go();
+};
+$('#h-allpar').onclick = () => SC.view.players.forEach(p => { if (!p.status && scoreOf(p.id, SC.hole) == null) enqueue(p.id, SC.hole, SC.view.course.par[SC.hole]); });
+$('#btn-submit').onclick = submitCardNow;
+$('#cm-go').onclick = () => cmLogin($('#cm-pin').value.trim());
+$('#cm-pin').onkeydown = e => { if (e.key === 'Enter') $('#cm-go').click(); };
+$('#cm-refresh').onclick = () => cmLogin(CM.pin);
+$('#btn-lock').onclick = () => {
+  const locked = String(CM.v.tournament.RoundLocked).toUpperCase() === 'TRUE';
+  Swal.fire({ icon: 'warning', title: locked ? 'ปลดล็อกรอบ?' : 'ล็อกรอบและประกาศผลทางการ?', text: locked ? 'ผลจะกลับเป็น "ยังไม่เป็นทางการ" และกรรมการแก้คะแนนได้' : 'การ์ดทุกก๊วนจะถูกล็อก เจ้าหน้าที่ก๊วนแก้คะแนนไม่ได้อีก', showCancelButton: true, confirmButtonText: locked ? 'ปลดล็อก' : 'ล็อกรอบ', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#0f172a' })
+    .then(x => x.isConfirmed && cmCall('lockRound', !locked));
+};
+$('#btn-gcards').onclick = printGroupCards;
+$('#imp-go').onclick = importNow;
+$('#imp-sample').onclick = () => { const s = 'ชื่อ\tเพศ\tHCP\tรุ่น\tก๊วน\tเวลาออก\tหลุมออก\nสมชาย ใจดี\tชาย\t12\tทั่วไป\t1\t07:00\t1\nสมหญิง รักดี\tหญิง\t20\tหญิง\t1\t\t'; try { navigator.clipboard.writeText(s); toast('คัดลอกแล้ว — วางใน Excel ได้เลย'); } catch (e) { $('#imp-text').value = s; } };
+$('#ed-player').onchange = renderEditTable;
+$('#ed-save').onclick = () => { const pid = $('#ed-player').value; if (!pid) return alertErr('เลือกผู้เล่นก่อน'); const arr = $$('[data-edh]').map(i => i.value.trim()); cmCall('adminSaveScores', pid, arr, $('#ed-reason').value).then(r => { if (r) $('#ed-reason').value = ''; }); };
+$('#set-save').onclick = () => {
+  const s = {}; $$('[data-set]').forEach(i => { s[i.dataset.set] = i.value; });
+  const course = { par: $$('[data-par]').map(i => i.value), si: $$('[data-si]').map(i => i.value) };
+  const changed = course.par.join() !== CM.v.course.par.join() || course.si.join() !== CM.v.course.si.join();
+  cmCall('saveSettings', s, changed ? course : null);
+};
+window.addEventListener('hashchange', show);
+window.addEventListener('online', () => flush());
+document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - lastLoad > 10000) load(true); });
+
+// ---------- เริ่ม ----------
+$('#gp-logo').src = GP_LOGO;
+if (HOME_URL) $('#home-link').href = HOME_URL;
+if (IS_TRIAL) { $('#trial-banner').classList.remove('hidden'); $('#trial-banner').innerHTML = '<i class="fa-solid fa-flask"></i> <b>งานทดลองใช้ฟรี</b> — ข้อมูลจะถูกลบอัตโนมัติใน 3 วัน • รหัสกรรมการ <b>3579</b> • ผู้เล่นตัวอย่าง: ก๊วน 1 รหัส <b>1111</b>, ก๊วน 2 รหัส <b>2222</b>'; }
+if (EVENT_CODE === 'DEMO') { $('#trial-banner').classList.remove('hidden'); $('#trial-banner').innerHTML = '<i class="fa-solid fa-circle-info"></i> <b>งานตัวอย่าง (DEMO)</b> — ข้อมูลจำลองระหว่างแข่ง ดูได้อย่างเดียว • อยากลองกรอกคะแนนจริง กด "ทดลองใช้ฟรี" ที่หน้าแรก'; }
+if (START_SCORE && START_SCORE.g && START_SCORE.k) {   // เปิดจาก QR บัตรก๊วน → เข้าก๊วนอัตโนมัติ แล้วลบรหัสออกจากแถบที่อยู่
+  try { const u = new URL(location.href); u.searchParams.delete('sg'); u.searchParams.delete('sk'); u.hash = '#score'; history.replaceState(null, '', u.href); } catch (e) {}
+  if (location.hash !== '#score') location.hash = '#score';
+  sstore('sp_sc_' + EVENT_CODE, null);   // ใช้ก๊วนจาก QR แทนก๊วนที่เคยเข้าไว้
+  scorerLogin(START_SCORE.g, START_SCORE.k);
+}
+show();
+load();
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});</script>
+</body>
+</html>
