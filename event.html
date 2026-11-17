@@ -26,6 +26,8 @@
   .lb-row { border-bottom:1px solid #e2e8f0; cursor:pointer; }
   .lb-row:hover { background:#f8fafc; }
   .lb-row.cut { border-top:2px dashed #94a3b8; }
+  .step-no { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:9999px; background:#15803d; color:#fff; font-size:12px; font-weight:900; }
+  .xl-tbl td, .xl-tbl th { padding:3px 6px; border-top:1px solid #e2e8f0; text-align:left; }
   .pill { display:inline-flex; align-items:center; gap:4px; border-radius:9999px; padding:2px 10px; font-size:11px; font-weight:800; }
   .live-dot { width:8px; height:8px; border-radius:9999px; background:#ef4444; animation:pulse 1.4s infinite; }
   @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.25 } }
@@ -133,6 +135,12 @@
 
   <!-- ===== กรอกคะแนน (เจ้าหน้าที่ประจำก๊วน) ===== -->
   <section id="view-score" class="view">
+    <div id="sc-excel" class="hidden card p-5 max-w-sm mx-auto text-center">
+      <div class="text-4xl text-green-700 mb-2"><i class="fa-solid fa-file-excel"></i></div>
+      <div class="font-black text-lg mb-1">งานนี้กรอกคะแนนโดยกรรมการ</div>
+      <p class="text-sm text-slate-500">กรรมการบันทึกคะแนนจากการ์ดกระดาษผ่านไฟล์ Excel — ส่งการ์ดให้กรรมการตามปกติ แล้วติดตามผลได้ที่ Leaderboard</p>
+      <a href="#board" class="btn btn-dark mt-4"><i class="fa-solid fa-list-ol"></i> ดู Leaderboard</a>
+    </div>
     <div id="sc-login" class="card p-5 max-w-sm mx-auto">
       <h2 class="font-black text-lg mb-1"><i class="fa-solid fa-pen-to-square text-yellow-500"></i> <span id="sc-login-title">กรอกคะแนนประจำก๊วน</span></h2>
       <p class="text-xs text-slate-500 mb-4" id="sc-login-hint">ใส่เลขก๊วนและรหัสก๊วน 4 หลัก (อยู่บนบัตรก๊วนที่กรรมการแจก หรือสแกน QR บนบัตร)</p>
@@ -195,6 +203,7 @@
         <button class="ctab on" data-cm="overview"><i class="fa-solid fa-gauge"></i> ภาพรวม</button>
         <button class="ctab" data-cm="players"><i class="fa-solid fa-users"></i> ผู้เล่น/ก๊วน</button>
         <button class="ctab" data-cm="edit"><i class="fa-solid fa-pen"></i> แก้คะแนน</button>
+        <button class="ctab" data-cm="excel"><i class="fa-solid fa-file-excel"></i> ไฟล์ Excel</button>
         <button class="ctab" data-cm="awards"><i class="fa-solid fa-trophy"></i> รางวัล</button>
         <button class="ctab" data-cm="settings"><i class="fa-solid fa-sliders"></i> ตั้งค่า</button>
         <button class="ctab" data-cm="audit"><i class="fa-solid fa-clock-rotate-left"></i> ประวัติ</button>
@@ -243,6 +252,37 @@
           <input id="ed-reason" class="inp mt-3" maxlength="200" placeholder="เหตุผลการแก้ (บังคับ) เช่น Marker กรอกผิดหลุม 7 ตามการ์ดกระดาษ">
           <button id="ed-save" class="btn btn-dark w-full mt-2"><i class="fa-solid fa-floppy-disk"></i> บันทึกการแก้คะแนน</button>
           <p class="text-[11px] text-slate-500 mt-2">ทุกการแก้บันทึกค่าเดิม → ค่าใหม่ ผู้แก้ และเหตุผลไว้ในประวัติ (ย้อนดูได้เสมอ)</p>
+        </div>
+      </div>
+      <!-- ไฟล์ Excel (v1.3) -->
+      <div data-cmv="excel" class="hidden">
+        <div class="rounded-2xl p-4 mb-3 text-white shadow-sm" style="background:#166534">
+          <div class="font-black text-lg"><i class="fa-solid fa-file-excel"></i> กรอกคะแนนจากการ์ดกระดาษด้วยไฟล์ Excel</div>
+          <div class="text-xs mt-1" style="color:#dcfce7">ดาวน์โหลด → กรอกใน Excel (ไม่ต้องต่อเน็ต) → อัปโหลด → ตรวจรายการที่เปลี่ยน → ผลขึ้น Leaderboard ทันที • ใช้ร่วมกับการกรอกสดได้</div>
+        </div>
+        <div id="xl-mode-tip" class="hidden mb-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs p-3"></div>
+        <div class="card p-4 mb-3">
+          <div class="flex items-center gap-2 font-black mb-1"><span class="step-no">1</span> ดาวน์โหลดไฟล์ของงานนี้</div>
+          <p class="text-xs text-slate-500 mb-3">ไฟล์มีรายชื่อ ก๊วน คะแนนล่าสุด Par/SI ค่าตั้ง รางวัล และไฟลท์ของงานนี้ — ทุกช่องที่เลือกได้มีดรอปดาวน์ และคะแนนผิดช่วง Excel จะเตือนทันที</p>
+          <button id="xl-dl" class="btn btn-dark"><i class="fa-solid fa-download"></i> ดาวน์โหลดไฟล์ Excel</button>
+        </div>
+        <div class="card p-4 mb-3">
+          <div class="flex items-center gap-2 font-black mb-1"><span class="step-no">2</span> กรอกข้อมูลใน Excel</div>
+          <ul class="text-xs text-slate-600 list-disc pl-5 space-y-1">
+            <li>แผ่นงาน <b>"ผู้เล่นและคะแนน"</b> — คะแนนรายหลุมในช่องสีเหลือง (เว้นว่าง = ยังไม่ตี) • ผู้เล่นใหม่กรอกต่อแถวว่างโดยเว้น PlayerID</li>
+            <li>แผ่นงาน <b>"ก๊วน"</b> เวลาออก/หลุมออก • <b>"สนาม"</b> Par/SI • <b>"ข้อมูลงาน"</b> ระบบแต้มต่อ วิธีตัดสิน</li>
+            <li>แผ่นงาน <b>"รางวัล"</b> <b>"รางวัลพิเศษ"</b> <b>"ไฟลท์ HCP"</b> — ตั้งค่ารางวัลและกรอกผู้ได้รางวัลในสนาม</li>
+            <li>บันทึกเป็น <b>.xlsx</b> — อัปโหลดซ้ำได้ไม่จำกัด เช่น หลังจบ 9 หลุม และตอนจบ 18 หลุม</li>
+          </ul>
+        </div>
+        <div class="card p-4 mb-3">
+          <div class="flex items-center gap-2 font-black mb-1"><span class="step-no">3</span> อัปโหลดไฟล์กลับเข้าระบบ</div>
+          <p class="text-xs text-slate-500 mb-3">ระบบตรวจทั้งไฟล์ก่อน ผิดแม้จุดเดียวจะไม่บันทึกอะไร • คะแนนที่เปลี่ยนบันทึกต่อท้ายในประวัติ (ค่าเดิมย้อนดูได้)</p>
+          <label class="btn btn-dark cursor-pointer"><i class="fa-solid fa-upload"></i> เลือกไฟล์และตรวจ<input type="file" id="xl-file" accept=".xlsx,.xls,.ods,.csv" class="hidden"></label>
+        </div>
+        <div class="card p-4">
+          <div class="font-black mb-2">ประวัติการอัปโหลดไฟล์</div>
+          <div id="xl-log" class="text-xs divide-y"></div>
         </div>
       </div>
       <!-- รางวัล -->
@@ -695,6 +735,545 @@ var GP_LOGO = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAQDAwMDAg
 </script>
 
 <script>
+/**
+ * ============================================================
+ *  GolfPro Stroke Play — โมดูลไฟล์ Excel (v1.3) — ยกแนวทางจาก GolfPro36 (excel.html) แล้วปรับให้เข้ากับ Stroke Play
+ *  - build(v)            : สร้างไฟล์ .xlsx ของงาน จากข้อมูลหน้ากรรมการ (ExcelJS: ดรอปดาวน์ / ตรวจคะแนน / สูตรรวม / ตรึงแถว)
+ *  - parse(file)         : อ่านไฟล์ที่กรอกกลับมา (SheetJS: .xlsx .xls .ods .csv)
+ *  - check(parsed, v, o) : ตรวจก่อนส่ง + เทียบกับข้อมูลปัจจุบัน (กติกาเดียวกับเซิร์ฟเวอร์ validateExcel_)
+ *  - toPayload(parsed)   : แปลงเป็นข้อมูลที่ส่งให้ uploadEventExcel
+ *  ไลบรารีโหลดเฉพาะตอนกดปุ่ม เพื่อไม่ให้หน้าเว็บช้า
+ * ============================================================
+ */
+var SPX = (function () {
+  var LIBS = { exceljs: 'https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js', xlsx: 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js' };
+  var loading = {};
+  function loadLib(key) {
+    if (key === 'exceljs' && window.ExcelJS) return Promise.resolve();
+    if (key === 'xlsx' && window.XLSX) return Promise.resolve();
+    if (loading[key]) return loading[key];
+    loading[key] = new Promise(function (resolve, reject) {
+      var s = document.createElement('script'); s.src = LIBS[key];
+      s.onload = function () { resolve(); };
+      s.onerror = function () { loading[key] = null; reject(new Error('โหลดตัวจัดการไฟล์ Excel ไม่สำเร็จ — ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่')); };
+      document.head.appendChild(s);
+    });
+    return loading[key];
+  }
+  var SHEET = { players: 'ผู้เล่นและคะแนน', groups: 'ก๊วน', course: 'สนาม', info: 'ข้อมูลงาน', awards: 'รางวัล', manual: 'รางวัลพิเศษ', flights: 'ไฟลท์ HCP', help: 'คำแนะนำ' };
+  var MAX_FILE = 5 * 1024 * 1024;
+  /** [คีย์, คำอธิบาย, ตัวเลือก] — คีย์ตรงกับแท็บ Tournament */
+  var INFO_ROWS = [
+    ['EventCode', 'รหัสงาน — ระบบใช้ตรวจว่าไฟล์นี้เป็นของงานไหน (ห้ามแก้)'],
+    ['Name', 'ชื่องาน'], ['Date', 'วันที่แข่ง (ปี ค.ศ. เช่น 2026-12-20)'], ['Course', 'สนาม / รายละเอียดสั้น ๆ'],
+    ['Status', 'Upcoming = ยังไม่เริ่ม / Live = กำลังแข่ง / Finished = จบแล้ว', ['Upcoming', 'Live', 'Finished']],
+    ['HcpMode', 'GROSS = ไม่มีแต้มต่อ / DECLARED = แต้มต่อที่ผู้เล่นแจ้ง (คอลัมน์ HCP) / S36 = System 36 (คำนวณจากคะแนน)', ['GROSS', 'DECLARED', 'S36']],
+    ['HcpAllowance', 'สัดส่วนแต้มต่อ % (เฉพาะ DECLARED) — WHS แนะนำ 95'],
+    ['ScorerMode', 'STAFF = เจ้าหน้าที่ประจำก๊วนกรอกสด / MARKER = ผู้เล่นในก๊วนกรอกสด / EXCEL = กรรมการกรอกจากการ์ดผ่านไฟล์นี้ (ปิดกรอกสด)', ['STAFF', 'MARKER', 'EXCEL']],
+    ['CorrectionMin', 'นาทีที่ยังแก้คะแนนได้หลังส่งการ์ด (0-60) — ใช้กับการกรอกสด'],
+    ['TieGross', 'เสมออันดับ 1 Gross: PLAYOFF = เพลย์ออฟ / COUNTBACK = เทียบการ์ด', ['PLAYOFF', 'COUNTBACK']],
+    ['TieNet', 'เสมออันดับ 1 Net: COUNTBACK = เทียบการ์ด / PLAYOFF = เพลย์ออฟ', ['COUNTBACK', 'PLAYOFF']],
+    ['LadyFlight', 'TRUE = ผู้หญิงแยกเป็น Flight Lady / FALSE = จัดไฟลท์ตาม HCP เหมือนผู้ชาย', ['TRUE', 'FALSE']],
+    ['ScoreVersion', 'จำนวนรายการคะแนนในระบบตอนดาวน์โหลด — ใช้เตือนเมื่อมีคะแนนใหม่เข้ามาหลังดาวน์โหลด (ห้ามแก้)'],
+    ['DownloadedAt', 'เวลาที่ดาวน์โหลดไฟล์นี้ (ห้ามแก้)']
+  ];
+  var INFO_KEYS = INFO_ROWS.map(function (r) { return r[0]; });
+  var SETTING_KEYS = ['Name', 'Date', 'Course', 'Status', 'HcpMode', 'HcpAllowance', 'ScorerMode', 'CorrectionMin', 'TieGross', 'TieNet', 'LadyFlight'];
+  var PCOL = { id: 1, name: 2, gender: 3, hcp: 4, division: 5, group: 6, flight: 7, status: 8, h1: 9 };   // คอลัมน์แผ่นงานผู้เล่น (1 = A)
+
+  function colLetter(n) { var s = ''; while (n > 0) { var m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; }
+  function pad2(n) { return ('0' + n).slice(-2); }
+  function triggerDownload(blob, fileName) {
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = fileName; a.style.display = 'none'; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 4000);
+  }
+  function safeFileName(s) { return String(s || '').replace(/[\\\/:*?"<>|]+/g, ' ').replace(/\s+/g, '_').slice(0, 60); }
+
+  /** สร้างไฟล์ Excel ของงาน — v = ข้อมูลหน้ากรรมการ (getCommitteeData) */
+  async function buildBuffer(v) {
+    await loadLib('exceljs');
+    var t = v.tournament || {}, par = v.course.par.map(Number), si = v.course.si.map(Number), maxS = v.maxScore || 20;
+    var players = v.players || [], scores = v.scores || {}, groups = v.groups || [];
+    var maxP = v.maxPlayers || 240, blank = Math.max(0, Math.min(maxP - players.length, players.length ? 20 : 60));
+    var wb = new ExcelJS.Workbook(); wb.creator = 'GolfPro Stroke Play'; wb.created = new Date();
+    var C_DARK = 'FF0F172A', C_HEAD = 'FF1E293B', C_YEL = 'FFFEF9C3', C_GRAY = 'FFF1F5F9', C_PAR = 'FFDCFCE7', C_WHITE = 'FFFFFFFF';
+    var thin = { style: 'thin', color: { argb: 'FFCBD5E1' } }, box = { top: thin, left: thin, bottom: thin, right: thin };
+    function fill(c) { return { type: 'pattern', pattern: 'solid', fgColor: { argb: c } }; }
+    function head(ws, row, labels) { labels.forEach(function (l, i) { var c = ws.getCell(row, i + 1); c.value = l; c.font = { bold: true, color: { argb: C_WHITE } }; c.fill = fill(C_HEAD); c.border = box; c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }; }); }
+    function list(values, title, warnOnly) { return { type: 'list', allowBlank: true, formulae: ['"' + values.join(',') + '"'], showErrorMessage: true, errorStyle: warnOnly ? 'warning' : 'stop', errorTitle: title, error: 'เลือก ' + values.join(' / ') }; }
+    var flightKeys = (v.flightRows || []).map(function (f) { return f.key; }).concat(['LADY']);
+
+    // ---------- 1) ผู้เล่นและคะแนน ----------
+    var ws = wb.addWorksheet(SHEET.players, { views: [{ state: 'frozen', xSplit: 2, ySplit: 3 }], properties: { tabColor: { argb: 'FFEAB308' } } });
+    var H1 = PCOL.h1, NC = H1 + 18 + 2;   // + OUT IN GROSS
+    var widths = [9, 26, 7, 7, 11, 7, 7, 7]; for (var h = 0; h < 18; h++) widths.push(4.6); widths.push(6, 6, 7);
+    ws.columns = widths.map(function (w) { return { width: w }; });
+    ws.pageSetup = { orientation: 'landscape', paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0, printTitlesRow: '3:3' };
+    ws.mergeCells(1, 1, 1, NC);
+    var title = ws.getCell(1, 1);
+    title.value = '⛳ ' + (t.Name || 'GolfPro Stroke Play') + '   [รหัสงาน ' + (t.EventCode || '') + ']   •   กรอกช่องสีเหลือง (เว้นว่าง = ยังไม่ตี) แล้วบันทึกเป็น .xlsx และอัปโหลดที่หน้ากรรมการ → ไฟล์ Excel';
+    title.font = { bold: true, size: 12, color: { argb: C_WHITE } }; title.fill = fill(C_DARK); title.alignment = { vertical: 'middle' }; ws.getRow(1).height = 26;
+    ws.getCell(2, H1 - 1).value = 'PAR →'; ws.getCell(2, H1 - 1).font = { bold: true, color: { argb: 'FF166534' } }; ws.getCell(2, H1 - 1).alignment = { horizontal: 'right' };
+    for (h = 0; h < 18; h++) {
+      var pc = ws.getCell(2, H1 + h);
+      pc.value = { formula: "'" + SHEET.course + "'!B" + (3 + h), result: par[h] };
+      pc.fill = fill(C_PAR); pc.font = { bold: true, color: { argb: 'FF166534' } }; pc.alignment = { horizontal: 'center' }; pc.border = box;
+    }
+    var cOut = H1 + 18, cIn = cOut + 1, cGr = cOut + 2, L = colLetter;
+    var sum = function (a) { return a.reduce(function (x, y) { return x + y; }, 0); };
+    ws.getCell(2, cOut).value = { formula: 'SUM(' + L(H1) + '2:' + L(H1 + 8) + '2)', result: sum(par.slice(0, 9)) };
+    ws.getCell(2, cIn).value = { formula: 'SUM(' + L(H1 + 9) + '2:' + L(H1 + 17) + '2)', result: sum(par.slice(9)) };
+    ws.getCell(2, cGr).value = { formula: L(cOut) + '2+' + L(cIn) + '2', result: sum(par) };
+    [cOut, cIn, cGr].forEach(function (c) { var x = ws.getCell(2, c); x.fill = fill(C_PAR); x.font = { bold: true, color: { argb: 'FF166534' } }; x.alignment = { horizontal: 'center' }; x.border = box; });
+    var hd = ['PlayerID', 'ชื่อ-นามสกุล', 'เพศ', 'HCP', 'รุ่น', 'ก๊วน', 'ไฟลท์', 'สถานะ'];
+    for (h = 1; h <= 18; h++) hd.push('H' + h);
+    hd.push('OUT', 'IN', 'GROSS');
+    head(ws, 3, hd); ws.getRow(3).height = 20;
+    ws.getCell(3, PCOL.id).note = 'รหัสที่ระบบออกให้ — ห้ามแก้ • ผู้เล่นใหม่เว้นว่าง (ระบบตั้งรหัสให้ตอนอัปโหลด)';
+    ws.getCell(3, PCOL.gender).note = 'ชาย หรือ หญิง';
+    ws.getCell(3, PCOL.hcp).note = 'แต้มต่อที่แจ้ง (ใช้เมื่อระบบแต้มต่อ = DECLARED)\nแต้มต่อบวก เช่น +2 ให้พิมพ์ -2 (ช่องจะแสดงเป็น +2.0)\nเว้นว่าง = ไม่มีแต้มต่อ';
+    ws.getCell(3, PCOL.division).note = 'รุ่นการแข่งขัน เช่น ทั่วไป / Senior / หญิง (ใช้กับรางวัลรายรุ่น)';
+    ws.getCell(3, PCOL.group).note = 'เลขก๊วน (ตัวเลข/ตัวอักษร 1-6 ตัว) ก๊วนละไม่เกิน 5 คน — ก๊วนใหม่ใส่เวลาออกที่แผ่นงาน "ก๊วน"';
+    ws.getCell(3, PCOL.flight).note = 'เว้นว่าง = ระบบจัดไฟลท์ตาม HCP อัตโนมัติ • ใส่เอง = บังคับไฟลท์ (' + flightKeys.join(', ') + ')';
+    ws.getCell(3, PCOL.status).note = 'ว่าง = แข่งปกติ / WD = ถอนตัว / DQ = ตัดสิทธิ์ / NR = ไม่ส่งผล';
+    ws.getCell(3, H1).note = 'จำนวนครั้งที่ตี 1-' + maxS + ' ต่อหลุม — เว้นว่าง = ยังไม่ได้ตี';
+    var gList = groups.map(function (g) { return g.group; });
+    for (var r = 0; r < players.length + blank; r++) {
+      var rowNo = 4 + r, p = players[r], row = ws.getRow(rowNo), sc = p ? (scores[p.id] || {}) : {};
+      var vals = p ? [p.id, p.name, p.gender === 'F' ? 'หญิง' : 'ชาย', p.hcp === '' || p.hcp == null ? null : Number(p.hcp), p.division || null, p.group || null, p.flight || null, p.status || null] : [null, null, null, null, null, null, null, null];
+      for (var c = 0; c < 8; c++) {
+        var cell = row.getCell(c + 1);
+        cell.value = vals[c] === '' ? null : vals[c]; cell.border = box;
+        if (c === 0) { cell.numFmt = '@'; cell.font = { color: { argb: 'FF64748B' } }; cell.fill = fill(C_GRAY); }
+        else cell.fill = fill(C_YEL);
+        if (c === 5) cell.numFmt = '@';
+        if (c === 3) { cell.numFmt = '0.0;"+"0.0;0'; cell.dataValidation = { type: 'decimal', operator: 'between', allowBlank: true, formulae: [-10, 54], showErrorMessage: true, errorTitle: 'HCP', error: 'HCP -10 ถึง 54 (แต้มต่อบวก +2 ให้พิมพ์ -2)' }; }
+        if (c === 2) cell.dataValidation = list(['ชาย', 'หญิง'], 'เพศ');
+        if (c === 5 && gList.length) cell.dataValidation = list(gList, 'ก๊วน', true);
+        if (c === 6) cell.dataValidation = list(flightKeys, 'ไฟลท์', true);
+        if (c === 7) cell.dataValidation = list(['WD', 'DQ', 'NR'], 'สถานะ');
+      }
+      for (h = 0; h < 18; h++) {
+        var sCell = row.getCell(H1 + h), sv = sc[h];
+        sCell.value = sv === undefined || sv === null || sv === '' ? null : Number(sv);
+        sCell.fill = fill(C_YEL); sCell.border = box; sCell.alignment = { horizontal: 'center' };
+        sCell.dataValidation = { type: 'whole', operator: 'between', allowBlank: true, formulae: [1, maxS], showErrorMessage: true, errorTitle: 'คะแนนไม่ถูกต้อง', error: 'ใส่จำนวนเต็ม 1-' + maxS + ' (เว้นว่าง = ยังไม่ตี)' };
+      }
+      var o = 0, i2 = 0, no = 0, ni = 0;
+      for (h = 0; h < 18; h++) { var x = sc[h]; if (x != null && x !== '') { if (h < 9) { o += Number(x); no++; } else { i2 += Number(x); ni++; } } }
+      var rng = function (a, b) { return L(a) + rowNo + ':' + L(b) + rowNo; };
+      row.getCell(cOut).value = { formula: 'IF(COUNT(' + rng(H1, H1 + 8) + ')=0,"",SUM(' + rng(H1, H1 + 8) + '))', result: no ? o : '' };
+      row.getCell(cIn).value = { formula: 'IF(COUNT(' + rng(H1 + 9, H1 + 17) + ')=0,"",SUM(' + rng(H1 + 9, H1 + 17) + '))', result: ni ? i2 : '' };
+      row.getCell(cGr).value = { formula: 'IF(COUNT(' + rng(H1, H1 + 17) + ')=0,"",SUM(' + rng(H1, H1 + 17) + '))', result: no + ni ? o + i2 : '' };
+      [cOut, cIn, cGr].forEach(function (cc) { var y = row.getCell(cc); y.fill = fill(C_GRAY); y.border = box; y.alignment = { horizontal: 'center' }; y.font = { bold: cc === cGr }; });
+    }
+
+    // ---------- 2) ก๊วน ----------
+    var wg = wb.addWorksheet(SHEET.groups, { views: [{ state: 'frozen', ySplit: 1 }], properties: { tabColor: { argb: 'FF0EA5E9' } } });
+    wg.columns = [{ width: 9 }, { width: 11 }, { width: 10 }, { width: 70 }];
+    head(wg, 1, ['ก๊วน', 'เวลาออก', 'หลุมออก', 'คำอธิบาย']);
+    var byG = {}; players.forEach(function (p) { (byG[p.group] = byG[p.group] || []).push(p.name); });
+    for (var gi = 0; gi < groups.length + 20; gi++) {
+      var g = groups[gi], gr = 2 + gi;
+      [g ? g.group : null, g ? g.teeTime || null : null, g ? Number(g.startHole) || 1 : null].forEach(function (val, ci) {
+        var cc = wg.getCell(gr, ci + 1); cc.value = val; cc.fill = fill(C_YEL); cc.border = box; cc.alignment = { horizontal: 'center' }; cc.numFmt = ci === 2 ? '0' : '@';
+      });
+      wg.getCell(gr, 3).dataValidation = { type: 'whole', operator: 'between', allowBlank: true, formulae: [1, 18], showErrorMessage: true, error: 'หลุมออก 1-18 (ปกติ 1 หรือ 10)' };
+      wg.getCell(gr, 4).value = g ? (byG[g.group] || []).join(' • ') : null; wg.getCell(gr, 4).font = { color: { argb: 'FF64748B' } };
+    }
+    wg.getCell(groups.length + 23, 1).value = 'เวลาออกพิมพ์แบบ 07:30 • ก๊วนใหม่ระบบออกรหัสก๊วน 4 หลักให้ (ดูได้ที่หน้ากรรมการ) • รายชื่อในคอลัมน์ D ไว้ดูเท่านั้น ระบบไม่อ่าน';
+    wg.getCell(groups.length + 23, 1).font = { italic: true, color: { argb: 'FF64748B' } };
+
+    // ---------- 3) สนาม ----------
+    var wc = wb.addWorksheet(SHEET.course, { views: [{ state: 'frozen', ySplit: 2 }], properties: { tabColor: { argb: 'FF16A34A' } } });
+    wc.columns = [{ width: 8 }, { width: 8 }, { width: 8 }, { width: 46 }];
+    wc.mergeCells(1, 1, 1, 4);
+    wc.getCell(1, 1).value = 'Par และ SI (Stroke Index: 1 = หลุมยากสุด) — SI ต้องไม่ซ้ำกันครบ 1-18';
+    wc.getCell(1, 1).font = { bold: true, color: { argb: C_WHITE } }; wc.getCell(1, 1).fill = fill(C_DARK);
+    head(wc, 2, ['หลุม', 'Par', 'SI']);
+    for (h = 0; h < 18; h++) {
+      var rr = 3 + h;
+      wc.getCell(rr, 1).value = h + 1; wc.getCell(rr, 1).font = { bold: true }; wc.getCell(rr, 1).alignment = { horizontal: 'center' };
+      wc.getCell(rr, 2).value = par[h]; wc.getCell(rr, 3).value = si[h];
+      [1, 2, 3].forEach(function (c) { wc.getCell(rr, c).border = box; });
+      [2, 3].forEach(function (c) { wc.getCell(rr, c).fill = fill(C_YEL); wc.getCell(rr, c).alignment = { horizontal: 'center' }; });
+      wc.getCell(rr, 2).dataValidation = { type: 'whole', operator: 'between', allowBlank: false, formulae: [3, 6], showErrorMessage: true, error: 'Par ต้องเป็น 3-6' };
+      wc.getCell(rr, 3).dataValidation = { type: 'whole', operator: 'between', allowBlank: false, formulae: [1, 18], showErrorMessage: true, error: 'SI ต้องเป็น 1-18' };
+    }
+    wc.getCell(21, 1).value = 'รวม'; wc.getCell(21, 1).font = { bold: true };
+    wc.getCell(21, 2).value = { formula: 'SUM(B3:B20)', result: sum(par) }; wc.getCell(21, 2).font = { bold: true };
+    wc.getCell(3, 4).value = { formula: 'IF(SUMPRODUCT(--(COUNTIF(C3:C20,ROW($1:$18))=1))=18,"✔ SI ถูกต้อง","⚠ SI ต้องเป็น 1-18 ไม่ซ้ำกัน")', result: '✔ SI ถูกต้อง' };
+    wc.getCell(3, 4).font = { bold: true, color: { argb: 'FF166534' } };
+
+    // ---------- 4) ข้อมูลงาน ----------
+    var wi = wb.addWorksheet(SHEET.info, { properties: { tabColor: { argb: 'FFF59E0B' } } });
+    wi.columns = [{ width: 16 }, { width: 30 }, { width: 90 }];
+    head(wi, 1, ['Key', 'Value', 'คำอธิบาย']);
+    var now = new Date(), stamp = now.getFullYear() + '-' + pad2(now.getMonth() + 1) + '-' + pad2(now.getDate()) + ' ' + pad2(now.getHours()) + ':' + pad2(now.getMinutes());
+    INFO_ROWS.forEach(function (ir, i) {
+      var rr2 = 2 + i, key = ir[0], gray = ['EventCode', 'ScoreVersion', 'DownloadedAt'].indexOf(key) >= 0;
+      var val = key === 'EventCode' ? t.EventCode : key === 'ScoreVersion' ? Number(v.ledgerCount || 0) : key === 'DownloadedAt' ? stamp : (t[key] == null ? '' : t[key]);
+      wi.getCell(rr2, 1).value = key; wi.getCell(rr2, 1).font = { bold: true };
+      var vc = wi.getCell(rr2, 2);
+      vc.value = typeof val === 'number' ? val : String(val);
+      if (typeof val !== 'number') vc.numFmt = '@';
+      vc.fill = fill(gray ? C_GRAY : C_YEL);
+      if (ir[2]) vc.dataValidation = list(ir[2], key);
+      wi.getCell(rr2, 3).value = ir[1]; wi.getCell(rr2, 3).font = { color: { argb: 'FF64748B' } };
+      [1, 2, 3].forEach(function (c) { wi.getCell(rr2, c).border = box; });
+    });
+
+    // ---------- 5) รางวัล ----------
+    var aw = v.awards || {}, rows = v.awardRows || [];
+    var wa = wb.addWorksheet(SHEET.awards, { properties: { tabColor: { argb: 'FFDC2626' } } });
+    wa.columns = [{ width: 22 }, { width: 9 }, { width: 12 }, { width: 26 }, { width: 80 }];
+    head(wa, 1, ['AwardKey', 'เปิด', 'ค่า', 'ชื่อที่แสดง', 'คำอธิบาย']);
+    rows.forEach(function (a, i) {
+      var rr3 = 2 + i, cur = aw[a.key] || {};
+      wa.getCell(rr3, 1).value = a.key; wa.getCell(rr3, 1).font = { color: { argb: 'FF64748B' } };
+      var e = wa.getCell(rr3, 2), vv = wa.getCell(rr3, 3), lb = wa.getCell(rr3, 4);
+      if (a.toggle) { e.value = cur.enabled ? 'TRUE' : 'FALSE'; e.fill = fill(C_YEL); e.dataValidation = list(['TRUE', 'FALSE'], 'เปิดรางวัล'); }
+      else e.fill = fill(C_GRAY);
+      vv.value = cur.value === '' || cur.value == null ? null : cur.value; vv.fill = fill(C_YEL); vv.alignment = { horizontal: 'center' };
+      if (a.key === 'NearestToPin') vv.numFmt = '@';
+      if (a.enums) vv.dataValidation = list(a.enums, a.key);
+      lb.value = a.label ? (cur.label || a.label) : null; lb.fill = fill(a.label ? C_YEL : C_GRAY);
+      wa.getCell(rr3, 5).value = a.desc;
+      [1, 2, 3, 4, 5].forEach(function (c) { wa.getCell(rr3, c).border = box; });
+    });
+    var an = rows.length + 3;
+    wa.getCell(an, 1).value = 'เปิด: TRUE = มีรางวัลนี้ / FALSE = ไม่มี • ค่า: จำนวนอันดับที่ได้รางวัล หรือค่าที่เลือก • รางวัลแจกตามลำดับ Overall → ไฟลท์ → รุ่น → รางวัลอื่น';
+    wa.getCell(an, 1).font = { italic: true, color: { argb: 'FF64748B' } };
+
+    // ---------- 6) รางวัลพิเศษ ----------
+    var wm = wb.addWorksheet(SHEET.manual, { properties: { tabColor: { argb: 'FFF97316' } } });
+    wm.columns = [{ width: 32 }, { width: 32 }, { width: 30 }];
+    head(wm, 1, ['รางวัล', 'ชื่อผู้ได้รับ', 'หมายเหตุ (เช่น ระยะ)']);
+    var slots = (typeof SPE !== 'undefined' ? SPE.manualSlots({ awards: aw }) : []), saved = v.manualAwards || [], mrows = [];
+    slots.forEach(function (n) { var s = saved.filter(function (m) { return m.award === n; })[0] || {}; mrows.push([n, s.winner || '', s.note || '']); });
+    saved.forEach(function (m) { if (slots.indexOf(m.award) < 0) mrows.push([m.award, m.winner, m.note]); });
+    var nameList = players.map(function (p) { return p.name; });
+    for (var mi = 0; mi < Math.max(30, mrows.length + 10); mi++) {
+      var mr = mrows[mi] || ['', '', ''];
+      [0, 1, 2].forEach(function (ci) { var cc = wm.getCell(2 + mi, ci + 1); cc.value = mr[ci] || null; cc.border = box; if (ci > 0) cc.fill = fill(C_YEL); });
+    }
+    wm.getCell(Math.max(30, mrows.length + 10) + 3, 1).value = 'กรอกชื่อผู้ได้รับรางวัลที่ตัดสินในสนาม (Nearest to the Pin, Longest Drive, จับฉลาก ฯลฯ) — เพิ่มแถวเองได้ • ลบทุกแถว = ล้างรางวัลพิเศษ';
+    wm.getCell(Math.max(30, mrows.length + 10) + 3, 1).font = { italic: true, color: { argb: 'FF64748B' } };
+    if (nameList.length) wm.getCell(1, 2).note = 'ชื่อผู้เล่นในงานนี้: ' + nameList.slice(0, 60).join(', ') + (nameList.length > 60 ? ' …' : '');
+
+    // ---------- 7) ไฟลท์ HCP ----------
+    var fl = v.flightRows || [];
+    var wf = wb.addWorksheet(SHEET.flights, { properties: { tabColor: { argb: 'FF8B5CF6' } } });
+    wf.columns = [{ width: 10 }, { width: 18 }, { width: 12 }, { width: 12 }, { width: 10 }, { width: 70 }];
+    head(wf, 1, ['ไฟลท์', 'ชื่อแสดง', 'HCP ต่ำสุด', 'HCP สูงสุด', 'ใช้งาน']);
+    for (var k = 0; k < 8; k++) {
+      var f = fl[k], vals2 = f ? [f.key, f.label, Number(f.min), Number(f.max), f.enabled === false ? 'FALSE' : 'TRUE'] : [null, null, null, null, null];
+      for (var c2 = 0; c2 < 5; c2++) { var cc2 = wf.getCell(2 + k, c2 + 1); cc2.value = vals2[c2]; cc2.fill = fill(C_YEL); cc2.border = box; cc2.alignment = { horizontal: c2 === 1 ? 'left' : 'center' }; }
+      wf.getCell(2 + k, 5).dataValidation = list(['TRUE', 'FALSE'], 'ใช้งาน');
+    }
+    ['ชื่อย่อไฟลท์ A-Z/0-9 ไม่เกิน 6 ตัว (LADY สงวนไว้ให้ผู้หญิง) • สูงสุด 8 ไฟลท์', 'จัดไฟลท์: แถวแรก (เรียงตาม HCP ต่ำสุด) ที่ HCP ≤ HCP สูงสุด — ไฟลท์สุดท้ายนับเป็น "ขึ้นไป"',
+      'ไม่ใช้บางไฟลท์ ให้ตั้ง ใช้งาน = FALSE • ผู้เล่นบังคับไฟลท์เองได้ที่คอลัมน์ "ไฟลท์" ในแผ่นงานผู้เล่น'].forEach(function (s, i) {
+      var c3 = wf.getCell(2 + i, 6); c3.value = '• ' + s; c3.font = { color: { argb: 'FF64748B' } }; c3.alignment = { wrapText: true, vertical: 'top' };
+    });
+
+    // ---------- 8) คำแนะนำ ----------
+    var wh = wb.addWorksheet(SHEET.help, { properties: { tabColor: { argb: 'FF64748B' } } });
+    wh.columns = [{ width: 115 }];
+    [['วิธีใช้ไฟล์นี้ — GolfPro Stroke Play (กรอกคะแนนจากการ์ดกระดาษ)', true], ['', false],
+      ['1) แผ่นงาน "ผู้เล่นและคะแนน": กรอกคะแนนแต่ละหลุมในช่องสีเหลือง (จำนวนเต็ม 1-' + maxS + ') เว้นว่าง = ยังไม่ได้ตี', false],
+      ['   • PlayerID คือรหัสที่ระบบออกให้ ห้ามแก้ — ผู้เล่นใหม่กรอกต่อในแถวว่างโดยเว้น PlayerID ไว้', false],
+      ['   • HCP: แต้มต่อที่ผู้เล่นแจ้ง (แต้มต่อบวก +2 ให้พิมพ์ -2) • ไฟลท์ว่าง = จัดตาม HCP อัตโนมัติ • สถานะ WD/DQ/NR', false],
+      ['2) แผ่นงาน "ก๊วน": เวลาออกและหลุมออกของแต่ละก๊วน (ก๊วนละไม่เกิน 5 คน)', false],
+      ['3) แผ่นงาน "สนาม": Par (3-6) และ SI (1-18 ห้ามซ้ำ)', false],
+      ['4) แผ่นงาน "ข้อมูลงาน": ระบบแต้มต่อ วิธีตัดสินเมื่อเสมอ และ ScorerMode = EXCEL ถ้างานนี้ไม่ใช้การกรอกสด', false],
+      ['5) แผ่นงาน "รางวัล" / "รางวัลพิเศษ" / "ไฟลท์ HCP": ตั้งรางวัล กรอกผู้ได้รางวัลที่ตัดสินในสนาม และช่วง HCP ของไฟลท์', false],
+      ['6) บันทึกเป็น .xlsx → หน้ากรรมการ → แท็บ "ไฟล์ Excel" → เลือกไฟล์ → ตรวจรายการที่เปลี่ยน → ใส่เหตุผล → ยืนยัน', false],
+      ['', false],
+      ['✔ ระบบตรวจทั้งไฟล์ก่อนบันทึก ถ้าผิดแม้จุดเดียวจะไม่บันทึกอะไรเลย และบอกแถว/หลุมที่ต้องแก้', false],
+      ['✔ คะแนนที่เปลี่ยนถูกบันทึก "ต่อท้าย" ในประวัติ (ค่าเดิมยังย้อนดูได้) • อัปโหลดซ้ำได้ไม่จำกัด เช่น หลังจบ 9 หลุม และอีกครั้งตอนจบ 18 หลุม', false],
+      ['✔ ช่องคะแนนที่ว่างในไฟล์ จะไม่ลบคะแนนที่มีอยู่แล้ว (เว้นแต่เลือก "ช่องว่าง = ลบคะแนน" ตอนอัปโหลด) — ผู้เล่นที่ไม่อยู่ในไฟล์จะไม่ถูกลบ', false],
+      ['⚠ ห้ามเปลี่ยนชื่อแผ่นงานและหัวตาราง • ถ้ามีคนกรอกสดหลังดาวน์โหลด ระบบจะเตือนให้ดาวน์โหลดไฟล์ใหม่', false]
+    ].forEach(function (ln, i) { var c4 = wh.getCell(i + 1, 1); c4.value = ln[0]; c4.font = { bold: ln[1], size: ln[1] ? 14 : 11 }; c4.alignment = { wrapText: true }; });
+
+    return wb.xlsx.writeBuffer();
+  }
+  async function download(v) {
+    var buf = await buildBuffer(v), t = v.tournament || {};
+    var blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    var d = new Date(), name = safeFileName((t.EventCode || 'GolfPro') + '_' + (t.Name || '')) + '_' + d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) + '-' + pad2(d.getHours()) + pad2(d.getMinutes()) + '.xlsx';
+    triggerDownload(blob, name);
+    return name;
+  }
+
+  // ======================================================================
+  //  อ่านไฟล์
+  // ======================================================================
+  function norm(v) { return String(v == null ? '' : v).toLowerCase().replace(/[\s\-_.:()\/]+/g, ''); }
+  var ALIAS = {
+    id: ['playerid', 'id', 'รหัส', 'รหัสผู้เล่น'], name: ['ชื่อนามสกุล', 'name', 'ชื่อ', 'ชื่อสกุล', 'player', 'ผู้เล่น', 'ชื่อผู้เล่น'],
+    gender: ['เพศ', 'gender', 'sex'], hcp: ['hcp', 'handicap', 'แต้มต่อ', 'แฮนดิแคป'], division: ['รุ่น', 'division', 'ประเภท'],
+    group: ['ก๊วน', 'group', 'กลุ่ม', 'flightgroup'], flight: ['ไฟลท์', 'flight', 'class'], status: ['สถานะ', 'status']
+  };
+  function holeIndexOf(h) { var m = norm(h).match(/^(?:h|hole|หลุม|หลุมที่)?(\d{1,2})$/); if (!m) return -1; var k = parseInt(m[1], 10); return k >= 1 && k <= 18 ? k - 1 : -1; }
+  function findPlayersHeader(rows) {
+    for (var r = 0; r < Math.min(rows.length, 30); r++) {
+      var map = { holes: [] }, holes = 0;
+      for (var i = 0; i < 18; i++) map.holes.push(-1);
+      (rows[r] || []).forEach(function (cell, c) {
+        var n = norm(cell);
+        Object.keys(ALIAS).forEach(function (k) { if (map[k] === undefined && ALIAS[k].indexOf(n) >= 0) map[k] = c; });
+        var hi = holeIndexOf(cell);
+        if (hi >= 0 && map.holes[hi] === -1 && typeof cell !== 'number') { map.holes[hi] = c; holes++; }
+      });
+      if (map.name !== undefined && holes >= 9) { map.row = r; return map; }
+    }
+    return null;
+  }
+  function dateToStr(v) {
+    if (v instanceof Date && !isNaN(v)) { var d = new Date(v.getTime() + 12 * 3600 * 1000); return d.getUTCFullYear() + '-' + pad2(d.getUTCMonth() + 1) + '-' + pad2(d.getUTCDate()); }
+    if (typeof v === 'number' && v > 20000 && v < 80000) { var dd = new Date(Math.round((v - 25569) * 86400 * 1000)); return dd.getUTCFullYear() + '-' + pad2(dd.getUTCMonth() + 1) + '-' + pad2(dd.getUTCDate()); }
+    var s = String(v == null ? '' : v).trim(), m = s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})$/);
+    if (m) { var y = +m[1]; if (y > 2400) y -= 543; return y + '-' + pad2(+m[2]) + '-' + pad2(+m[3]); }
+    m = s.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/);
+    if (m) { var yy = +m[3]; if (yy > 2400) yy -= 543; return yy + '-' + pad2(+m[2]) + '-' + pad2(+m[1]); }
+    return s;
+  }
+  function timeToStr(v) {
+    if (v instanceof Date && !isNaN(v)) return pad2(v.getHours()) + ':' + pad2(v.getMinutes());
+    if (typeof v === 'number' && v >= 0 && v < 1) { var mins = Math.round(v * 1440); return pad2(Math.floor(mins / 60)) + ':' + pad2(mins % 60); }
+    return String(v == null ? '' : v).trim();
+  }
+  function cellStr(v) {
+    if (v == null) return '';
+    if (v instanceof Date) return dateToStr(v);
+    if (typeof v === 'boolean') return v ? 'TRUE' : 'FALSE';
+    if (typeof v === 'number') return String(v);
+    return String(v).trim();
+  }
+  function ordered(sheets, pref) { return sheets.slice().sort(function (a, b) { return (b.name === pref) - (a.name === pref); }); }
+
+  /** อ่านไฟล์ → { fileName, info, course, groups, players, awards, manual, flights, found } */
+  async function parse(file) {
+    if (!file) throw new Error('ยังไม่ได้เลือกไฟล์');
+    if (file.size > MAX_FILE) throw new Error('ไฟล์ใหญ่เกิน 5 MB');
+    if (!/\.(xlsx|xlsm|xls|csv|ods)$/i.test(file.name)) throw new Error('รองรับเฉพาะไฟล์ .xlsx .xls .ods .csv');
+    await loadLib('xlsx');
+    var buf = await file.arrayBuffer(), wb;
+    try {
+      if (/\.csv$/i.test(file.name)) {
+        var text; try { text = new TextDecoder('utf-8', { fatal: true }).decode(buf); } catch (e1) { text = new TextDecoder('windows-874').decode(buf); }
+        wb = XLSX.read(text.replace(/^﻿/, ''), { type: 'string', cellDates: true, raw: false });
+      } else wb = XLSX.read(buf, { type: 'array', cellDates: true });
+    } catch (e) { throw new Error('เปิดไฟล์ไม่ได้ — ไฟล์อาจเสียหายหรือมีรหัสผ่าน (' + e.message + ')'); }
+    var sheets = wb.SheetNames.map(function (n) { return { name: n, rows: XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: true, defval: '', blankrows: true }) }; });
+    var out = { fileName: file.name, info: {}, course: null, groups: null, players: [], awards: null, manual: null, flights: null, found: {} };
+
+    ordered(sheets, SHEET.players).some(function (s) {
+      var map = findPlayersHeader(s.rows); if (!map) return false;
+      out.found.players = s.name;
+      for (var r = map.row + 1; r < s.rows.length; r++) {
+        var row = s.rows[r] || [], get = function (k) { return map[k] === undefined ? '' : cellStr(row[map[k]]); };
+        var sc = map.holes.map(function (c) { if (c < 0) return ''; var v = row[c]; return v == null ? '' : (typeof v === 'number' ? v : String(v).trim()); });
+        var name = get('name');
+        if (!name && !get('id') && sc.every(function (x) { return x === ''; })) continue;
+        var hv = map.hcp === undefined ? '' : row[map.hcp];
+        out.players.push({ row: r + 1, id: get('id'), name: name, gender: get('gender'), hcp: typeof hv === 'number' ? hv : cellStr(hv), division: get('division'),
+          group: get('group'), flight: get('flight'), status: get('status'), scores: sc });
+      }
+      return true;
+    });
+    ordered(sheets, SHEET.groups).some(function (s) {
+      if (s.name === out.found.players) return false;
+      var h = (s.rows[0] || []).map(norm);
+      var cG = h.indexOf('ก๊วน') >= 0 ? h.indexOf('ก๊วน') : h.indexOf('group'), cT = h.indexOf('เวลาออก') >= 0 ? h.indexOf('เวลาออก') : h.indexOf('teetime'), cS = h.indexOf('หลุมออก') >= 0 ? h.indexOf('หลุมออก') : h.indexOf('starthole');
+      if (cG < 0 || (cT < 0 && cS < 0)) return false;
+      out.found.groups = s.name; out.groups = [];
+      s.rows.slice(1).forEach(function (row, i) {
+        var g = cellStr(row[cG]); if (!g || /^เวลาออกพิมพ์/.test(g)) return;
+        out.groups.push({ row: i + 2, group: g, teeTime: cT >= 0 ? timeToStr(row[cT]) : '', startHole: cS >= 0 ? cellStr(row[cS]) : '' });
+      });
+      return true;
+    });
+    ordered(sheets, SHEET.course).some(function (s) {
+      if (s.name === out.found.players) return false;
+      for (var r = 0; r < Math.min(s.rows.length, 30); r++) {
+        var cPar = -1, cSi = -1, cHole = -1;
+        (s.rows[r] || []).forEach(function (cell, c) { var n = norm(cell); if (n === 'par' && cPar < 0) cPar = c; if ((n === 'si' || n === 'strokeindex' || n === 'index') && cSi < 0) cSi = c; if ((n === 'หลุม' || n === 'hole') && cHole < 0) cHole = c; });
+        if (cPar < 0 || cSi < 0) continue;
+        var par = [], si = [], seq = 0;
+        for (var i = 0; i < 18; i++) { par.push(''); si.push(''); }
+        for (var rr = r + 1; rr < s.rows.length && seq < 30; rr++) {
+          var row = s.rows[rr] || [], no = cHole >= 0 ? parseInt(row[cHole], 10) : seq + 1;
+          if (!(no >= 1 && no <= 18)) { if (cHole >= 0) continue; else break; }
+          seq++; par[no - 1] = row[cPar]; si[no - 1] = row[cSi];
+        }
+        out.course = { par: par, si: si }; out.found.course = s.name; return true;
+      }
+      return false;
+    });
+    ordered(sheets, SHEET.info).some(function (s) {
+      var hits = 0, info = {};
+      s.rows.forEach(function (row) {
+        var k = String(row[0] == null ? '' : row[0]).trim(), key = INFO_KEYS.filter(function (x) { return x.toLowerCase() === k.toLowerCase(); })[0];
+        if (key) { hits++; info[key] = key === 'Date' ? dateToStr(row[1]) : cellStr(row[1]); }
+      });
+      if (hits >= 3) { out.info = info; out.found.info = s.name; return true; }
+      return false;
+    });
+    ordered(sheets, SHEET.awards).some(function (s) {
+      if (norm((s.rows[0] || [])[0]) !== 'awardkey') return false;
+      var aw = {};
+      s.rows.slice(1).forEach(function (row) {
+        var k = cellStr(row[0]); if (!/^[A-Za-z_]+$/.test(k)) return;
+        var o = {}, en = cellStr(row[1]), val = cellStr(row[2]), lb = cellStr(row[3]);
+        if (en !== '') o.enabled = en;
+        if (val !== '' || k === 'NearestToPin' || k === 'LuckyDraw') o.value = val === '' && k === 'LuckyDraw' ? 0 : val;
+        if (lb !== '') o.label = lb;
+        aw[k] = o;
+      });
+      out.awards = aw; out.found.awards = s.name; return true;
+    });
+    ordered(sheets, SHEET.manual).some(function (s) {
+      if (!(s.rows[0] || []).some(function (c) { return String(c).indexOf('ชื่อผู้ได้รับ') >= 0; })) return false;
+      var lst = [];
+      s.rows.slice(1).forEach(function (row) {
+        var a = cellStr(row[0]), w = cellStr(row[1]), n = cellStr(row[2]);
+        if (a.indexOf('กรอกชื่อผู้ได้รับรางวัลที่ตัดสินในสนาม') === 0) return;
+        if (a || w) lst.push({ award: a, winner: w, note: n });
+      });
+      out.manual = lst; out.found.manual = s.name; return true;
+    });
+    ordered(sheets, SHEET.flights).some(function (s) {
+      var h = (s.rows[0] || []).map(norm), cK = h.indexOf('ไฟลท์'), cMin = h.indexOf('hcpต่ำสุด'), cMax = h.indexOf('hcpสูงสุด');
+      if (cK < 0 || cMin < 0 || cMax < 0) return false;
+      var lst = [];
+      s.rows.slice(1).forEach(function (row) {
+        var k = cellStr(row[cK]); if (!k || k.indexOf('•') === 0) return;
+        lst.push({ key: k, label: cellStr(row[h.indexOf('ชื่อแสดง')]), min: cellStr(row[cMin]), max: cellStr(row[cMax]), enabled: h.indexOf('ใช้งาน') >= 0 ? cellStr(row[h.indexOf('ใช้งาน')]) || 'TRUE' : 'TRUE' });
+      });
+      out.flights = lst; out.found.flights = s.name; return true;
+    });
+    if (!out.found.players) throw new Error('ไม่พบตารางผู้เล่นในไฟล์ — ต้องมีหัวตาราง "ชื่อ" และหลุม H1-H18 (แนะนำให้ใช้ไฟล์ที่ดาวน์โหลดจากระบบ)');
+    return out;
+  }
+
+  // ======================================================================
+  //  ตรวจ + เปรียบเทียบกับข้อมูลปัจจุบัน (กติกาเดียวกับเซิร์ฟเวอร์)
+  // ======================================================================
+  function toInt(v) {
+    if (v === null || v === undefined) return null;
+    if (typeof v === 'number') return isFinite(v) && Math.floor(v) === v ? v : NaN;
+    var s = String(v).trim(); if (s === '') return null;
+    return /^\d{1,2}(\.0+)?$/.test(s) ? parseInt(s, 10) : NaN;
+  }
+  function genderOf(g) {
+    var s = String(g == null ? '' : g).trim().toUpperCase();
+    if (!s || /^(M|MALE|MEN|ชาย|ช)$/.test(s)) return 'M';
+    if (/^(F|L|W|FEMALE|LADY|LADIES|WOMEN|หญิง|ญ)$/.test(s)) return 'F';
+    return null;
+  }
+  function hcpOf(v) { var s = String(v == null ? '' : v).trim().replace(/^\+/, '-'); if (s === '') return ''; var n = parseFloat(s); return isNaN(n) || n < -10 || n > 54 ? NaN : n; }
+  function fmtH(n) { return n === '' || n == null ? '–' : n < 0 ? '+' + (-n) : String(n); }
+
+  /** v = ข้อมูลหน้ากรรมการ • คืน { errors, warnings, stats, diff } */
+  function check(parsed, v) {
+    var errors = [], warnings = [], t = v.tournament || {}, maxS = v.maxScore || 20;
+    function err(m) { if (errors.length < 200) errors.push(m); }
+    function warn(m) { if (warnings.length < 100) warnings.push(m); }
+    var info = parsed.info || {};
+    var fc = String(info.EventCode || '').trim().toUpperCase();
+    if (fc && fc !== String(t.EventCode || '').toUpperCase()) err('ไฟล์นี้เป็นของงาน ' + fc + ' ไม่ใช่งานนี้ (' + t.EventCode + ') — ดาวน์โหลดไฟล์ของงานนี้');
+    if (!parsed.found.info) warn('ไม่พบแผ่นงาน "ข้อมูลงาน" — ค่าตั้งของงานไม่เปลี่ยน');
+    if (!parsed.found.course) warn('ไม่พบแผ่นงาน "สนาม" — ใช้ Par/SI เดิม');
+    var fv = parseInt(info.ScoreVersion, 10), cv = Number(v.ledgerCount || 0);
+    if (!isNaN(fv) && cv > fv) warn('มีคะแนนบันทึกเพิ่ม ' + (cv - fv) + ' รายการหลังจากดาวน์โหลดไฟล์นี้ (เช่น จากการกรอกสด) — ตรวจรายการที่เปลี่ยนด้านล่างให้ดี หรือดาวน์โหลดไฟล์ใหม่');
+    if (info.ScorerMode && String(info.ScorerMode).toUpperCase() !== String(t.ScorerMode || 'STAFF').toUpperCase()) warn('ผู้กรอกคะแนนจะเปลี่ยนจาก ' + (t.ScorerMode || 'STAFF') + ' เป็น ' + String(info.ScorerMode).toUpperCase());
+    if (info.HcpMode && String(info.HcpMode).toUpperCase() !== String(t.HcpMode || 'GROSS').toUpperCase()) warn('ระบบแต้มต่อจะเปลี่ยนจาก ' + (t.HcpMode || 'GROSS') + ' เป็น ' + String(info.HcpMode).toUpperCase() + ' — อันดับ Net และรางวัลจะเปลี่ยน');
+    if (info.Date && !/^\d{4}-\d{2}-\d{2}$/.test(info.Date)) err('ข้อมูลงาน: วันที่ "' + info.Date + '" ต้องเป็นรูปแบบ ปปปป-ดด-วว เช่น 2026-12-20');
+    if (parsed.course) {
+      var seen = {};
+      for (var h = 0; h < 18; h++) {
+        var pv = toInt(parsed.course.par[h]), sv = toInt(parsed.course.si[h]);
+        if (pv === null || isNaN(pv) || pv < 3 || pv > 6) err('แผ่นงานสนาม หลุม ' + (h + 1) + ': Par ต้องเป็น 3-6');
+        if (sv === null || isNaN(sv) || sv < 1 || sv > 18) err('แผ่นงานสนาม หลุม ' + (h + 1) + ': SI ต้องเป็น 1-18');
+        else if (seen[sv]) err('แผ่นงานสนาม: SI ' + sv + ' ซ้ำกัน (หลุม ' + seen[sv] + ' และ ' + (h + 1) + ')'); else seen[sv] = h + 1;
+      }
+    }
+    var cur = {}, curScores = v.scores || {}, seenId = {}, clean = [];
+    (v.players || []).forEach(function (p) { cur[p.id.toUpperCase()] = p; });
+    parsed.players.forEach(function (r) {
+      var line = 'แถว ' + r.row + (r.name ? ' (' + r.name + ')' : '') + ': ', scores = [], any = false;
+      for (var h = 0; h < 18; h++) {
+        var raw = r.scores[h], rs = raw == null ? '' : String(raw).trim();
+        if (rs === '' || rs === '-' || rs === '–' || rs === '—') { scores.push(''); continue; }
+        var n = toInt(raw);
+        if (n === null || isNaN(n) || n < 1 || n > maxS) { err(line + 'หลุม ' + (h + 1) + ': "' + rs.slice(0, 10) + '" ไม่ใช่คะแนนที่ถูกต้อง (จำนวนเต็ม 1-' + maxS + ')'); scores.push(''); continue; }
+        any = true; scores.push(n);
+      }
+      if (!r.name) { if (any || r.id) err(line + 'ไม่มีชื่อผู้เล่น'); return; }
+      var id = String(r.id || '').trim().toUpperCase(), p0 = null;
+      if (id) {
+        p0 = cur[id];
+        if (!p0) { err(line + 'PlayerID ' + id + ' ไม่มีในงานนี้ — ผู้เล่นใหม่ให้เว้น PlayerID ว่าง'); return; }
+        if (seenId[id]) { err(line + 'PlayerID ' + id + ' ซ้ำกับ' + seenId[id]); return; }
+        seenId[id] = 'แถว ' + r.row;
+      }
+      var g = genderOf(r.gender); if (!g) err(line + 'เพศต้องเป็น ชาย/หญิง');
+      var hc = hcpOf(r.hcp); if (typeof hc === 'number' && isNaN(hc)) err(line + 'HCP ต้องเป็นตัวเลข -10 ถึง 54');
+      var grp = String(r.group || '').trim().replace(/^ก๊วน\s*/, '');
+      if (!/^[A-Za-z0-9]{1,6}$/.test(grp)) err(line + (grp ? 'เลขก๊วนต้องเป็นตัวเลข/ตัวอักษร 1-6 ตัว' : 'ไม่ได้ใส่ก๊วน'));
+      var fl = String(r.flight || '').trim().toUpperCase().replace(/^FLIGHT\s*/, '');
+      if (fl && !/^[A-Z0-9]{1,6}$/.test(fl)) err(line + 'ไฟลท์ไม่ถูกต้อง');
+      var st = String(r.status || '').trim().toUpperCase(); if (['', 'WD', 'DQ', 'NR'].indexOf(st) < 0) err(line + 'สถานะต้องเป็น WD / DQ / NR หรือว่าง');
+      clean.push({ row: r.row, p0: p0, name: r.name, gender: g, hcp: hc, division: r.division, group: grp, flight: fl, status: st, scores: scores });
+    });
+    var missing = (v.players || []).filter(function (p) { return !seenId[p.id.toUpperCase()]; }).map(function (p) { return { id: p.id, name: p.name, hasScores: Object.keys(curScores[p.id] || {}).length > 0 }; });
+    var count = {};
+    missing.forEach(function (m) { var p = cur[m.id.toUpperCase()]; if (!p.status) count[p.group] = (count[p.group] || 0) + 1; });
+    clean.forEach(function (p) { if (!p.status) count[p.group] = (count[p.group] || 0) + 1; });
+    Object.keys(count).forEach(function (g) { if (count[g] > 5) err('ก๊วน ' + g + ' มีผู้เล่น ' + count[g] + ' คน (สูงสุด 5)'); });
+    if (missing.length + clean.length > (v.maxPlayers || 240)) err('ผู้เล่นรวม ' + (missing.length + clean.length) + ' คน เกินกำหนด ' + (v.maxPlayers || 240) + ' คน');
+    // รายการที่เปลี่ยน
+    var diff = { added: [], edited: [], missing: missing, changes: [], blanks: [] }, stats = { players: clean.length, complete: 0, partial: 0, empty: 0 };
+    clean.forEach(function (p) {
+      var n = p.scores.filter(function (x) { return x !== ''; }).length; if (n === 18) stats.complete++; else if (n) stats.partial++; else stats.empty++;
+      if (!p.p0) { diff.added.push(p.name); p.scores.forEach(function (s, h) { if (s !== '') diff.changes.push({ name: p.name, hole: h + 1, old: '', nw: s }); }); return; }
+      var o = p.p0, f = [];
+      if (o.name !== p.name) f.push('ชื่อ'); if ((o.gender === 'F' ? 'F' : 'M') !== p.gender) f.push('เพศ');
+      if (String(o.hcp) !== String(p.hcp)) f.push('HCP ' + fmtH(o.hcp) + '→' + fmtH(p.hcp));
+      if ((o.division || '') !== (p.division || '')) f.push('รุ่น'); if (o.group !== p.group) f.push('ก๊วน ' + o.group + '→' + p.group);
+      if ((o.flight || '') !== p.flight) f.push('ไฟลท์ ' + (o.flight || 'อัตโนมัติ') + '→' + (p.flight || 'อัตโนมัติ'));
+      if ((o.status || '') !== p.status) f.push('สถานะ ' + (o.status || 'ปกติ') + '→' + (p.status || 'ปกติ'));
+      if (f.length) diff.edited.push(p.name + ': ' + f.join(', '));
+      var cs = curScores[o.id] || {};
+      p.scores.forEach(function (s, h) {
+        var old = cs[h] == null ? '' : cs[h];
+        if (s === '' && old !== '') diff.blanks.push({ name: p.name, hole: h + 1, old: old, nw: '' });
+        else if (s !== '' && String(old) !== String(s)) diff.changes.push({ name: p.name, hole: h + 1, old: old, nw: s });
+      });
+    });
+    if (String(t.RoundLocked).toUpperCase() === 'TRUE' && (diff.changes.length || diff.blanks.length)) warn('รอบนี้ล็อกแล้ว — ถ้ามีคะแนนเปลี่ยน ระบบจะไม่บันทึก (ปลดล็อกรอบที่แท็บภาพรวมก่อน)');
+    return { errors: errors, warnings: warnings, stats: stats, diff: diff };
+  }
+
+  /** แปลงเป็นข้อมูลที่ส่งให้เซิร์ฟเวอร์ (เฉพาะแผ่นงานที่พบในไฟล์) */
+  function toPayload(parsed, fileData) {
+    var info = parsed.info || {}, settings = null;
+    if (parsed.found.info) { settings = {}; SETTING_KEYS.forEach(function (k) { if (info[k] != null && String(info[k]).trim() !== '') settings[k] = String(info[k]).trim(); }); }
+    return {
+      fileName: parsed.fileName, fileData: fileData || '', eventCode: String(info.EventCode || '').trim(),
+      settings: settings, course: parsed.course, flights: parsed.flights, awards: parsed.awards, manualAwards: parsed.manual, groups: parsed.groups,
+      players: parsed.players.map(function (r) { return { row: r.row, id: r.id, name: r.name, gender: r.gender, hcp: r.hcp, division: r.division, group: r.group, flight: r.flight, status: r.status, scores: r.scores.map(function (x) { return x === '' || x == null ? '' : String(x); }) }; })
+    };
+  }
+  function readAsDataURL(file) { return new Promise(function (res, rej) { var r = new FileReader(); r.onload = function () { res(r.result); }; r.onerror = function () { rej(new Error('อ่านไฟล์ไม่สำเร็จ')); }; r.readAsDataURL(file); }); }
+
+  return { buildBuffer: buildBuffer, download: download, parse: parse, check: check, toPayload: toPayload, readAsDataURL: readAsDataURL, SHEET: SHEET };
+})();
+</script>
+
+<script>
 'use strict';
 const EVENT_CODE = (new URLSearchParams(location.search).get('event') || '').toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 40);
 if (!EVENT_CODE) location.replace('index.html');
@@ -734,6 +1313,11 @@ function applyHeader(t) {
   else if (t.Status === 'Live') { st.className = 'pill bg-red-600 text-white'; st.innerHTML = '<span class="live-dot bg-white"></span> LIVE'; }
   else if (t.Status === 'Finished') { st.className = 'pill bg-slate-600 text-white'; st.textContent = 'จบการแข่งขัน'; }
   else { st.className = 'pill bg-slate-700 text-white'; st.textContent = 'ยังไม่เริ่ม'; }
+  // v1.3 งานที่กรรมการกรอกผ่าน Excel: ซ่อนเมนูกรอกคะแนนสด
+  const xl = String(t.ScorerMode).toUpperCase() === 'EXCEL';
+  $$('[data-nav=score]').forEach(a => a.classList.toggle('hidden', xl));
+  $('#sc-excel').classList.toggle('hidden', !xl);
+  if (xl) $('#sc-login').classList.add('hidden'); else if (!SC.group) $('#sc-login').classList.remove('hidden');
 }
 
 function load(silent) {
@@ -1133,7 +1717,7 @@ function renderCM() {
   if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
   renderEditTable();
   renderSettings();
-  renderAwardForm(); renderManualForm();
+  renderAwardForm(); renderManualForm(); renderExcelTab();
   $('#cm-audit').innerHTML = v.audit.map(a => `<div class="py-1.5"><span class="text-slate-400">${esc(a.time)}</span> <b>${esc(a.actor)}</b> <span class="pill bg-slate-100 text-slate-600 !py-0">${esc(a.action)}</span> ${esc(a.detail)}</div>`).join('') || '<div class="text-slate-400">ยังไม่มีประวัติ</div>';
 }
 const AW_UI = [
@@ -1200,7 +1784,7 @@ function renderSettings() {
     field('สถานะงาน', sel('Status', [['Upcoming', 'ยังไม่เริ่ม'], ['Live', 'กำลังแข่ง'], ['Finished', 'จบแล้ว']])) +
     field('ระบบแต้มต่อ', sel('HcpMode', [['GROSS', 'Gross ล้วน (ไม่มีแต้มต่อ)'], ['DECLARED', 'แต้มต่อที่ผู้เล่นแจ้ง (คอลัมน์ HCP)'], ['S36', 'System 36 (คำนวณหลังเล่น)']])) +
     field('สัดส่วนแต้มต่อ % (เฉพาะแต้มที่แจ้ง)', `<input class="inp" type="number" min="1" max="100" data-set="HcpAllowance" value="${esc(t.HcpAllowance || 100)}">`) +
-    field('ผู้กรอกคะแนน', sel('ScorerMode', [['STAFF', 'เจ้าหน้าที่ประจำก๊วน'], ['MARKER', 'ผู้เล่นในก๊วน (Marker)']])) +
+    field('ผู้กรอกคะแนน', sel('ScorerMode', [['STAFF', 'เจ้าหน้าที่ประจำก๊วน (กรอกสด)'], ['MARKER', 'ผู้เล่นในก๊วน (Marker กรอกสด)'], ['EXCEL', 'กรรมการกรอกจากการ์ดผ่านไฟล์ Excel']])) +
     field('แก้ได้หลังส่งการ์ด (นาที)', `<input class="inp" type="number" min="0" max="60" data-set="CorrectionMin" value="${esc(t.CorrectionMin)}">`) +
     field('เสมออันดับ 1 — Gross', sel('TieGross', [['PLAYOFF', 'เพลย์ออฟ'], ['COUNTBACK', 'เทียบการ์ด 9/6/3/1']])) +
     field('เสมออันดับ 1 — Net', sel('TieNet', [['COUNTBACK', 'เทียบการ์ด 9/6/3/1'], ['PLAYOFF', 'เพลย์ออฟ']])) +
@@ -1278,6 +1862,64 @@ function printGroupCards() {
     <div class="text-[11px] mt-1">${(byG[g.group] || []).map(p => esc(p.name)).join(' • ')}</div>
     <div class="text-[9px] text-slate-400 mt-1">สแกน QR → กรอกคะแนนทีละหลุม → จบรอบให้ผู้เล่นยืนยันแล้วกด "ส่งการ์ด" • GolfPro Stroke Play</div></div>`).join('');
   location.hash = '#gcards';
+}
+
+// ---------- ไฟล์ Excel (v1.3) ----------
+function renderExcelTab() {
+  const v = CM.v, xl = String(v.tournament.ScorerMode).toUpperCase() === 'EXCEL';
+  const tip = $('#xl-mode-tip');
+  tip.classList.toggle('hidden', xl);
+  tip.innerHTML = '<i class="fa-solid fa-circle-info"></i> งานนี้เปิดกรอกคะแนนสดรายก๊วนอยู่ — ใช้ไฟล์ Excel ร่วมกันได้ (เช่น เก็บตกการ์ดที่กรอกไม่ทัน) ถ้าทั้งงานใช้การ์ดกระดาษ ให้ตั้ง <b>ผู้กรอกคะแนน = กรรมการกรอกจากการ์ดผ่านไฟล์ Excel</b> ที่แท็บตั้งค่า (หรือ ScorerMode = EXCEL ในไฟล์)';
+  const logs = (v.audit || []).filter(a => a.action === 'EXCEL_UPLOAD');
+  $('#xl-log').innerHTML = logs.map(a => `<div class="py-1.5"><span class="text-slate-400">${esc(a.time)}</span> ${esc(a.detail.replace(/\s*\|\s*https:\/\/\S+/, ''))}</div>`).join('') || '<div class="text-slate-400">ยังไม่มีการอัปโหลด</div>';
+}
+function excelDownload() {
+  Swal.fire({ title: 'กำลังสร้างไฟล์…', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+  SPX.download(CM.v).then(n => { Swal.close(); toast('ดาวน์โหลด ' + n); }).catch(e => { Swal.close(); alertErr(e.message); });
+}
+function xlChangeTable(list, max) {
+  if (!list.length) return '';
+  return '<div class="max-h-48 overflow-y-auto border rounded-lg mt-1"><table class="xl-tbl w-full text-xs"><tr class="text-slate-500"><th>ผู้เล่น</th><th>หลุม</th><th>เดิม</th><th>ใหม่</th></tr>' +
+    list.slice(0, max).map(c => `<tr><td>${esc(c.name)}</td><td>${c.hole}</td><td>${c.old === '' ? '–' : esc(c.old)}</td><td class="font-black">${c.nw === '' ? '<span class="text-red-600">ลบ</span>' : esc(c.nw)}</td></tr>`).join('') +
+    (list.length > max ? `<tr><td colspan="4" class="text-slate-400">… อีก ${list.length - max} ช่อง</td></tr>` : '') + '</table></div>';
+}
+async function excelPick(file) {
+  if (!file) return;
+  let parsed, chk, dataUrl;
+  try {
+    Swal.fire({ title: 'กำลังอ่านไฟล์…', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    parsed = await SPX.parse(file); chk = SPX.check(parsed, CM.v); dataUrl = await SPX.readAsDataURL(file);
+    Swal.close();
+  } catch (e) { Swal.close(); return alertErr(e.message); }
+  const d = chk.diff, list = (a, cls) => a.length ? `<ul class="text-xs text-left list-disc pl-5 ${cls || ''} max-h-40 overflow-y-auto">${a.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
+  if (chk.errors.length) return Swal.fire({ icon: 'error', title: `พบข้อผิดพลาด ${chk.errors.length} จุด`, width: 640, confirmButtonColor: '#0f172a', confirmButtonText: 'ปิด — แก้ในไฟล์แล้วอัปโหลดใหม่',
+    html: '<p class="text-sm mb-2">ยังไม่ได้บันทึกอะไร</p>' + list(chk.errors, 'text-red-700') + (chk.warnings.length ? '<div class="font-bold text-xs mt-2 text-left">ข้อควรทราบ</div>' + list(chk.warnings, 'text-amber-800') : '') });
+  const st = chk.stats, delable = d.missing.filter(m => !m.hasScores);
+  const html = `<div class="text-left text-sm">
+    <div class="grid grid-cols-3 gap-2 text-center mb-3">
+      <div class="rounded-lg bg-slate-100 p-2"><div class="text-xl font-black">${st.players}</div><div class="text-[11px] text-slate-500">ผู้เล่นในไฟล์</div></div>
+      <div class="rounded-lg bg-green-50 p-2"><div class="text-xl font-black text-green-700">${d.changes.length}</div><div class="text-[11px] text-slate-500">ช่องคะแนนใหม่/แก้</div></div>
+      <div class="rounded-lg bg-slate-100 p-2"><div class="text-xl font-black">${st.complete}</div><div class="text-[11px] text-slate-500">ครบ 18 หลุม</div></div></div>
+    ${chk.warnings.length ? '<div class="rounded-lg bg-amber-50 border border-amber-200 p-2 mb-2">' + list(chk.warnings, 'text-amber-900') + '</div>' : ''}
+    ${d.added.length ? `<div class="font-bold text-xs mt-2">ผู้เล่นใหม่ ${d.added.length} คน</div>` + list(d.added) : ''}
+    ${d.edited.length ? `<div class="font-bold text-xs mt-2">แก้ข้อมูลผู้เล่น ${d.edited.length} คน</div>` + list(d.edited) : ''}
+    ${d.changes.length ? '<div class="font-bold text-xs mt-2">คะแนนที่จะบันทึก</div>' + xlChangeTable(d.changes, 300) : '<div class="text-xs text-slate-500 mt-2">ไม่มีคะแนนเปลี่ยน</div>'}
+    ${d.blanks.length ? `<label class="flex gap-2 items-start mt-3 text-xs"><input type="checkbox" id="xl-blank" class="mt-0.5"><span><b>ช่องว่างในไฟล์ = ลบคะแนนเดิม</b> (${d.blanks.length} ช่องที่ในระบบมีคะแนน แต่ในไฟล์ว่าง — ไม่ติ๊ก = คงคะแนนเดิมไว้)</span></label>` + xlChangeTable(d.blanks, 60) : ''}
+    ${d.missing.length ? `<label class="flex gap-2 items-start mt-3 text-xs"><input type="checkbox" id="xl-rm" ${delable.length ? '' : 'disabled'}><span><b>ลบผู้เล่นที่ไม่มีในไฟล์</b> ${delable.length} คนที่ยังไม่มีคะแนน${d.missing.length > delable.length ? ` (อีก ${d.missing.length - delable.length} คนมีคะแนนแล้ว จะไม่ถูกลบ — ใช้สถานะ WD แทน)` : ''}: ${esc(d.missing.map(m => m.name).join(', ')).slice(0, 300)}</span></label>` : ''}
+    <label class="block mt-3"><span class="text-xs font-bold">เหตุผล / ที่มาของคะแนน (บันทึกในประวัติ)</span><input id="xl-reason" class="inp mt-1" maxlength="200" value="กรอกจากการ์ดกระดาษ (ไฟล์ Excel)"></label>
+  </div>`;
+  const x = await Swal.fire({ title: 'ตรวจไฟล์: ' + esc(parsed.fileName), html, width: 680, showCancelButton: true, confirmButtonText: 'ยืนยันบันทึก', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#15803d',
+    preConfirm: () => ({ blankDeletes: !!($('#xl-blank') && $('#xl-blank').checked), removeMissing: !!($('#xl-rm') && $('#xl-rm').checked), reason: $('#xl-reason').value.trim() }) });
+  if (!x.isConfirmed) return;
+  Swal.fire({ title: 'กำลังบันทึก…', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+  api('uploadEventExcel', EVENT_CODE, CM.pin, SPX.toPayload(parsed, dataUrl), x.value).then(r => {
+    if (r.status !== 'success') {
+      if (r.auth) { Swal.close(); CM.pin = ''; sstore('sp_cm_' + EVENT_CODE, null); $('#cm-app').classList.add('hidden'); $('#cm-login').classList.remove('hidden'); return alertErr(r.message); }
+      return Swal.fire({ icon: 'error', title: 'ยังไม่ได้บันทึก', width: 640, confirmButtonColor: '#0f172a', html: '<p class="text-sm mb-2">' + esc(r.message) + '</p>' + list(r.errors || [], 'text-red-700') });
+    }
+    CM.v = r; renderCM(); load(true);
+    Swal.fire({ icon: 'success', title: 'บันทึกจากไฟล์แล้ว', text: r.message.replace(/^บันทึกจากไฟล์แล้ว:\s*/, ''), confirmButtonColor: '#0f172a' });
+  }).catch(e => { Swal.close(); alertErr(e.message); });
 }
 
 // ---------- เส้นทางหน้า ----------
@@ -1363,6 +2005,8 @@ $('#btn-lock').onclick = () => {
     .then(x => x.isConfirmed && cmCall('lockRound', !locked));
 };
 $('#btn-gcards').onclick = printGroupCards;
+$('#xl-dl').onclick = excelDownload;
+$('#xl-file').onchange = e => { const f = e.target.files[0]; e.target.value = ''; excelPick(f); };
 $('#imp-go').onclick = importNow;
 $('#imp-sample').onclick = () => { const s = 'ชื่อ\tเพศ\tHCP\tรุ่น\tก๊วน\tเวลาออก\tหลุมออก\tไฟลท์\nสมชาย ใจดี\tชาย\t12\tทั่วไป\t1\t07:00\t1\t\nสมหญิง รักดี\tหญิง\t20\tหญิง\t1\t\t\t'; try { navigator.clipboard.writeText(s); toast('คัดลอกแล้ว — วางใน Excel ได้เลย'); } catch (e) { $('#imp-text').value = s; } };
 $('#ed-player').onchange = renderEditTable;
