@@ -13,8 +13,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>GolfPro Stroke Play</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js" integrity="sha384-YB/DdIkloKoRpclWB8bNcYXWakt57USgtQPDzvnIDHYU0lasD5eWlXVo1S4ODukY" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800;900&display=swap');
@@ -53,6 +52,7 @@
   .score-val.empty { color:#94a3b8; font-size:18px; }
   .ctab { padding:8px 12px; border-radius:10px; font-weight:800; font-size:13px; color:#475569; white-space:nowrap; }
   .ctab.on { background:var(--navy); color:#fff; }
+  @media (max-width:420px) { header nav .ctab { padding:7px 8px; font-size:12px; } header nav .ctab i { display:none; } }
   .seg button { padding:6px 16px; font-weight:800; font-size:13px; border-radius:9999px; color:#475569; }
   .seg button.on { background:var(--navy); color:#fff; }
   .inp { width:100%; border:1px solid #cbd5e1; border-radius:10px; padding:8px 10px; font-size:15px; background:#fff; }
@@ -76,6 +76,9 @@
   .print-only { display:none; }
   .gcard { break-inside:avoid; border:2px dashed #94a3b8; border-radius:14px; padding:12px; }
 </style>
+<style>/* Tailwind CSS v3 (คอมไพล์ล่วงหน้าโดย tools/build_styles.sh — ห้ามแก้มือ) */
+*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.collapse{visibility:collapse}.fixed{position:fixed}.absolute{position:absolute}.sticky{position:sticky}.inset-0{inset:0}.bottom-2{bottom:.5rem}.left-6{left:1.5rem}.right-6{right:1.5rem}.top-0{top:0}.z-30{z-index:30}.z-40{z-index:40}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:.25rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.ml-5{margin-left:1.25rem}.ml-auto{margin-left:auto}.mt-0\.5{margin-top:.125rem}.mt-1{margin-top:.25rem}.mt-2{margin-top:.5rem}.mt-3{margin-top:.75rem}.mt-4{margin-top:1rem}.mt-5{margin-top:1.25rem}.block{display:block}.inline{display:inline}.flex{display:flex}.table{display:table}.grid{display:grid}.hidden{display:none}.h-10{height:2.5rem}.h-14{height:3.5rem}.h-24{height:6rem}.h-28{height:7rem}.h-5{height:1.25rem}.h-6{height:1.5rem}.max-h-24{max-height:6rem}.max-h-40{max-height:10rem}.max-h-48{max-height:12rem}.max-h-56{max-height:14rem}.max-h-64{max-height:16rem}.max-h-\[92vh\]{max-height:92vh}.min-h-screen{min-height:100vh}.\!w-12{width:3rem!important}.\!w-16{width:4rem!important}.\!w-20{width:5rem!important}.\!w-36{width:9rem!important}.\!w-auto{width:auto!important}.w-10{width:2.5rem}.w-12{width:3rem}.w-14{width:3.5rem}.w-28{width:7rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-8{width:2rem}.w-full{width:100%}.min-w-0{min-width:0}.min-w-\[620px\]{min-width:620px}.min-w-\[640px\]{min-width:640px}.max-w-2xl{max-width:42rem}.max-w-4xl{max-width:56rem}.max-w-5xl{max-width:64rem}.max-w-full{max-width:100%}.max-w-md{max-width:28rem}.max-w-sm{max-width:24rem}.flex-1{flex:1 1 0%}.flex-\[2\]{flex:2}.shrink-0{flex-shrink:0}.table-fixed{table-layout:fixed}.border-collapse{border-collapse:collapse}.cursor-pointer{cursor:pointer}.list-decimal{list-style-type:decimal}.list-disc{list-style-type:disc}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}.grid-cols-\[1\.5rem_1fr\]{grid-template-columns:1.5rem 1fr}.grid-cols-\[1\.5rem_1fr_5rem\]{grid-template-columns:1.5rem 1fr 5rem}.grid-cols-\[1fr_10rem\]{grid-template-columns:1fr 10rem}.grid-cols-\[1fr_1fr\]{grid-template-columns:1fr 1fr}.grid-cols-\[3\.2rem_1fr_3\.6rem_3rem_3\.4rem\]{grid-template-columns:3.2rem 1fr 3.6rem 3rem 3.4rem}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:.25rem}.gap-1\.5{gap:.375rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.space-y-1>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.25rem*var(--tw-space-y-reverse))}.space-y-1\.5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.375rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.375rem*var(--tw-space-y-reverse))}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.5rem*var(--tw-space-y-reverse))}.space-y-5>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem*var(--tw-space-y-reverse))}.divide-y>:not([hidden])~:not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px*(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px*var(--tw-divide-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis}.truncate,.whitespace-nowrap{white-space:nowrap}.rounded{border-radius:.25rem}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:.5rem}.rounded-xl{border-radius:.75rem}.rounded-t-3xl{border-top-left-radius:1.5rem;border-top-right-radius:1.5rem}.border{border-width:1px}.border-b-4{border-bottom-width:4px}.border-t{border-top-width:1px}.border-amber-200{--tw-border-opacity:1;border-color:rgb(253 230 138/var(--tw-border-opacity,1))}.border-amber-300{--tw-border-opacity:1;border-color:rgb(252 211 77/var(--tw-border-opacity,1))}.border-green-200{--tw-border-opacity:1;border-color:rgb(187 247 208/var(--tw-border-opacity,1))}.border-red-300{--tw-border-opacity:1;border-color:rgb(252 165 165/var(--tw-border-opacity,1))}.border-red-400{--tw-border-opacity:1;border-color:rgb(248 113 113/var(--tw-border-opacity,1))}.border-yellow-300{--tw-border-opacity:1;border-color:rgb(253 224 71/var(--tw-border-opacity,1))}.border-yellow-500{--tw-border-opacity:1;border-color:rgb(234 179 8/var(--tw-border-opacity,1))}.\!bg-transparent{background-color:transparent!important}.\!bg-white{--tw-bg-opacity:1!important;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))!important}.bg-amber-100{--tw-bg-opacity:1;background-color:rgb(254 243 199/var(--tw-bg-opacity,1))}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235/var(--tw-bg-opacity,1))}.bg-black\/60{background-color:rgba(0,0,0,.6)}.bg-green-100{--tw-bg-opacity:1;background-color:rgb(220 252 231/var(--tw-bg-opacity,1))}.bg-green-50{--tw-bg-opacity:1;background-color:rgb(240 253 244/var(--tw-bg-opacity,1))}.bg-green-600{--tw-bg-opacity:1;background-color:rgb(22 163 74/var(--tw-bg-opacity,1))}.bg-orange-100{--tw-bg-opacity:1;background-color:rgb(255 237 213/var(--tw-bg-opacity,1))}.bg-red-100{--tw-bg-opacity:1;background-color:rgb(254 226 226/var(--tw-bg-opacity,1))}.bg-red-50{--tw-bg-opacity:1;background-color:rgb(254 242 242/var(--tw-bg-opacity,1))}.bg-red-500\/20{background-color:rgba(239,68,68,.2)}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38/var(--tw-bg-opacity,1))}.bg-sky-100{--tw-bg-opacity:1;background-color:rgb(224 242 254/var(--tw-bg-opacity,1))}.bg-slate-100{--tw-bg-opacity:1;background-color:rgb(241 245 249/var(--tw-bg-opacity,1))}.bg-slate-200{--tw-bg-opacity:1;background-color:rgb(226 232 240/var(--tw-bg-opacity,1))}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252/var(--tw-bg-opacity,1))}.bg-slate-600{--tw-bg-opacity:1;background-color:rgb(71 85 105/var(--tw-bg-opacity,1))}.bg-slate-700{--tw-bg-opacity:1;background-color:rgb(51 65 85/var(--tw-bg-opacity,1))}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59/var(--tw-bg-opacity,1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42/var(--tw-bg-opacity,1))}.bg-slate-950{--tw-bg-opacity:1;background-color:rgb(2 6 23/var(--tw-bg-opacity,1))}.bg-violet-100{--tw-bg-opacity:1;background-color:rgb(237 233 254/var(--tw-bg-opacity,1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.bg-yellow-100{--tw-bg-opacity:1;background-color:rgb(254 249 195/var(--tw-bg-opacity,1))}.bg-yellow-50{--tw-bg-opacity:1;background-color:rgb(254 252 232/var(--tw-bg-opacity,1))}.bg-yellow-500{--tw-bg-opacity:1;background-color:rgb(234 179 8/var(--tw-bg-opacity,1))}.object-contain{-o-object-fit:contain;object-fit:contain}.object-cover{-o-object-fit:cover;object-fit:cover}.\!p-1\.5{padding:.375rem!important}.\!p-2{padding:.5rem!important}.p-0{padding:0}.p-1{padding:.25rem}.p-2{padding:.5rem}.p-2\.5{padding:.625rem}.p-3{padding:.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.\!px-1\.5{padding-left:.375rem!important;padding-right:.375rem!important}.\!px-2{padding-left:.5rem!important;padding-right:.5rem!important}.\!px-3{padding-left:.75rem!important;padding-right:.75rem!important}.\!py-0{padding-top:0!important;padding-bottom:0!important}.\!py-1{padding-top:.25rem!important;padding-bottom:.25rem!important}.\!py-1\.5{padding-top:.375rem!important;padding-bottom:.375rem!important}.\!py-3{padding-top:.75rem!important;padding-bottom:.75rem!important}.px-1{padding-left:.25rem;padding-right:.25rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-1\.5{padding-top:.375rem;padding-bottom:.375rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-5{padding-top:1.25rem;padding-bottom:1.25rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.pb-1{padding-bottom:.25rem}.pb-2{padding-bottom:.5rem}.pb-24{padding-bottom:6rem}.pl-5{padding-left:1.25rem}.pl-8{padding-left:2rem}.pr-1{padding-right:.25rem}.pt-3{padding-top:.75rem}.pt-8{padding-top:2rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.font-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace}.\!text-\[12px\]{font-size:12px!important}.\!text-\[9px\]{font-size:9px!important}.\!text-xl{font-size:1.25rem!important;line-height:1.75rem!important}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-5xl{font-size:3rem;line-height:1}.text-\[\.7em\]{font-size:.7em}.text-\[1\.55vw\]{font-size:1.55vw}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-\[14px\]{font-size:14px}.text-\[15px\]{font-size:15px}.text-\[8px\]{font-size:8px}.text-\[9px\]{font-size:9px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:.75rem;line-height:1rem}.\!font-normal{font-weight:400!important}.font-black{font-weight:900}.font-bold{font-weight:700}.font-normal{font-weight:400}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.italic{font-style:italic}.leading-none{line-height:1}.leading-relaxed{line-height:1.625}.leading-tight{line-height:1.25}.tracking-\[\.3em\]{letter-spacing:.3em}.\!text-red-600{--tw-text-opacity:1!important;color:rgb(220 38 38/var(--tw-text-opacity,1))!important}.text-amber-700{--tw-text-opacity:1;color:rgb(180 83 9/var(--tw-text-opacity,1))}.text-amber-800{--tw-text-opacity:1;color:rgb(146 64 14/var(--tw-text-opacity,1))}.text-amber-900{--tw-text-opacity:1;color:rgb(120 53 15/var(--tw-text-opacity,1))}.text-blue-700{--tw-text-opacity:1;color:rgb(29 78 216/var(--tw-text-opacity,1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105/var(--tw-text-opacity,1))}.text-green-400{--tw-text-opacity:1;color:rgb(74 222 128/var(--tw-text-opacity,1))}.text-green-600{--tw-text-opacity:1;color:rgb(22 163 74/var(--tw-text-opacity,1))}.text-green-700{--tw-text-opacity:1;color:rgb(21 128 61/var(--tw-text-opacity,1))}.text-green-800{--tw-text-opacity:1;color:rgb(22 101 52/var(--tw-text-opacity,1))}.text-orange-800{--tw-text-opacity:1;color:rgb(154 52 18/var(--tw-text-opacity,1))}.text-pink-500{--tw-text-opacity:1;color:rgb(236 72 153/var(--tw-text-opacity,1))}.text-red-100{--tw-text-opacity:1;color:rgb(254 226 226/var(--tw-text-opacity,1))}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113/var(--tw-text-opacity,1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68/var(--tw-text-opacity,1))}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38/var(--tw-text-opacity,1))}.text-red-700{--tw-text-opacity:1;color:rgb(185 28 28/var(--tw-text-opacity,1))}.text-red-800{--tw-text-opacity:1;color:rgb(153 27 27/var(--tw-text-opacity,1))}.text-sky-300{--tw-text-opacity:1;color:rgb(125 211 252/var(--tw-text-opacity,1))}.text-sky-800{--tw-text-opacity:1;color:rgb(7 89 133/var(--tw-text-opacity,1))}.text-slate-200{--tw-text-opacity:1;color:rgb(226 232 240/var(--tw-text-opacity,1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225/var(--tw-text-opacity,1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184/var(--tw-text-opacity,1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139/var(--tw-text-opacity,1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105/var(--tw-text-opacity,1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85/var(--tw-text-opacity,1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59/var(--tw-text-opacity,1))}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42/var(--tw-text-opacity,1))}.text-violet-800{--tw-text-opacity:1;color:rgb(91 33 182/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.text-yellow-400{--tw-text-opacity:1;color:rgb(250 204 21/var(--tw-text-opacity,1))}.text-yellow-500{--tw-text-opacity:1;color:rgb(234 179 8/var(--tw-text-opacity,1))}.text-yellow-600{--tw-text-opacity:1;color:rgb(202 138 4/var(--tw-text-opacity,1))}.text-yellow-800{--tw-text-opacity:1;color:rgb(133 77 14/var(--tw-text-opacity,1))}.underline{text-decoration-line:underline}.accent-slate-900{accent-color:#0f172a}.opacity-40{opacity:.4}.opacity-60{opacity:.6}.shadow-sm{--tw-shadow:0 1px 2px 0 rgba(0,0,0,.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.ring-yellow-400{--tw-ring-opacity:1;--tw-ring-color:rgb(250 204 21/var(--tw-ring-opacity,1))}.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.hover\:bg-slate-50:hover{--tw-bg-opacity:1;background-color:rgb(248 250 252/var(--tw-bg-opacity,1))}.hover\:ring-2:hover{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}@media (min-width:640px){.sm\:block{display:block}.sm\:inline-block{display:inline-block}.sm\:max-w-2xl{max-width:42rem}.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.sm\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}.sm\:grid-cols-\[1\.5rem_1fr_14rem_5rem\]{grid-template-columns:1.5rem 1fr 14rem 5rem}.sm\:grid-cols-\[14rem_1fr_9rem_2rem\]{grid-template-columns:14rem 1fr 9rem 2rem}.sm\:grid-cols-\[4rem_1fr_4\.5rem_4rem_4rem_4rem\]{grid-template-columns:4rem 1fr 4.5rem 4rem 4rem 4rem}.sm\:items-center{align-items:center}.sm\:rounded-3xl{border-radius:1.5rem}.sm\:p-4{padding:1rem}.sm\:py-10{padding-top:2.5rem;padding-bottom:2.5rem}.sm\:text-3xl{font-size:1.875rem;line-height:2.25rem}.sm\:text-base{font-size:1rem;line-height:1.5rem}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}.sm\:text-xs{font-size:.75rem;line-height:1rem}}</style>
+
 </head>
 <body class="min-h-screen">
 <!-- ===== หัวหน้า ===== -->
@@ -94,10 +97,11 @@
     <a href="#awards" data-nav="awards" class="ctab text-slate-200"><i class="fa-solid fa-trophy"></i> รางวัล</a>
     <a href="#score" data-nav="score" class="ctab text-slate-200"><i class="fa-solid fa-pen-to-square"></i> กรอกคะแนน</a>
     <a href="#committee" data-nav="committee" class="ctab text-slate-200"><i class="fa-solid fa-user-shield"></i> กรรมการ</a>
-    <a href="#tv" data-nav="tv" class="ctab text-slate-200"><i class="fa-solid fa-tv"></i> จอ TV</a>
+    <a href="#tv" data-nav="tv" class="ctab text-slate-200 hidden sm:inline-block"><i class="fa-solid fa-tv"></i> จอ TV</a>
   </nav>
 </header>
 
+<div id="ver-banner" class="hidden bg-red-600 text-white text-sm font-bold text-center px-3 py-2"></div>
 <main class="max-w-5xl mx-auto px-3 py-3 pb-24">
   <div id="trial-banner" class="hidden mb-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs p-2.5"></div>
   <img id="ev-banner" class="hidden w-full max-h-56 object-cover rounded-2xl mb-3 bg-white" alt="แบนเนอร์งาน">
@@ -143,11 +147,11 @@
     </div>
     <div id="sc-login" class="card p-5 max-w-sm mx-auto">
       <h2 class="font-black text-lg mb-1"><i class="fa-solid fa-pen-to-square text-yellow-500"></i> <span id="sc-login-title">กรอกคะแนนประจำก๊วน</span></h2>
-      <p class="text-xs text-slate-500 mb-4" id="sc-login-hint">ใส่เลขก๊วนและรหัสก๊วน 4 หลัก (อยู่บนบัตรก๊วนที่กรรมการแจก หรือสแกน QR บนบัตร)</p>
+      <p class="text-xs text-slate-500 mb-4" id="sc-login-hint">ใส่เลขก๊วนและรหัสก๊วน (อยู่บนบัตรก๊วนที่กรรมการแจก หรือสแกน QR บนบัตร)</p>
       <label class="text-xs font-bold text-slate-600">เลขก๊วน</label>
       <input id="sc-g" class="inp mb-3 text-center text-2xl font-black" inputmode="numeric" maxlength="6" autocomplete="off">
       <label class="text-xs font-bold text-slate-600">รหัสก๊วน</label>
-      <input id="sc-p" class="inp mb-4 text-center text-2xl font-black tracking-[.4em]" inputmode="numeric" maxlength="4" type="password" autocomplete="off">
+      <input id="sc-p" class="inp mb-4 text-center text-2xl font-black tracking-[.3em]" inputmode="numeric" maxlength="8" type="password" autocomplete="off">
       <button id="sc-go" class="btn btn-dark w-full text-base"><i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบก๊วน</button>
     </div>
     <div id="sc-app" class="hidden">
@@ -333,6 +337,7 @@
     <div class="no-print flex gap-2 mb-3"><button class="btn btn-dark" onclick="window.print()"><i class="fa-solid fa-print"></i> พิมพ์</button><a href="#committee" class="btn btn-light">กลับ</a></div>
     <div id="gcards" class="grid grid-cols-2 gap-3"></div>
   </section>
+  <footer class="no-print text-center text-[11px] text-slate-400 pt-8">GolfPro Stroke Play <span id="sys-ver">v1.3.1</span> • GolfPro36</footer>
 </main>
 
 <!-- ===== จอ TV ===== -->
@@ -608,7 +613,7 @@ var SPE = (function () {
   // ======================================================================
   var AWARD_DEF = { OverallLowGross: [true, 1, 'Overall Low Gross'], OverallLowNet: [true, 1, 'Overall Low Net'], Overall_IncludeLady: [false, '', ''],
     FlightLowGross: [false, 1, 'Low Gross'], FlightLowNet: [true, 2, 'Low Net'], DivisionLowGross: [false, 1, 'Low Gross'], DivisionLowNet: [false, 1, 'Low Net'],
-    BoobyPrize: [true, '', 'Booby Prize'], Booby_Scope: [false, 'ALL', ''], Booby_Rule: [false, '2ND', ''], MostBirdies: [false, 1, 'Most Birdies'], MostPars: [false, 1, 'Most Pars'],
+    BoobyPrize: [true, '', 'Booby Prize'], Booby_Scope: [false, 'ALL', ''], Booby_Rule: [false, '2ND', ''], Booby_Priority: [false, 'FLIGHT', ''], MostBirdies: [false, 1, 'Most Birdies'], MostPars: [false, 1, 'Most Pars'],
     TeamLowGross: [false, 1, 'ก๊วนชนะเลิศ Gross'], TeamLowNet: [false, 1, 'ก๊วนชนะเลิศ Net'], Team_BestN: [false, 3, ''], OnePrizePerPerson: [true, '', ''],
     NearestToPin: [false, '', 'Nearest to the Pin'], LongestDrive: [false, 'NONE', 'Longest Drive'], LongestPutt: [false, '', 'Longest Putt'], SpiritAward: [false, '', 'รางวัลน้ำใจนักกีฬา'], LuckyDraw: [false, 0, 'Lucky Draw'] };
   function awardCfg(data) {
@@ -637,12 +642,20 @@ var SPE = (function () {
     function fmtN(r) { return r.complete ? 'Net ' + r.net + ' (HCP ' + r.hcpLabel + ')' : 'Net ' + fmtToPar(r.netToPar) + ' • Thru ' + r.thru; }
     function ranked(key, title, sr, kind, places) {
       var list = kind === 'net' ? sr.net : sr.gross, ent = [];
+      // v1.3.1 อันดับ 1 Overall เสมอแบบเพลย์ออฟที่ยังไม่ได้ตัดสิน: พักรางวัลไว้ ("รอเพลย์ออฟ") และกันทุกคนที่เสมอไว้ก่อน
+      //        (เดิมแจกตาม countback ไปเลย → ถ้าคนแพ้ countback ชนะเพลย์ออฟ รางวัลถัดไปจะผิดคน)
+      var po = /^Overall/.test(key) ? (kind === 'net' ? sr.playoffNet : sr.playoffGross) : null;
+      if (po && !po.winner && po.players.length > 1) {
+        var tied = po.players.map(function (id) { return sr.byId[id]; }).filter(Boolean);
+        ent.push({ place: 1, id: '', name: 'รอผลเพลย์ออฟ', pending: true, value: tied.map(function (r) { return r.name; }).join(' / ') + ' — ' + (kind === 'net' ? fmtN(tied[0]) : fmtG(tied[0])), tie: false, ids: po.players.slice() });
+        po.players.forEach(function (id) { used[id] = 1; });
+      }
       for (var i = 0; i < list.length && ent.length < places; i++) {
         var r = list[i]; if (!ok(r) || (one && used[r.id])) continue;
         ent.push({ place: ent.length + 1, id: r.id, name: r.name, pos: r['pos_' + kind], value: kind === 'net' ? fmtN(r) : fmtG(r), tie: !!r['tie_' + kind], cb: r['cbBy_' + kind] || '' });
       }
-      ent.forEach(function (e) { used[e.id] = 1; });
-      if (ent.length) sections.push({ key: key, title: title, kind: kind, entries: ent });
+      ent.forEach(function (e) { if (e.id) used[e.id] = 1; });
+      if (ent.length) sections.push({ key: key, title: title, kind: kind, entries: ent, pending: ent.some(function (e) { return e.pending; }) });
     }
     var net = res.mode !== 'GROSS';
     var lf = res.flights.some(function (f) { return f.key === 'LADY'; });
@@ -651,6 +664,25 @@ var SPE = (function () {
     if (c.OverallLowGross.enabled || (net && c.OverallLowNet.enabled)) allSub = sub(overallPool);
     if (c.OverallLowGross.enabled) ranked('OverallLowGross', c.OverallLowGross.label, allSub, 'gross', +c.OverallLowGross.value || 1);
     if (net && c.OverallLowNet.enabled) ranked('OverallLowNet', c.OverallLowNet.label, allSub, 'net', +c.OverallLowNet.value || 1);
+    function doBooby() {
+      if (c.BoobyPrize.enabled && !doBooby.done) {
+        doBooby.done = true;
+        var scope = upper(c.Booby_Scope.value), rule = upper(c.Booby_Rule.value) === 'LAST' ? 0 : 1;
+        var pools = scope === 'SEPARATE' ? [['ชาย', function (r) { return !lady(r); }], ['หญิง', lady]] : scope === 'MEN' ? [['', function (r) { return !lady(r); }]] : scope === 'LADY' ? [['', lady]] : [['', function () { return true; }]];
+        pools.forEach(function (pl) {
+          var worst = res.gross.filter(function (r) { return ok(r) && r.complete && pl[1](r); }).slice().reverse();
+          var cand = worst.filter(function (r) { return !(one && used[r.id]); });
+          var w = worst[rule]; if (w && one && used[w.id]) w = cand[rule] || null;
+          if (!w) return;
+          used[w.id] = 1;
+          sections.push({ key: 'BoobyPrize' + (pl[0] ? ':' + pl[0] : ''), title: c.BoobyPrize.label + (pl[0] ? ' ' + pl[0] : '') + (rule ? ' (รองบ๊วย)' : ' (บ๊วย)'), kind: 'booby',
+            entries: [{ place: 1, id: w.id, name: w.name, value: fmtG(w), tie: !!w.tie_gross }] });
+        });
+      }
+    }
+    // v1.3.1 Booby_Priority: FLIGHT (ค่าเริ่มต้น) = แจกรางวัลไฟลท์/รุ่นก่อน แล้ว Booby จากคนที่ยังไม่ได้รางวัล • BOOBY = Booby ก่อน แล้วคนได้ Booby หมดสิทธิ์รางวัลไฟลท์
+    var boobyFirst = upper(c.Booby_Priority.value) === 'BOOBY';
+    if (boobyFirst) doBooby();
     res.flights.forEach(function (f) {
       if (!c.FlightLowGross.enabled && !(net && c.FlightLowNet.enabled)) return;
       var sr = sub(function (r) { return r && r.flight === f.key; });
@@ -680,19 +712,7 @@ var SPE = (function () {
     }
     counted('MostBirdies', function (d) { return d <= -1; });
     counted('MostPars', function (d) { return d === 0; });
-    if (c.BoobyPrize.enabled) {
-      var scope = upper(c.Booby_Scope.value), rule = upper(c.Booby_Rule.value) === 'LAST' ? 0 : 1;
-      var pools = scope === 'SEPARATE' ? [['ชาย', function (r) { return !lady(r); }], ['หญิง', lady]] : scope === 'MEN' ? [['', function (r) { return !lady(r); }]] : scope === 'LADY' ? [['', lady]] : [['', function () { return true; }]];
-      pools.forEach(function (pl) {
-        var worst = res.gross.filter(function (r) { return ok(r) && r.complete && pl[1](r); }).slice().reverse();
-        var cand = worst.filter(function (r) { return !(one && used[r.id]); });
-        var w = worst[rule]; if (w && one && used[w.id]) w = cand[rule] || null;
-        if (!w) return;
-        used[w.id] = 1;
-        sections.push({ key: 'BoobyPrize' + (pl[0] ? ':' + pl[0] : ''), title: c.BoobyPrize.label + (pl[0] ? ' ' + pl[0] : '') + (rule ? ' (รองบ๊วย)' : ' (บ๊วย)'), kind: 'booby',
-          entries: [{ place: 1, id: w.id, name: w.name, value: fmtG(w), tie: !!w.tie_gross }] });
-      });
-    }
+    if (!boobyFirst) doBooby();
     // ก๊วน
     var N = Math.max(1, Math.min(5, parseInt(c.Team_BestN.value, 10) || 3));
     [['TeamLowGross', 'gross'], ['TeamLowNet', 'net']].forEach(function (tk) {
@@ -1289,9 +1309,24 @@ const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
 function sstore(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
+const PAGE_VERSION = 'v1.3.1';
+const API_TIMEOUT_MS = 45000;
+/** v1.3.1 ตั้งเวลาหมดเวลา — คำขอที่ค้าง (เน็ตสนามช้า) ไม่ทำให้หน้าค้าง; คำขอบันทึกคะแนนมี opId กันซ้ำ ส่งใหม่ได้ปลอดภัย */
 function api(fn, ...args) {
-  return new Promise((ok, no) => google.script.run.withSuccessHandler(ok).withFailureHandler(no)[fn](...args));
+  return new Promise((ok, no) => {
+    let done = false;
+    const t = setTimeout(() => { if (!done) { done = true; no(new Error('เซิร์ฟเวอร์ตอบช้าเกินไป — ลองใหม่อีกครั้ง')); } }, API_TIMEOUT_MS);
+    google.script.run.withSuccessHandler(v => { if (!done) { done = true; clearTimeout(t); ok(v); } })
+      .withFailureHandler(e => { if (!done) { done = true; clearTimeout(t); no(e); } })[fn](...args);
+  });
 }
+/** v1.3.1 หน้าเว็บ (GitHub) กับเซิร์ฟเวอร์ (Apps Script) คนละเวอร์ชัน → แจ้งเตือนแดง */
+window.addEventListener('gp-sv', e => {
+  const sv = e.detail; if (!sv || sv === PAGE_VERSION) return;
+  const b = document.getElementById('ver-banner'); if (!b) return;
+  b.textContent = `เวอร์ชันหน้าเว็บ (${PAGE_VERSION}) ไม่ตรงกับเซิร์ฟเวอร์ (${sv}) — แจ้งผู้ดูแลให้อัปเดตไฟล์บน GitHub / ปิดแล้วเปิดหน้านี้ใหม่`;
+  b.classList.remove('hidden');
+});
 function toast(msg, icon) { Swal.fire({ toast: true, position: 'top', timer: 2600, showConfirmButton: false, icon: icon || 'success', title: esc(msg) }); }
 function alertErr(msg) { return Swal.fire({ icon: 'error', title: 'ทำรายการไม่สำเร็จ', text: msg, confirmButtonColor: '#0f172a' }); }
 function tpClass(n) { return n == null ? 'text-slate-400' : n < 0 ? 'tp-under' : n > 0 ? 'tp-over' : 'tp-even'; }
@@ -1430,7 +1465,7 @@ function renderAwards() {
   const html = A.sections.map(sec => card(sec.title, sec.entries.map(e => `<div class="flex items-center gap-3 px-3 py-2 ${e.id ? 'cursor-pointer hover:bg-slate-50' : ''}" ${e.id ? `data-awpid="${esc(e.id)}"` : ''}>
       <div class="text-2xl w-8 text-center">${sec.entries.length > 1 || sec.kind === 'gross' || sec.kind === 'net' ? (MEDAL[e.place - 1] || '<span class="text-base font-black text-slate-500">' + e.place + '</span>') : '🏅'}</div>
       <div class="min-w-0 flex-1"><div class="font-bold truncate">${esc(e.name)}</div><div class="text-[11px] text-slate-500">${esc(e.value)}${e.members ? ' • ' + esc(e.members) : ''}${e.cb ? ' • CB ' + esc(e.cb) : ''}</div></div>
-      ${e.tie && A.final ? '<span class="pill bg-yellow-100 text-yellow-800">เสมอ — กรรมการตัดสิน</span>' : ''}</div>`).join(''), sec.kind === 'team' ? 'fa-people-group' : sec.kind === 'booby' ? 'fa-face-grin-squint' : 'fa-trophy')).join('');
+      ${e.pending ? '<span class="pill bg-orange-100 text-orange-800">รอผลเพลย์ออฟ</span>' : e.tie && A.final ? '<span class="pill bg-yellow-100 text-yellow-800">เสมอ — กรรมการตัดสิน</span>' : ''}</div>`).join(''), sec.kind === 'team' ? 'fa-people-group' : sec.kind === 'booby' ? 'fa-face-grin-squint' : 'fa-trophy')).join('');
   const man = {}; (DATA.manualAwards || []).forEach(m => { man[m.award] = m; });
   const names = A.manualSlots.concat((DATA.manualAwards || []).map(m => m.award).filter(a => !A.manualSlots.includes(a)));
   const manHtml = names.length ? card('รางวัลพิเศษ', names.map(n => { const m = man[n] || {}; return `<div class="flex items-center gap-3 px-3 py-2"><div class="text-xl w-8 text-center">🎖️</div><div class="min-w-0 flex-1"><div class="text-[11px] font-bold text-slate-500">${esc(n)}</div><div class="font-bold truncate">${m.winner ? esc(m.winner) : '<span class="text-slate-300">รอประกาศ</span>'}</div></div><div class="text-xs text-slate-500">${esc(m.note || '')}</div></div>`; }).join(''), 'fa-star') : '';
@@ -1511,7 +1546,7 @@ function scorerLogin(g, p, silent) {
   return api('scorerLogin', EVENT_CODE, g, p).then(r => {
     Swal.close();
     if (r.status !== 'success') { sstore('sp_sc_' + EVENT_CODE, null); if (!silent || r.message) alertErr(r.message); return; }
-    SC.group = String(g); SC.pin = String(p);
+    SC.group = String(g); SC.pin = String(r.token || p);   // v1.3.1 เก็บตั๋ว ไม่เก็บรหัสก๊วนจริง
     sstore('sp_sc_' + EVENT_CODE, JSON.stringify({ g: SC.group, p: SC.pin }));
     loadQueue(); applyView(r, true);
     $('#sc-login').classList.add('hidden'); $('#sc-app').classList.remove('hidden');
@@ -1519,6 +1554,7 @@ function scorerLogin(g, p, silent) {
     SC.hole = order.find(h => r.players.some(pl => !pl.status && scoreOf(pl.id, h) == null));
     if (SC.hole == null) SC.hole = order[0];
     renderScorer(); flush();
+    if (getUnsent().length) showUnsent('');
   }).catch(e => { Swal.close(); alertErr(e.message || String(e)); });
 }
 /** ใช้ข้อมูลจากเซิร์ฟเวอร์ แล้วซ้อนคิวที่ยังไม่ได้ส่ง (แสดงค่าที่กรอกในเครื่องเสมอ) */
@@ -1543,8 +1579,9 @@ function flush() {
   api('saveGroupScores', EVENT_CODE, SC.group, SC.pin, batch, DEVICE).then(r => {
     SC.sending = false;
     if (r.status !== 'success') {
-      if (r.auth) { SC.queue = []; saveQueue(); logoutScorer(); alertErr(r.message); return; }
-      if (r.closed) { const lost = SC.queue.length; SC.queue = []; saveQueue(); refreshScorer(); alertErr(r.message + (lost ? ` (คะแนนที่ยังไม่ส่ง ${lost} รายการไม่ถูกบันทึก — แจ้งกรรมการ)` : '')); return; }
+      // v1.3.1 ไม่ทิ้งคะแนนในคิวอีกต่อไป
+      if (r.auth) { const n = SC.queue.length; logoutScorer(); alertErr(r.message + (n ? ` — คะแนนที่ยังไม่ส่ง ${n} รายการยังเก็บในเครื่องนี้ เข้าสู่ระบบก๊วนอีกครั้งแล้วจะส่งต่อเอง` : '')); return; }
+      if (r.closed) { keepUnsent(SC.queue); SC.queue = []; saveQueue(); refreshScorer(); showUnsent(r.message); return; }
       throw new Error(r.message);
     }
     const sent = new Set(batch.map(o => o.opId));
@@ -1556,8 +1593,21 @@ function flush() {
     if (SC.queue.length) flush();
   }).catch(e => {
     SC.sending = false; SC.retry = Math.min(SC.retry + 1, 6); renderSync(true);
-    clearTimeout(SC.timer); SC.timer = setTimeout(flush, 3000 * SC.retry);
+    clearTimeout(SC.timer); SC.timer = setTimeout(flush, 3000 * SC.retry + Math.floor(Math.random() * 2000));   // สุ่มหน่วง กันทุกเครื่องยิงพร้อมกัน
   });
+}
+/** v1.3.1 คะแนนที่ส่งไม่ได้เพราะการ์ดปิด/รอบล็อก — เก็บไว้ในเครื่อง ให้เจ้าหน้าที่แจ้งกรรมการ */
+const lostKey = () => 'sp_lost_' + EVENT_CODE + '_' + SC.group;
+function getUnsent() { try { return JSON.parse(store(lostKey()) || '[]'); } catch (e) { return []; } }
+function keepUnsent(ops) { const all = getUnsent(); ops.forEach(o => all.push({ pid: o.pid, hole: o.hole, strokes: o.strokes, at: Date.now() })); store(lostKey(), JSON.stringify(all.slice(-300))); }
+function showUnsent(msg) {
+  const list = getUnsent(); if (!list.length) return;
+  const name = pid => { const p = SC.view && SC.view.players.find(x => x.id === pid); return p ? p.name : pid; };
+  Swal.fire({ icon: 'warning', title: 'คะแนนที่ยังส่งไม่ได้ ' + list.length + ' รายการ', width: 560, confirmButtonText: 'แจ้งกรรมการแล้ว (ล้างรายการ)', showCancelButton: true, cancelButtonText: 'เก็บไว้ก่อน', confirmButtonColor: '#0f172a',
+    html: (msg ? '<p class="text-sm mb-2">' + esc(msg) + '</p>' : '') + '<p class="text-xs text-slate-500 mb-2">แจ้งค่าเหล่านี้ให้กรรมการบันทึกแทน (ถ่ายภาพหน้าจอนี้ได้)</p>' +
+      '<table class="w-full text-base text-left"><tr class="text-slate-500 text-sm"><th class="py-1">ผู้เล่น</th><th>หลุม</th><th>สโตรก</th></tr>' +
+      list.map(o => `<tr class="border-t"><td class="py-1.5">${esc(name(o.pid))}</td><td>${o.hole}</td><td class="font-black text-lg">${o.strokes === '' ? 'ลบ' : esc(o.strokes)}</td></tr>`).join('') + '</table>' })
+    .then(x => { if (x.isConfirmed) { store(lostKey(), null); renderScorer(); } });
 }
 function refreshScorer() { if (!SC.group) return; api('scorerLogin', EVENT_CODE, SC.group, SC.pin).then(r => { if (r.status === 'success') { applyView(r); renderScorer(); } }).catch(() => {}); }
 function logoutScorer() { SC.group = ''; SC.pin = ''; SC.view = null; sstore('sp_sc_' + EVENT_CODE, null); $('#sc-app').classList.add('hidden'); $('#sc-login').classList.remove('hidden'); }
@@ -1658,7 +1708,7 @@ function cmLogin(pin, silent) {
   if (!pin) return;
   return api('getCommitteeData', EVENT_CODE, pin).then(r => {
     if (r.status !== 'success') { sstore('sp_cm_' + EVENT_CODE, null); if (!silent) alertErr(r.message); return; }
-    CM.pin = pin; sstore('sp_cm_' + EVENT_CODE, pin); CM.v = r;
+    CM.pin = r.token || pin; sstore('sp_cm_' + EVENT_CODE, CM.pin); CM.v = r;   // v1.3.1 เก็บตั๋ว ไม่เก็บรหัสกรรมการจริง
     $('#cm-login').classList.add('hidden'); $('#cm-app').classList.remove('hidden'); renderCM();
   }).catch(e => alertErr(e.message));
 }
@@ -1727,6 +1777,7 @@ const AW_UI = [
   ['h', 'รางวัลอื่น'], ['r', 'MostBirdies', 'Most Birdies'], ['r', 'MostPars', 'Most Pars'], ['x', 'BoobyPrize', 'Booby Prize'],
   ['e', 'Booby_Scope', 'Booby: ผู้มีสิทธิ์', [['ALL', 'รวมทุกคน'], ['MEN', 'เฉพาะชาย'], ['LADY', 'เฉพาะหญิง'], ['SEPARATE', 'แยกชาย-หญิง']]],
   ['e', 'Booby_Rule', 'Booby: ใคร', [['2ND', 'รองบ๊วย'], ['LAST', 'บ๊วย']]],
+  ['e', 'Booby_Priority', 'Booby ติดรางวัลไฟลท์ด้วย', [['FLIGHT', 'ได้รางวัลไฟลท์ (Booby ไปคนถัดไป)'], ['BOOBY', 'ได้ Booby (เสียรางวัลไฟลท์)']]],
   ['r', 'TeamLowGross', 'ก๊วน Low Gross'], ['r', 'TeamLowNet', 'ก๊วน Low Net', 'net'], ['n', 'Team_BestN', 'ก๊วน: นับดีสุดกี่คน (1-5)'],
   ['b', 'OnePrizePerPerson', '1 คน 1 รางวัล'],
   ['h', 'รางวัลกรอกมือ'], ['t', 'NearestToPin', 'Nearest to the Pin: หลุม (เช่น 3,7,12,16)'],
@@ -1934,6 +1985,7 @@ function show() {
   $$('.view').forEach(s => s.classList.remove('active'));
   $('#view-' + r.v).classList.add('active');
   $$('[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === r.v));
+  { const on = document.querySelector('header nav [data-nav].on'); if (on && on.scrollIntoView) try { on.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) {} }
   $$('[data-nav]').forEach(a => a.classList.toggle('text-slate-200', a.dataset.nav !== r.v));
   if (r.v !== 'tv') { document.body.classList.remove('tv'); clearInterval(tvTimer); startPolling(POLL_MS); }
   if (r.v === 'tv') startTV();
@@ -1994,14 +2046,33 @@ $('#h-next').onclick = () => {
   if (missing.length && editable()) return Swal.fire({ icon: 'warning', title: 'ยังไม่ได้กรอก', text: missing.map(p => p.name).join(', '), showCancelButton: true, confirmButtonText: 'ไปหลุมถัดไปเลย', cancelButtonText: 'กลับไปกรอก' }).then(x => x.isConfirmed && go());
   go();
 };
-$('#h-allpar').onclick = () => SC.view.players.forEach(p => { if (!p.status && scoreOf(p.id, SC.hole) == null) enqueue(p.id, SC.hole, SC.view.course.par[SC.hole]); });
+$('#h-allpar').onclick = async () => {   // v1.3.1 ถามก่อน + เลิกทำได้
+  const h = SC.hole, par = SC.view.course.par[h], ids = SC.view.players.filter(p => !p.status && scoreOf(p.id, h) == null).map(p => p.id);
+  if (!ids.length) return toast('ทุกคนมีคะแนนหลุมนี้แล้ว', 'info');
+  const x = await Swal.fire({ icon: 'question', title: `ใส่พาร์ (${par}) หลุม ${h + 1}?`, text: `ให้ ${ids.length} คนที่ยังว่าง`, showCancelButton: true, confirmButtonText: 'ใส่พาร์', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#0f172a' });
+  if (!x.isConfirmed) return;
+  ids.forEach(pid => enqueue(pid, h, par));
+  const u = await Swal.fire({ toast: true, position: 'bottom', icon: 'success', title: `ใส่พาร์ให้ ${ids.length} คนแล้ว`, timer: 7000, timerProgressBar: true, showConfirmButton: true, confirmButtonText: 'เลิกทำ', confirmButtonColor: '#dc2626' });
+  if (u.isConfirmed) {
+    ids.forEach(pid => {
+      const inQ = SC.queue.some(o => o.pid === pid && o.hole === h + 1 && o.strokes === par);
+      if (inQ && !SC.sending) { SC.queue = SC.queue.filter(o => !(o.pid === pid && o.hole === h + 1)); saveQueue(); const s = SC.view.scores[pid] || {}; delete s[h]; }
+      else enqueue(pid, h, '');
+    });
+    renderScorer(); toast('เลิกทำแล้ว', 'info');
+  }
+};
 $('#btn-submit').onclick = submitCardNow;
 $('#cm-go').onclick = () => cmLogin($('#cm-pin').value.trim());
 $('#cm-pin').onkeydown = e => { if (e.key === 'Enter') $('#cm-go').click(); };
 $('#cm-refresh').onclick = () => cmLogin(CM.pin);
 $('#btn-lock').onclick = () => {
   const locked = String(CM.v.tournament.RoundLocked).toUpperCase() === 'TRUE';
-  Swal.fire({ icon: 'warning', title: locked ? 'ปลดล็อกรอบ?' : 'ล็อกรอบและประกาศผลทางการ?', text: locked ? 'ผลจะกลับเป็น "ยังไม่เป็นทางการ" และกรรมการแก้คะแนนได้' : 'การ์ดทุกก๊วนจะถูกล็อก เจ้าหน้าที่ก๊วนแก้คะแนนไม่ได้อีก', showCancelButton: true, confirmButtonText: locked ? 'ปลดล็อก' : 'ล็อกรอบ', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#0f172a' })
+  const act = CM.v.players.filter(p => !p.status), holesOf = p => Object.keys(CM.v.scores[p.id] || {}).length;
+  const pInc = act.filter(p => holesOf(p) < 18), gIdx = {}; act.forEach(p => { gIdx[p.group] = 1; });
+  const gInc = CM.v.groups.filter(g => gIdx[g.group] && g.cardStatus !== 'SUBMITTED' && g.cardStatus !== 'LOCKED');
+  const warn = !locked && (pInc.length || gInc.length) ? `<div class="mt-3 rounded-xl bg-red-50 border border-red-300 text-red-800 text-sm p-2 text-left"><b>ยังไม่ครบ:</b> ${[gInc.length ? gInc.length + ' ก๊วนยังไม่ส่งการ์ด' : '', pInc.length ? pInc.length + ' คนคะแนนไม่ครบ 18 หลุม' : ''].filter(Boolean).join(' • ')}${pInc.length ? '<br><span class="text-xs">' + esc(pInc.slice(0, 12).map(p => p.name + ' (' + holesOf(p) + ')').join(', ')) + (pInc.length > 12 ? ' …' : '') + '</span>' : ''}</div>` : '';
+  Swal.fire({ icon: 'warning', title: locked ? 'ปลดล็อกรอบ?' : 'ล็อกรอบและประกาศผลทางการ?', html: (locked ? 'ผลจะกลับเป็น "ยังไม่เป็นทางการ" และกรรมการแก้คะแนนได้' : 'การ์ดทุกก๊วนจะถูกล็อก เจ้าหน้าที่ก๊วนแก้คะแนนไม่ได้อีก') + warn, showCancelButton: true, confirmButtonText: locked ? 'ปลดล็อก' : 'ล็อกรอบ', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#0f172a' })
     .then(x => x.isConfirmed && cmCall('lockRound', !locked));
 };
 $('#btn-gcards').onclick = printGroupCards;
@@ -2043,7 +2114,7 @@ function showBanner() { const v = route().v; $('#ev-banner').classList.toggle('h
 // ---------- เริ่ม ----------
 $('#gp-logo').src = GP_LOGO;
 if (HOME_URL) $('#home-link').href = HOME_URL;
-if (IS_TRIAL) { $('#trial-banner').classList.remove('hidden'); $('#trial-banner').innerHTML = '<i class="fa-solid fa-flask"></i> <b>งานทดลองใช้ฟรี</b> — ข้อมูลจะถูกลบอัตโนมัติใน 3 วัน • รหัสกรรมการ <b>3579</b> • ผู้เล่นตัวอย่าง: ก๊วน 1 รหัส <b>1111</b>, ก๊วน 2 รหัส <b>2222</b>'; }
+if (IS_TRIAL) { $('#trial-banner').classList.remove('hidden'); $('#trial-banner').innerHTML = '<i class="fa-solid fa-flask"></i> <b>งานทดลองใช้ฟรี</b> — ข้อมูลจะถูกลบอัตโนมัติใน 3 วัน • ใช้รหัสกรรมการที่ได้ตอนสร้างงาน • รหัสก๊วนดูได้ในหน้ากรรมการ → บัตรก๊วน'; }
 if (EVENT_CODE === 'DEMO') { $('#trial-banner').classList.remove('hidden'); $('#trial-banner').innerHTML = '<i class="fa-solid fa-circle-info"></i> <b>งานตัวอย่าง (DEMO)</b> — ข้อมูลจำลองระหว่างแข่ง ดูได้อย่างเดียว • อยากลองกรอกคะแนนจริง กด "ทดลองใช้ฟรี" ที่หน้าแรก'; }
 if (START_SCORE && START_SCORE.g && START_SCORE.k) {   // เปิดจาก QR บัตรก๊วน → เข้าก๊วนอัตโนมัติ แล้วลบรหัสออกจากแถบที่อยู่
   try { const u = new URL(location.href); u.searchParams.delete('sg'); u.searchParams.delete('sk'); u.hash = '#score'; history.replaceState(null, '', u.href); } catch (e) {}

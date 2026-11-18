@@ -1,6 +1,7 @@
 /**
  * gas-shim.js — ทำให้โค้ดหน้าเว็บที่ใช้ google.script.run ทำงานนอก Apps Script (fetch → doPost)
- * คำสั่งอ่านอย่างเดียวลองใหม่อัตโนมัติ 2 ครั้ง; คำสั่งบันทึกคะแนนไม่ลองซ้ำเอง (หน้าเว็บมีคิวออฟไลน์ + opId กันบันทึกซ้ำ)
+ * คำสั่งอ่านอย่างเดียวลองใหม่อัตโนมัติ 2 ครั้ง (สุ่มหน่วง 1.5–3 วิ); คำสั่งบันทึกคะแนนไม่ลองซ้ำเอง (หน้าเว็บมีคิวออฟไลน์ + opId กันบันทึกซ้ำ)
+ * v1.3.1 หมดเวลา 45 วิ (AbortController) • แจ้งเวอร์ชันเซิร์ฟเวอร์ผ่าน event 'gp-sv'
  */
 (function () {
   var READ_ONLY = ['getPublicEvents', 'getEventData', 'getAdminContact', 'scorerLogin', 'getCommitteeData', 'verifyAdminPin'];
@@ -11,17 +12,23 @@
     }
     var tries = READ_ONLY.indexOf(fn) >= 0 ? 3 : 1;
     function once(n) {
+      var ac = typeof AbortController === 'function' ? new AbortController() : null;
+      var t = ac ? setTimeout(function () { ac.abort(); }, 45000) : 0;
       return fetch(api, { method: 'POST', redirect: 'follow', cache: 'no-store', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ fn: fn, args: args }) })
-        .then(function (r) { if (!r.ok) throw new Error('เซิร์ฟเวอร์ตอบกลับผิดปกติ (' + r.status + ')'); return r.json(); })
+        body: JSON.stringify({ fn: fn, args: args }), signal: ac ? ac.signal : undefined })
+        .then(function (r) { clearTimeout(t); if (!r.ok) throw new Error('เซิร์ฟเวอร์ตอบกลับผิดปกติ (' + r.status + ')'); return r.json(); })
         .catch(function (e) {
-          if (n > 1) return new Promise(function (ok) { setTimeout(ok, 1200); }).then(function () { return once(n - 1); });
+          clearTimeout(t);
+          if (e && e.name === 'AbortError') e = new Error('เซิร์ฟเวอร์ตอบช้าเกินไป — ลองใหม่อีกครั้ง');
+          if (n > 1) return new Promise(function (ok) { setTimeout(ok, 1500 + Math.floor(Math.random() * 1500)); }).then(function () { return once(n - 1); });
           throw e;
         });
     }
     return once(tries)
       .catch(function (e) { throw new Error(e && /JSON|Failed to fetch|NetworkError|Load failed/.test(e.message) ? 'เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ — ตรวจสอบอินเทอร์เน็ต' : (e.message || String(e))); })
-      .then(function (o) { if (!o || !o.ok) throw new Error((o && o.err) || 'เกิดข้อผิดพลาด'); return o.v; });
+      .then(function (o) {
+        if (o && o.sv) { try { window.dispatchEvent(new CustomEvent('gp-sv', { detail: o.sv })); } catch (e) {} }
+        if (!o || !o.ok) throw new Error((o && o.err) || 'เกิดข้อผิดพลาด'); return o.v; });
   }
   function runner(h) {
     return new Proxy({}, { get: function (_, k) {
