@@ -341,7 +341,7 @@
     <div class="no-print flex gap-2 mb-3"><button class="btn btn-dark" onclick="window.print()"><i class="fa-solid fa-print"></i> พิมพ์</button><a href="#committee" class="btn btn-light">กลับ</a></div>
     <div id="gcards" class="grid grid-cols-2 gap-3"></div>
   </section>
-  <footer class="no-print text-center text-[11px] text-slate-400 pt-8">GolfPro Stroke Play <span id="sys-ver">v1.4.0</span> • GolfPro36</footer>
+  <footer class="no-print text-center text-[11px] text-slate-400 pt-8">GolfPro Stroke Play <span id="sys-ver">v1.4.1</span> • GolfPro36</footer>
 </main>
 
 <!-- ===== จอ TV ===== -->
@@ -1317,7 +1317,7 @@ const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
 function sstore(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
-const PAGE_VERSION = 'v1.4.0';
+const PAGE_VERSION = 'v1.4.1';
 const API_TIMEOUT_MS = 45000;
 /** v1.3.1 ตั้งเวลาหมดเวลา — คำขอที่ค้าง (เน็ตสนามช้า) ไม่ทำให้หน้าค้าง; คำขอบันทึกคะแนนมี opId กันซ้ำ ส่งใหม่ได้ปลอดภัย */
 function api(fn, ...args) {
@@ -2134,8 +2134,8 @@ document.addEventListener('click', e => {
   if (t.dataset.poSave) return cmCall('setPlayoffWinner', t.dataset.poSave, $(`[data-po-sel="${t.dataset.poSave}"]`).value);
   if (t.dataset.pstat) {
     const p = CM.v.players.find(x => x.id === t.dataset.pstat);
-    return Swal.fire({ title: esc(p.name), html: `<select id="sw-st" class="inp mb-2"><option value="">ปกติ (แข่งต่อ)</option><option value="WD">WD — ถอนตัว</option><option value="DQ">DQ — ตัดสิทธิ์</option><option value="NR">NR — ไม่ส่งผล</option></select><input id="sw-note" class="inp" placeholder="หมายเหตุ / เหตุผล" value="${esc(p.statusNote)}">`,
-      didOpen: () => { $('#sw-st').value = p.status || ''; }, showCancelButton: true, confirmButtonText: 'บันทึก', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#0f172a',
+    return Swal.fire({ title: esc(p.name), html: `<select id="sw-st" class="inp mb-2">${[['', 'ปกติ (แข่งต่อ)'], ['WD', 'WD — ถอนตัว'], ['DQ', 'DQ — ตัดสิทธิ์'], ['NR', 'NR — ไม่ส่งผล']].map(([v, l]) => `<option value="${v}" ${(p.status || '') === v ? 'selected' : ''}>${l}</option>`).join('')}</select><input id="sw-note" class="inp" placeholder="หมายเหตุ / เหตุผล" value="${esc(p.statusNote)}">`,
+      showCancelButton: true, confirmButtonText: 'บันทึก', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#0f172a',
       preConfirm: () => [$('#sw-st').value, $('#sw-note').value] }).then(x => x.isConfirmed && cmCall('setPlayerStatus', p.id, x.value[0], x.value[1]));
   }
   if (t.dataset.pedit) {
